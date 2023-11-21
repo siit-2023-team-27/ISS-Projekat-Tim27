@@ -1,15 +1,12 @@
 package model;
 
+import model.enums.ReportStatus;
 public class CommentReport {
     private User reportingUser;
     private Comment reportedComment;
     private String reason;
     private ReportStatus reportStatus;
 
-    // Enum to represent report status: pending, archived, accepted
-    public enum ReportStatus {
-        PENDING, ARCHIVED, ACCEPTED
-    }
 
     // Constructor
     public CommentReport(User reportingUser, Comment reportedComment, String reason, ReportStatus reportStatus) {

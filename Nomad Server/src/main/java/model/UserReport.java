@@ -1,20 +1,18 @@
 package model;
 
-public class CommentReport {
+import model.enums.ReportStatus;
+public class UserReport {
     private User reportingUser;
-    private Comment reportedComment;
+    private User reportedUser;
     private String reason;
     private ReportStatus reportStatus;
 
-    // Enum to represent report status: pending, archived, accepted
-    public enum ReportStatus {
-        PENDING, ARCHIVED, ACCEPTED
-    }
+
 
     // Constructor
-    public CommentReport(User reportingUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
+    public UserReport(User reportingUser, User reportedComment, String reason, ReportStatus reportStatus) {
         this.reportingUser = reportingUser;
-        this.reportedComment = reportedComment;
+        this.reportedUser = reportedComment;
         this.reason = reason;
         this.reportStatus = reportStatus;
     }
@@ -28,12 +26,12 @@ public class CommentReport {
         this.reportingUser = reportingUser;
     }
 
-    public Comment getReportedComment() {
-        return reportedComment;
+    public User getReportedUser() {
+        return reportedUser;
     }
 
-    public void setReportedComment(Comment reportedComment) {
-        this.reportedComment = reportedComment;
+    public void setReportedUser(User reportedUser) {
+        this.reportedUser = reportedUser;
     }
 
     public String getReason() {
