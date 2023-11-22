@@ -3,6 +3,8 @@ package model;
 import model.enums.ReservationStatus;
 
 public class Reservation {
+    private long id;
+
     private User user;
     private Accommodation accommodation;
     private DateRange dateRange;
@@ -21,6 +23,13 @@ public class Reservation {
     }
 
     // Getters and setters for each attribute
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
     public User getUser() {
         return user;
     }

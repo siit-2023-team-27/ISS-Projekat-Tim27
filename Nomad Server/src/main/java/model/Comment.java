@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Comment {
+    private long id;
     private String title;
     private String text;
     private User user;
@@ -25,6 +26,15 @@ public class Comment {
     }
 
     // Getters and setters for each attribute
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }

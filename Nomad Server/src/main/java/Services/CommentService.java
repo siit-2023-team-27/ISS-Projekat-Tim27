@@ -1,38 +1,37 @@
 package Services;
 
+import Repositories.IRepository;
 import Repositories.InMemoryAccommodationRepository;
-import model.Accommodation;
+import model.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
-public class AccommodationService implements IService<Accommodation, Long> {
+public class CommentService implements IService<Comment, Long> {
 
     @Autowired
-    private InMemoryAccommodationRepository accommodationRepository;
+    private IRepository<Comment, Long> accommodationRepository;
 
     @Override
-    public Collection<Accommodation> findAll() {
-        Collection<Accommodation> accommodations = accommodationRepository.findAll();
-        return accommodations;
+    public Collection<Comment> findAll() {
+        return accommodationRepository.findAll();
     }
 
     @Override
-    public Accommodation findOne(Long id) {
-        Accommodation accommodation = accommodationRepository.findOne(id);
-        return accommodation;
+    public Comment findOne(Long id) {
+        return accommodationRepository.findOne(id);
     }
 
     @Override
-    public void create(Accommodation accommodation) {
-        accommodationRepository.create(accommodation);
+    public void create(Comment comment) {
+        accommodationRepository.create(comment);
     }
 
     @Override
-    public void update(Accommodation accommodation) {
-        accommodationRepository.update(accommodation);
+    public void update(Comment comment) {
+        accommodationRepository.update(comment);
     }
 
     @Override
