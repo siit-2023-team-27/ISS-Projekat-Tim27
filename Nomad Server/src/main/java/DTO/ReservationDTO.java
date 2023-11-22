@@ -1,15 +1,13 @@
 package DTO;
 
-import model.Accommodation;
 import model.DateRange;
-import model.User;
 import model.enums.ReservationStatus;
 
 public class ReservationDTO {
 
     private long id;
-    private long userId;
-    private long accommodationId;
+    private long user;
+    private long accommodation;
     private DateRange dateRange;
     private int numGuests;
     private ReservationStatus status;
@@ -17,15 +15,15 @@ public class ReservationDTO {
     // Constructor
     public ReservationDTO(
             long id,
-            long userId,
-            long accommodationId,
+            long user,
+            long accommodation,
             DateRange dateRange,
             int numGuests,
             ReservationStatus status
     ) {
         this.id = id;
-        this.userId = userId;
-        this.accommodationId = accommodationId;
+        this.user = user;
+        this.accommodation = accommodation;
         this.dateRange = dateRange;
         this.numGuests = numGuests;
         this.status = status;
@@ -41,20 +39,20 @@ public class ReservationDTO {
         this.id = id;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getUser() {
+        return user;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUser(long user) {
+        this.user = user;
     }
 
-    public long getAccommodationId() {
-        return accommodationId;
+    public long getAccommodation() {
+        return accommodation;
     }
 
-    public void setAccommodationId(long accommodationId) {
-        this.accommodationId = accommodationId;
+    public void setAccommodation(long accommodation) {
+        this.accommodation = accommodation;
     }
 
     public DateRange getDateRange() {

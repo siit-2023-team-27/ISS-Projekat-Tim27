@@ -22,6 +22,8 @@ public class Reservation {
         this.status = status;
     }
 
+    public Reservation() {}
+
     // Getters and setters for each attribute
     public long getId() {
         return id;
