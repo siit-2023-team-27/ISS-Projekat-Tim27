@@ -1,13 +1,13 @@
-package model;
+package DTO;
+
+import model.Accommodation;
+import model.Comment;
+import model.User;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
-public class Accommodation {
-    private long id;
-    private User host;
+public class AccommodationDTO {
     private int minGuests;
     private int maxGuests;
     private String name;
@@ -18,8 +18,7 @@ public class Accommodation {
     private List<Comment> comments;
 
     // Constructor
-    public Accommodation(User host, int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images) {
-        this.host = host;
+    public AccommodationDTO(int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images) {
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
         this.name = name;
@@ -29,14 +28,7 @@ public class Accommodation {
         this.images = images;
         this.comments = new ArrayList<Comment>();
     }
-    public Accommodation(){}
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    public AccommodationDTO(){}
 
     public void addComment(Comment comment){
         this.comments.add(comment);
@@ -53,15 +45,6 @@ public class Accommodation {
 
     public void addImage(String image){
         this.images.add(image);
-    }
-
-
-    public User getHost() {
-        return host;
-    }
-
-    public void setHost(User host) {
-        this.host = host;
     }
 
     public int getMinGuests() {
@@ -123,7 +106,6 @@ public class Accommodation {
     @Override
     public String toString() {
         return "Accommodation{" +
-                "host=" + host +
                 ", minGuests=" + minGuests +
                 ", maxGuests=" + maxGuests +
                 ", name='" + name + '\'' +
@@ -132,16 +114,5 @@ public class Accommodation {
                 ", amenities=" + amenities +
                 ", images=" + images +
                 '}';
-    }
-
-
-    public void copyValues(Accommodation accommodation) {
-        this.minGuests = accommodation.minGuests;
-        this.maxGuests = accommodation.maxGuests;
-        this.name = accommodation.name;
-        this.description = accommodation.description;
-        this.address = accommodation.address;
-        this.amenities = accommodation.amenities;
-        this.images = accommodation.images;
     }
 }
