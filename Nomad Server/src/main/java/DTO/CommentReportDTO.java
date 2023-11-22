@@ -1,16 +1,17 @@
-package model;
+package DTO;
 
+import model.Comment;
+import model.User;
 import model.enums.ReportStatus;
-public class CommentReport {
-    private long id;
+
+public class CommentReportDTO {
     private User reportingUser;
     private Comment reportedComment;
     private String reason;
     private ReportStatus reportStatus;
 
-    public CommentReport(){}
-    // Constructor
-    public CommentReport(User reportingUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
+    public CommentReportDTO(){}
+    public CommentReportDTO(User reportingUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
         this.reportingUser = reportingUser;
         this.reportedComment = reportedComment;
         this.reason = reason;
@@ -18,13 +19,6 @@ public class CommentReport {
     }
 
     // Getters and setters for each attribute
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
     public User getReportingUser() {
         return reportingUser;
     }
@@ -55,12 +49,5 @@ public class CommentReport {
 
     public void setReportStatus(ReportStatus reportStatus) {
         this.reportStatus = reportStatus;
-    }
-
-    public void copyValues(CommentReport comment){
-        this.reportingUser = comment.reportingUser;
-        this.reportedComment = comment.reportedComment;
-        this.reason = comment.reason;
-        this.reportStatus = comment.reportStatus;
     }
 }

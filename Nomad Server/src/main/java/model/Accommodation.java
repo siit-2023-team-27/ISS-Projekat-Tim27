@@ -1,5 +1,8 @@
 package model;
 
+import model.enums.AccommodationStatus;
+import model.enums.ConfirmationType;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,9 +19,15 @@ public class Accommodation {
     private List<String> amenities;
     private List<String> images;
     private List<Comment> comments;
+    private AccommodationStatus status;
+    private ConfirmationType confirmationType;
+    private int deadlineForCancellation;
+
+    public Accommodation(){}
 
     // Constructor
-    public Accommodation(User host, int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images) {
+    public Accommodation(User host, int minGuests, int maxGuests, String name, String description, String address, List<String> amenities,
+                         List<String> images, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation) {
         this.host = host;
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
@@ -28,8 +37,33 @@ public class Accommodation {
         this.amenities = amenities;
         this.images = images;
         this.comments = new ArrayList<Comment>();
+        this.status = status;
+        this.confirmationType = confirmationType;
+        this.deadlineForCancellation = deadlineForCancellation;
     }
-    public Accommodation(){}
+    public ConfirmationType getConfirmationType() {
+        return confirmationType;
+    }
+
+    public void setConfirmationType(ConfirmationType confirmationType) {
+        this.confirmationType = confirmationType;
+    }
+
+    public int getDeadlineForCancellation() {
+        return deadlineForCancellation;
+    }
+
+    public void setDeadlineForCancellation(int deadlineForCancellation) {
+        this.deadlineForCancellation = deadlineForCancellation;
+    }
+    public AccommodationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AccommodationStatus status) {
+        this.status = status;
+    }
+
     public long getId() {
         return id;
     }
@@ -123,7 +157,8 @@ public class Accommodation {
     @Override
     public String toString() {
         return "Accommodation{" +
-                "host=" + host +
+                "id=" + id +
+                ", host=" + host +
                 ", minGuests=" + minGuests +
                 ", maxGuests=" + maxGuests +
                 ", name='" + name + '\'' +
@@ -131,9 +166,12 @@ public class Accommodation {
                 ", address='" + address + '\'' +
                 ", amenities=" + amenities +
                 ", images=" + images +
+                ", comments=" + comments +
+                ", status=" + status +
+                ", confirmationType=" + confirmationType +
+                ", deadlineForCancellation=" + deadlineForCancellation +
                 '}';
     }
-
 
     public void copyValues(Accommodation accommodation) {
         this.minGuests = accommodation.minGuests;
@@ -143,5 +181,8 @@ public class Accommodation {
         this.address = accommodation.address;
         this.amenities = accommodation.amenities;
         this.images = accommodation.images;
+        this.status = accommodation.status;
+        this.deadlineForCancellation = accommodation.deadlineForCancellation;
+        this.confirmationType = accommodation.confirmationType;
     }
 }
