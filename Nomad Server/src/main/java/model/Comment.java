@@ -11,6 +11,8 @@ public class Comment {
     private int rating; // Optional rating from 1 to 5
     private List<Comment> responses;
 
+    public Comment(){}
+
     // Constructor without a rating
     public Comment(String title, String text, User user) {
         this.title = title;
@@ -90,5 +92,12 @@ public class Comment {
                 ", rating=" + rating +
                 ", responses=" + responses +
                 '}';
+    }
+
+    public void copyValues(Comment comment){
+        this.title = comment.title;
+        this.text = comment.text;
+        this.user = comment.user;
+        this.rating = comment.rating;
     }
 }
