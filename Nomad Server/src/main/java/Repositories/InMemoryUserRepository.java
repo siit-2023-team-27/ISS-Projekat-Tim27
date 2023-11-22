@@ -1,36 +1,39 @@
 package Repositories;
 
-import model.UserReport;
+import model.Accommodation;
+import model.User;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-public class InMemoryUserReportRepository implements IRepository<UserReport, Long> {
-    private ConcurrentMap<Long, UserReport> userReports;
+@Repository
+public class InMemoryUserRepository implements IRepository<User, Long> {
+    private ConcurrentMap<Long, User> users = new ConcurrentHashMap<Long, User>();
     private static Long id = 0l;
     @Override
-    public Collection<UserReport> findAll() {
-        return userReports.values();
+    public Collection<User> findAll() {
+        return users.values();
     }
 
     @Override
-    public void create(UserReport object) {
-        this.userReports.put(id, object);
+    public void create(User object) {
+        this.users.put(id, object);
         object.setId(id++);
     }
 
     @Override
-    public UserReport findOne(Long id) {
-        return this.userReports.get(id);
+    public User findOne(Long id) {
+        return this.users.get(id);
     }
 
     @Override
-    public void update(UserReport object) {
-        this.userReports.replace(object.getId(), object);
+    public void update(User object) {
+        this.users.replace(object.getId(), object);
     }
 
     @Override
     public void delete(Long id) {
-        this.userReports.remove(id);
+        this.users.remove(id);
     }
 }

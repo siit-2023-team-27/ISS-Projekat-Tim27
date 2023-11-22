@@ -1,44 +1,42 @@
 package Services;
 
 import Repositories.IRepository;
-import model.Comment;
 import model.Reservation;
+import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 
 @Service
-public class ReservationService implements IService<Reservation, Long> {
+public class UserService implements IService<User, Long> {
 
     @Autowired
-    private IRepository<Reservation, Long> reservationRepository;
+    private IRepository<User, Long> userRepository;
 
     @Override
-    public Collection<Reservation> findAll() {
-        Collection<Reservation> reservations = reservationRepository.findAll();
-        return reservations;
+    public Collection<User> findAll() {
+        return userRepository.findAll();
     }
 
     @Override
-    public Reservation findOne(Long id) {
-        Reservation reservations = reservationRepository.findOne(id);
-        return reservations;
+    public User findOne(Long id) {
+        return userRepository.findOne(id);
     }
 
     @Override
-    public void create(Reservation reservation) {
-        reservationRepository.create(reservation);
+    public void create(User user) {
+        userRepository.create(user);
     }
 
     @Override
-    public void update(Reservation reservation) {
-        reservationRepository.update(reservation);
+    public void update(User user) {
+        userRepository.update(user);
     }
 
     @Override
     public void delete(Long id) {
-        reservationRepository.delete(id);
+        userRepository.delete(id);
     }
 
 }

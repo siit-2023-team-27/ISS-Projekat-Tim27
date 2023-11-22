@@ -2,6 +2,7 @@ package model;
 
 import model.enums.ReportStatus;
 public class CommentReport {
+    private long id;
     private User reportingUser;
     private Comment reportedComment;
     private String reason;
@@ -17,6 +18,13 @@ public class CommentReport {
     }
 
     // Getters and setters for each attribute
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
     public User getReportingUser() {
         return reportingUser;
     }

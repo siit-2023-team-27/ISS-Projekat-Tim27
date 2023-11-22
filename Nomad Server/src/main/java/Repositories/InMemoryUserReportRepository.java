@@ -1,37 +1,39 @@
 package Repositories;
 
 import model.Accommodation;
-import model.CommentReport;
+import model.UserReport;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-public class InMemoryCommentReportRepository implements IRepository<CommentReport, Long> {
-    private ConcurrentMap<Long, CommentReport> commentReports;
+@Repository
+public class InMemoryUserReportRepository implements IRepository<UserReport, Long> {
+    private ConcurrentMap<Long, UserReport> userReports = new ConcurrentHashMap<Long, UserReport>();
     private static Long id = 0l;
     @Override
-    public Collection<CommentReport> findAll() {
-        return commentReports.values();
+    public Collection<UserReport> findAll() {
+        return userReports.values();
     }
 
     @Override
-    public void create(CommentReport object) {
-        this.commentReports.put(id, object);
+    public void create(UserReport object) {
+        this.userReports.put(id, object);
         object.setId(id++);
     }
 
     @Override
-    public CommentReport findOne(Long id) {
-        return this.commentReports.get(id);
+    public UserReport findOne(Long id) {
+        return this.userReports.get(id);
     }
 
     @Override
-    public void update(CommentReport object) {
-        this.commentReports.replace(object.getId(), object);
+    public void update(UserReport object) {
+        this.userReports.replace(object.getId(), object);
     }
 
     @Override
     public void delete(Long id) {
-        this.commentReports.remove(id);
+        this.userReports.remove(id);
     }
 }

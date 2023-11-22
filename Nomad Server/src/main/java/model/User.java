@@ -3,6 +3,8 @@ package model;
 import model.enums.UserType;
 
 public class User {
+    private long id;
+
     private String firstName;
     private String lastName;
     private String address;
@@ -26,6 +28,13 @@ public class User {
     }
 
     // Getters and setters for each attribute
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
     public void suspend(){
         this.suspended = true;
     }

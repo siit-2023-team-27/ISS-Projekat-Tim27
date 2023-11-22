@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Accommodation {
+    private long id;
     private User host;
     private int minGuests;
     private int maxGuests;
@@ -29,6 +30,13 @@ public class Accommodation {
         this.comments = new ArrayList<Comment>();
     }
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public void addComment(Comment comment){
         this.comments.add(comment);
