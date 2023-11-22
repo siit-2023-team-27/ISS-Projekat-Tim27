@@ -1,9 +1,10 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
-import Services.AccommodationService;
+import DTO.UserDTO;
 import Services.IService;
 import model.Accommodation;
+import model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,66 +14,64 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
-@RequestMapping("/api/accommodations")
+@RequestMapping("/api/users")
 @ComponentScan(basePackageClasses = IService.class)
-public class AccommodationController {
+public class UserController {
     @Autowired
-    private IService<Accommodation, Long> accommodationService;
+    private IService<User, Long> userService;
     @Autowired
     private ModelMapper modelMapper;
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
-        Collection<Accommodation> accommodations = accommodationService.findAll();
-        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
-        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    public ResponseEntity<Collection<UserDTO>> getUsers() {
+        Collection<User> users = userService.findAll();
+        Collection<UserDTO> userDTOS = users.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<UserDTO>>(userDTOS, HttpStatus.OK);
     }
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable("id") Long id) {
-        Accommodation accommodation = accommodationService.findOne(id);
+    public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
+        User user = userService.findOne(id);
 
-        if (accommodation == null) {
-            return new ResponseEntity<AccommodationDTO>(HttpStatus.NOT_FOUND);
+        if (user == null) {
+            return new ResponseEntity<UserDTO>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<AccommodationDTO>(this.convertToDto(accommodation), HttpStatus.OK);
+        return new ResponseEntity<UserDTO>(this.convertToDto(user), HttpStatus.OK);
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
-        Accommodation accommodation = this.convertToEntity(accommodationDTO);
-        accommodationService.create(accommodation);
-        return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.CREATED);
+    public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
+        User user = this.convertToEntity(userDTO);
+        userService.create(user);
+        return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<AccommodationDTO> deleteAccommodation(@PathVariable("id") Long id) {
-        accommodationService.delete(id);
-        return new ResponseEntity<AccommodationDTO>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
+        userService.delete(id);
+        return new ResponseEntity<UserDTO>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccommodationDTO> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO, @PathVariable Long id)
+    public ResponseEntity<UserDTO> updateAccommodation(@RequestBody UserDTO userDTO, @PathVariable Long id)
             throws Exception {
-        Accommodation accommodationForUpdate = accommodationService.findOne(id);
-        Accommodation updatedAccommodation = this.convertToEntity(accommodationDTO);
-        accommodationForUpdate.copyValues(updatedAccommodation);
+        User userForUpdate = userService.findOne(id);
+        User updatedUser = this.convertToEntity(userDTO);
+        userForUpdate.copyValues(updatedUser);
 
-        accommodationService.update(accommodationForUpdate);
+        userService.update(userForUpdate);
 
-        if (updatedAccommodation == null) {
-            return new ResponseEntity<AccommodationDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (updatedUser == null) {
+            return new ResponseEntity<UserDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.OK);
+        return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
 
-    private AccommodationDTO convertToDto(Accommodation accommodation) {
-        AccommodationDTO accommodationDTO = modelMapper.map(accommodation, AccommodationDTO.class);
+    private UserDTO convertToDto(User user) {
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 
-        return accommodationDTO;
+        return userDTO;
     }
-    private Accommodation convertToEntity(AccommodationDTO accommodationDTO) {
-        return modelMapper.map(accommodationDTO, Accommodation.class);
+    private User convertToEntity(UserDTO userDTO) {
+        return modelMapper.map(userDTO, User.class);
     }
 }

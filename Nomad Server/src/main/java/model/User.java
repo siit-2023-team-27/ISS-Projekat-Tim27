@@ -26,6 +26,7 @@ public class User {
         this.userType = userType;
         this.suspended = false;
     }
+    public User(){}
 
     // Getters and setters for each attribute
     public long getId() {
@@ -109,5 +110,13 @@ public class User {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", userType=" + userType +
                 '}';
+    }
+    public void copyValues(User user){
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.address = user.address;
+        this.password = user.password;
+        this.phoneNumber = user.phoneNumber;
+        this.userType = user.userType;
     }
 }
