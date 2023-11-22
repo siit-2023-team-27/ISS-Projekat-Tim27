@@ -1,2 +1,4 @@
-package DTO;public class CommentDTO {
+package DTO;
+
+public class CommentDTO {
 }

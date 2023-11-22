@@ -29,7 +29,7 @@ public class Accommodation {
         this.images = images;
         this.comments = new ArrayList<Comment>();
     }
-
+    public Accommodation(){}
     public long getId() {
         return id;
     }
@@ -135,4 +135,13 @@ public class Accommodation {
     }
 
 
+    public void copyValues(Accommodation accommodation) {
+        this.minGuests = accommodation.minGuests;
+        this.maxGuests = accommodation.maxGuests;
+        this.name = accommodation.name;
+        this.description = accommodation.description;
+        this.address = accommodation.address;
+        this.amenities = accommodation.amenities;
+        this.images = accommodation.images;
+    }
 }
