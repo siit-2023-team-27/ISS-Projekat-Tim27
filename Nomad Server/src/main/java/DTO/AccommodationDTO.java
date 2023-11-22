@@ -3,6 +3,8 @@ package DTO;
 import model.Accommodation;
 import model.Comment;
 import model.User;
+import model.enums.AccommodationStatus;
+import model.enums.ConfirmationType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +18,13 @@ public class AccommodationDTO {
     private List<String> amenities;
     private List<String> images;
     private List<Comment> comments;
+    private AccommodationStatus status;
 
-    // Constructor
-    public AccommodationDTO(int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images) {
+    private ConfirmationType confirmationType;
+    private int deadlineForCancellation;
+    public AccommodationDTO(){}
+
+    public AccommodationDTO(int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation) {
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
         this.name = name;
@@ -26,9 +32,38 @@ public class AccommodationDTO {
         this.address = address;
         this.amenities = amenities;
         this.images = images;
-        this.comments = new ArrayList<Comment>();
+        this.comments = comments;
+        this.status = status;
+        this.confirmationType = confirmationType;
+        this.deadlineForCancellation = deadlineForCancellation;
     }
-    public AccommodationDTO(){}
+
+
+    public AccommodationStatus getStatus() {
+        return status;
+    }
+
+
+    public ConfirmationType getConfirmationType() {
+        return confirmationType;
+    }
+
+    public void setConfirmationType(ConfirmationType confirmationType) {
+        this.confirmationType = confirmationType;
+    }
+
+    public int getDeadlineForCancellation() {
+        return deadlineForCancellation;
+    }
+
+    public void setDeadlineForCancellation(int deadlineForCancellation) {
+        this.deadlineForCancellation = deadlineForCancellation;
+    }
+
+    public void setStatus(AccommodationStatus status) {
+        this.status = status;
+    }
+
 
     public void addComment(Comment comment){
         this.comments.add(comment);
@@ -105,14 +140,19 @@ public class AccommodationDTO {
 
     @Override
     public String toString() {
-        return "Accommodation{" +
-                ", minGuests=" + minGuests +
+        return "AccommodationDTO{" +
+                "minGuests=" + minGuests +
                 ", maxGuests=" + maxGuests +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", address='" + address + '\'' +
                 ", amenities=" + amenities +
                 ", images=" + images +
+                ", comments=" + comments +
+                ", status=" + status +
+                ", confirmationType=" + confirmationType +
+                ", deadlineForCancellation=" + deadlineForCancellation +
                 '}';
     }
+
 }
