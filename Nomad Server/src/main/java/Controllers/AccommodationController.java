@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 public class AccommodationController {
     @Autowired
     private IService<Accommodation, Long> accommodationService;
+
     @Autowired
     private ModelMapper modelMapper;
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

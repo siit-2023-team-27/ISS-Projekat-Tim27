@@ -69,4 +69,13 @@ public class Reservation {
     public void setStatus(ReservationStatus status) {
         this.status = status;
     }
+
+    public void copyValues(Reservation reservation) {
+        this.id = reservation.id;
+        this.user = reservation.user;
+        this.accommodation = reservation.accommodation;
+        this.dateRange = reservation.dateRange;
+        this.numGuests = reservation.numGuests;
+        this.status = reservation.status;
+    }
 }
