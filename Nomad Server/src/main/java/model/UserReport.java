@@ -59,4 +59,6 @@ public class UserReport {
         this.reportStatus = reportStatus;
     }
 
+    public void copyValues(UserReport userReport) {
+    }
 }

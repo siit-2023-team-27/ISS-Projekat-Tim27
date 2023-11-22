@@ -1,20 +1,27 @@
-package model;
+package DTO;
 
+import model.DateRange;
 import model.enums.ReservationStatus;
 
-public class Reservation {
-    private long id;
+public class ReservationDTO {
 
-    private User user;
-    private Accommodation accommodation;
+    private long id;
+    private long user;
+    private long accommodation;
     private DateRange dateRange;
     private int numGuests;
     private ReservationStatus status;
 
-    // Enum to represent reservation status: pending, accepted, rejected
-
     // Constructor
-    public Reservation(User user, Accommodation accommodation, DateRange dateRange, int numGuests, ReservationStatus status) {
+    public ReservationDTO(
+            long id,
+            long user,
+            long accommodation,
+            DateRange dateRange,
+            int numGuests,
+            ReservationStatus status
+    ) {
+        this.id = id;
         this.user = user;
         this.accommodation = accommodation;
         this.dateRange = dateRange;
@@ -22,9 +29,8 @@ public class Reservation {
         this.status = status;
     }
 
-    public Reservation() {}
+    public ReservationDTO () {}
 
-    // Getters and setters for each attribute
     public long getId() {
         return id;
     }
@@ -32,19 +38,20 @@ public class Reservation {
     public void setId(long id) {
         this.id = id;
     }
-    public User getUser() {
+
+    public long getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(long user) {
         this.user = user;
     }
 
-    public Accommodation getAccommodation() {
+    public long getAccommodation() {
         return accommodation;
     }
 
-    public void setAccommodation(Accommodation accommodation) {
+    public void setAccommodation(long accommodation) {
         this.accommodation = accommodation;
     }
 
@@ -70,14 +77,5 @@ public class Reservation {
 
     public void setStatus(ReservationStatus status) {
         this.status = status;
-    }
-
-    public void copyValues(Reservation reservation) {
-        this.id = reservation.id;
-        this.user = reservation.user;
-        this.accommodation = reservation.accommodation;
-        this.dateRange = reservation.dateRange;
-        this.numGuests = reservation.numGuests;
-        this.status = reservation.status;
     }
 }
