@@ -15,6 +15,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:4200"
+        },
+        methods = {
+                RequestMethod.OPTIONS,
+                RequestMethod.GET,
+                RequestMethod.PUT,
+                RequestMethod.DELETE,
+                RequestMethod.POST
+        })
 @RestController
 @RequestMapping("/api/commentReports")
 @ComponentScan(basePackageClasses = IService.class)
