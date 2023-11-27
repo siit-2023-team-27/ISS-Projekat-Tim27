@@ -18,6 +18,17 @@ import org.springframework.web.bind.annotation.*;
 import javax.print.attribute.standard.Media;
 import java.util.Collection;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:4200"
+        },
+        methods = {
+                RequestMethod.OPTIONS,
+                RequestMethod.GET,
+                RequestMethod.PUT,
+                RequestMethod.DELETE,
+                RequestMethod.POST
+        })
 @RestController
 @RequestMapping("/api/reservations")
 @ComponentScan (basePackageClasses = IService.class)

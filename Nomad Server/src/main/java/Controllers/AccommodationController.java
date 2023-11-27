@@ -16,6 +16,18 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@CrossOrigin(
+        origins = {
+                "http://localhost:4200"
+        },
+        methods = {
+                RequestMethod.OPTIONS,
+                RequestMethod.GET,
+                RequestMethod.PUT,
+                RequestMethod.DELETE,
+                RequestMethod.POST
+        })
+
 @RestController
 @RequestMapping("/api/accommodations")
 @ComponentScan(basePackageClasses = IService.class)
@@ -25,6 +37,7 @@ public class AccommodationController {
 
     @Autowired
     private ModelMapper modelMapper;
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findAll();
