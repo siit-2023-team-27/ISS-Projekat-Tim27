@@ -22,9 +22,10 @@ public class AccommodationDTO {
 
     private ConfirmationType confirmationType;
     private int deadlineForCancellation;
+    private boolean verified;
     public AccommodationDTO(){}
 
-    public AccommodationDTO(int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation) {
+    public AccommodationDTO(int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation, boolean verified) {
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
         this.name = name;
@@ -36,8 +37,16 @@ public class AccommodationDTO {
         this.status = status;
         this.confirmationType = confirmationType;
         this.deadlineForCancellation = deadlineForCancellation;
+        this.verified = verified;
     }
 
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
 
     public AccommodationStatus getStatus() {
         return status;

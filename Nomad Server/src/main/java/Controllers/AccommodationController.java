@@ -92,7 +92,33 @@ public class AccommodationController {
 
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.OK);
     }
+    @PutMapping(value = "verify/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccommodationDTO> updateAccommodation(@PathVariable Long id)
+            throws Exception {
+        Accommodation accommodationForUpdate = accommodationService.findOne(id);
+        accommodationForUpdate.setVerified(true);
+        accommodationService.update(accommodationForUpdate);
 
+
+
+        return new ResponseEntity<AccommodationDTO>(convertToDto(accommodationForUpdate), HttpStatus.OK);
+    }
+    @PutMapping(value = "/favourite", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccommodationDTO> favouriteAccommodation(@RequestParam() Long userID, @RequestParam() Long accommodationID) {
+        Accommodation accommodation = this.accommodationService.findOne(accommodationID);
+        if(accommodation == null){
+            return new ResponseEntity<AccommodationDTO>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<AccommodationDTO>(this.convertToDto(accommodation),HttpStatus.OK);
+    }
+    @PutMapping(value = "/un-favourite", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccommodationDTO> unFavouriteAccommodation(@RequestParam() Long userID, @RequestParam() Long accommodationID) {
+        Accommodation accommodation = this.accommodationService.findOne(accommodationID);
+        if(accommodation == null){
+            return new ResponseEntity<AccommodationDTO>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<AccommodationDTO>(this.convertToDto(accommodation),HttpStatus.OK);
+    }
     private AccommodationDTO convertToDto(Accommodation accommodation) {
         AccommodationDTO accommodationDTO = modelMapper.map(accommodation, AccommodationDTO.class);
 
