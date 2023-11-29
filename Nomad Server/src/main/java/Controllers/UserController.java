@@ -70,7 +70,7 @@ public class UserController {
 
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
-    @PutMapping(value = "/unSuspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/un-suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> unsuspentUser(@PathVariable Long id) {
 
         return new ResponseEntity<UserDTO>(HttpStatus.OK);

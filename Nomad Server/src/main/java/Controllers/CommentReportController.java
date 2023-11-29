@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/commentReports")
+@RequestMapping("/api/comment-reports")
 @ComponentScan(basePackageClasses = IService.class)
 public class CommentReportController {
     @Autowired
