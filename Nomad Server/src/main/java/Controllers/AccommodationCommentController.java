@@ -56,4 +56,10 @@ public class AccommodationCommentController {
                 accommodationCommentService.create(comment);
                 return new ResponseEntity<AccommodationComment>(comment, HttpStatus.CREATED);
         }
+
+        @DeleteMapping(value = "/{id}")
+        public ResponseEntity<AccommodationComment> deleteComment(@PathVariable("id") Long id) {
+                accommodationCommentService.delete(id);
+                return new ResponseEntity<AccommodationComment>(HttpStatus.NO_CONTENT);
+        }
 }

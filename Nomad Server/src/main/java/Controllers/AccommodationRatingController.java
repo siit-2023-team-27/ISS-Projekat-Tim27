@@ -1,14 +1,17 @@
 package Controllers;
 
 import Services.IService;
+import model.AccommodationComment;
 import model.AccommodationRating;
 import model.HostRating;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 
 @CrossOrigin(
         origins = {
@@ -29,4 +32,33 @@ public class AccommodationRatingController {
 
     @Autowired
     private IService<AccommodationRating, Long> accommodationRatingService;
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<AccommodationRating>> getRatings() {
+        Collection<AccommodationRating> accommodationRatings = accommodationRatingService.findAll();
+        return new ResponseEntity<Collection<AccommodationRating>>(accommodationRatings, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccommodationRating> getRating(@PathVariable("id") Long id) {
+        AccommodationRating rating = accommodationRatingService.findOne(id);
+
+        if (rating == null) {
+            return new ResponseEntity<AccommodationRating>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<AccommodationRating>(rating, HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccommodationRating> createRating(@RequestBody AccommodationRating rating) throws Exception {
+        accommodationRatingService.create(rating);
+        return new ResponseEntity<AccommodationRating>(rating, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<AccommodationRating> deleteRating(@PathVariable("id") Long id) {
+        accommodationRatingService.delete(id);
+        return new ResponseEntity<AccommodationRating>(HttpStatus.NO_CONTENT);
+    }
 }
