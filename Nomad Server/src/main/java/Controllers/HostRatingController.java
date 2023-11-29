@@ -28,7 +28,7 @@ import java.util.Collection;
         })
 
 @RestController
-@RequestMapping("/api/accommodations")
+@RequestMapping("/api/host-ratings")
 @ComponentScan(basePackageClasses = IService.class)
 public class HostRatingController {
 
