@@ -10,6 +10,7 @@ public class Comment {
     private User user;
     private int rating; // Optional rating from 1 to 5
     private List<Comment> responses;
+    private Accommodation accommodation;
 
     public Comment(){}
 
@@ -28,6 +29,14 @@ public class Comment {
     }
 
     // Getters and setters for each attribute
+
+    public Accommodation getAccommodation() {
+        return accommodation;
+    }
+
+    public void setAccommodation(Accommodation accommodation) {
+        this.accommodation = accommodation;
+    }
 
     public long getId() {
         return id;
@@ -99,5 +108,6 @@ public class Comment {
         this.text = comment.text;
         this.user = comment.user;
         this.rating = comment.rating;
+        this.accommodation = comment.accommodation;
     }
 }
