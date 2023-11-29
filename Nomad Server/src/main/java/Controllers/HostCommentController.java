@@ -26,7 +26,7 @@ import java.util.Collection;
         })
 
 @RestController
-@RequestMapping("/api/accommodations")
+@RequestMapping("/api/host-comments")
 @ComponentScan(basePackageClasses = IService.class)
 public class HostCommentController {
 
