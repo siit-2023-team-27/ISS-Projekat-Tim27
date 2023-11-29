@@ -1,8 +1,11 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
+import DTO.LoginDTO;
+import DTO.LoginResponseDTO;
 import DTO.UserDTO;
 import Services.IService;
+import Services.UserService;
 import model.Accommodation;
 import model.User;
 import org.modelmapper.ModelMapper;
@@ -31,7 +34,7 @@ import java.util.Collection;
 @ComponentScan(basePackageClasses = IService.class)
 public class UserController {
     @Autowired
-    private IService<User, Long> userService;
+    private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -55,6 +58,15 @@ public class UserController {
         User user = this.convertToEntity(userDTO);
         userService.create(user);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
+    }
+    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
+        User user = userService.getExisting(loginDTO);
+        if(user != null){
+            LoginResponseDTO response = user.toLoginResponse();
+            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {

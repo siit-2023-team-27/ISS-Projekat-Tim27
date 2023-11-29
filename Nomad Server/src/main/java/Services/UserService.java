@@ -1,6 +1,9 @@
 package Services;
 
+import DTO.LoginDTO;
 import Repositories.IRepository;
+import Repositories.IUserRepository;
+import Repositories.InMemoryUserRepository;
 import model.Reservation;
 import model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +15,11 @@ import java.util.Collection;
 public class UserService implements IService<User, Long> {
 
     @Autowired
-    private IRepository<User, Long> userRepository;
+    private IUserRepository userRepository;
 
+    public User getExisting(LoginDTO loginDto){
+        return userRepository.getExisting(loginDto);
+    }
     @Override
     public Collection<User> findAll() {
         return userRepository.findAll();

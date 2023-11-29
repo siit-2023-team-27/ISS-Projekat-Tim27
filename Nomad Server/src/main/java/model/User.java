@@ -1,5 +1,7 @@
 package model;
 
+import DTO.LoginDTO;
+import DTO.LoginResponseDTO;
 import model.enums.UserType;
 
 public class User {
@@ -118,5 +120,8 @@ public class User {
         this.password = user.password;
         this.phoneNumber = user.phoneNumber;
         this.userType = user.userType;
+    }
+    public LoginResponseDTO toLoginResponse(){
+        return new LoginResponseDTO(this.id, this.username, this.userType.toString());
     }
 }
