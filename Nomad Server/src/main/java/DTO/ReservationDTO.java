@@ -5,7 +5,6 @@ import model.enums.ReservationStatus;
 
 public class ReservationDTO {
 
-    private long id;
     private long user;
     private long accommodation;
     private DateRange dateRange;
@@ -14,14 +13,12 @@ public class ReservationDTO {
 
     // Constructor
     public ReservationDTO(
-            long id,
             long user,
             long accommodation,
             DateRange dateRange,
             int numGuests,
             ReservationStatus status
     ) {
-        this.id = id;
         this.user = user;
         this.accommodation = accommodation;
         this.dateRange = dateRange;
@@ -31,13 +28,7 @@ public class ReservationDTO {
 
     public ReservationDTO () {}
 
-    public long getId() {
-        return id;
-    }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public long getUser() {
         return user;

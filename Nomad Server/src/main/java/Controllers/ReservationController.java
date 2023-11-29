@@ -6,6 +6,7 @@ import DTO.ReservationDTO;
 import Services.IService;
 import model.Accommodation;
 import model.Reservation;
+import model.enums.ReservationStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -84,6 +85,24 @@ public class ReservationController {
         if (updatedReservation == null) {return new ResponseEntity<ReservationDTO>(HttpStatus.INTERNAL_SERVER_ERROR);}
 
         return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.OK);
+    }
+    @PutMapping (value = "/confirm/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ReservationDTO> confirmReservation(@PathVariable Long id) {
+        Reservation reservationForUpdate = reservationService.findOne(id);
+        reservationForUpdate.setStatus(ReservationStatus.ACCEPTED);
+        reservationService.update(reservationForUpdate);
+
+
+        return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
+    }
+    @PutMapping (value = "/reject/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ReservationDTO> rejectReservation(@PathVariable Long id) {
+        Reservation reservationForUpdate = reservationService.findOne(id);
+        reservationForUpdate.setStatus(ReservationStatus.REJECTED);
+        reservationService.update(reservationForUpdate);
+
+
+        return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
     }
 
     private ReservationDTO convertToDto(Reservation reservation) {
