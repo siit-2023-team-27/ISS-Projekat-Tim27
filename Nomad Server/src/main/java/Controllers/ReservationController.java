@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.print.attribute.standard.Media;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @CrossOrigin(
         origins = {
@@ -104,11 +106,20 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
     }
+    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> filterReservations(@RequestParam(required = false) String name,
+                                                                             @RequestParam(required = false) Integer minimumGuests, @RequestParam(required = false) Integer maximumGuests,
+                                                                             @RequestParam(required = false) Date minimumDate, @RequestParam(required = false) Date maximumDate,
+                                                                             @RequestParam(required = false) Double minimumPrice, @RequestParam(required = false) Double maximumPrice) {
+        Collection<Reservation> reservations = reservationService.findAll();
+        Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
+    }
 
     private ReservationDTO convertToDto(Reservation reservation) {
-        ReservationDTO reervationDTO = modelMapper.map(reservation, ReservationDTO.class);
+        ReservationDTO reservationDTO = modelMapper.map(reservation, ReservationDTO.class);
 
-        return reervationDTO;
+        return reservationDTO;
     }
     private Reservation convertToEntity(ReservationDTO reservationDTO) {
         return modelMapper.map(reservationDTO, Reservation.class);

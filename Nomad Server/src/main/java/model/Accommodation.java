@@ -22,7 +22,7 @@ public class Accommodation {
     private AccommodationStatus status;
     private ConfirmationType confirmationType;
     private int deadlineForCancellation;
-
+    private boolean verified;
     public Accommodation(){}
 
     // Constructor
@@ -40,7 +40,17 @@ public class Accommodation {
         this.status = status;
         this.confirmationType = confirmationType;
         this.deadlineForCancellation = deadlineForCancellation;
+        this.verified = false;
     }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
     public ConfirmationType getConfirmationType() {
         return confirmationType;
     }
