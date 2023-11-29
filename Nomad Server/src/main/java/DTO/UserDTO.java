@@ -3,14 +3,14 @@ package DTO;
 import model.enums.UserType;
 
 public class UserDTO {
-    private String firstName;
-    private String lastName;
-    private String address;
-    private String username;
-    private String password;
-    private String phoneNumber;
-    private UserType userType;
-    private boolean suspended;
+        private String firstName;
+        private String lastName;
+        private String address;
+        private String username;
+        private String password;
+        private String phoneNumber;
+        private UserType userType;
+        private boolean suspended;
 
     // Constructor
     public UserDTO(String firstName, String lastName, String address, String username, String password, String phoneNumber, UserType userType) {

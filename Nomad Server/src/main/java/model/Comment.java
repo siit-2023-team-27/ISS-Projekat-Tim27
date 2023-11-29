@@ -4,38 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Comment {
+
     private long id;
-    private String title;
     private String text;
     private User user;
-    private int rating; // Optional rating from 1 to 5
-    private List<Comment> responses;
-    private Accommodation accommodation;
 
     public Comment(){}
 
-    // Constructor without a rating
-    public Comment(String title, String text, User user) {
-        this.title = title;
+    public Comment(String text, User user) {
         this.text = text;
         this.user = user;
-        this.responses = new ArrayList<>();
-    }
-
-    // Constructor with a rating
-    public Comment(String title, String text, User user, int rating) {
-        this(title, text, user);
-        this.rating = (rating >= 1 && rating <= 5) ? rating : 0;
-    }
-
-    // Getters and setters for each attribute
-
-    public Accommodation getAccommodation() {
-        return accommodation;
-    }
-
-    public void setAccommodation(Accommodation accommodation) {
-        this.accommodation = accommodation;
     }
 
     public long getId() {
@@ -44,14 +22,6 @@ public class Comment {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getText() {
@@ -70,44 +40,17 @@ public class Comment {
         this.user = user;
     }
 
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = (rating >= 1 && rating <= 5) ? rating : 0;
-    }
-
-    public List<Comment> getResponses() {
-        return responses;
-    }
-
-    public void setResponses(List<Comment> responses) {
-        this.responses = responses;
-    }
-
-    // Method to add a response comment
-    public void addResponse(Comment response) {
-        this.responses.add(response);
-    }
-
-    // toString method to represent the comment as a string
     @Override
     public String toString() {
         return "Comment{" +
-                "title='" + title + '\'' +
+                "id=" + id +
                 ", text='" + text + '\'' +
                 ", user=" + user +
-                ", rating=" + rating +
-                ", responses=" + responses +
                 '}';
     }
 
     public void copyValues(Comment comment){
-        this.title = comment.title;
         this.text = comment.text;
         this.user = comment.user;
-        this.rating = comment.rating;
-        this.accommodation = comment.accommodation;
     }
 }
