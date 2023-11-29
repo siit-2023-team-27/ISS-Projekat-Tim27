@@ -122,6 +122,6 @@ public class User {
         this.userType = user.userType;
     }
     public LoginResponseDTO toLoginResponse(){
-        return new LoginResponseDTO(this.username, this.userType.toString());
+        return new LoginResponseDTO(this.id, this.username, this.userType.toString());
     }
 }
