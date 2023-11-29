@@ -65,7 +65,16 @@ public class UserController {
 
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
+    @PutMapping(value = "/suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> suspendUser(@PathVariable Long id) {
 
+        return new ResponseEntity<UserDTO>(HttpStatus.OK);
+    }
+    @PutMapping(value = "/unSuspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDTO> unsuspentUser(@PathVariable Long id) {
+
+        return new ResponseEntity<UserDTO>(HttpStatus.OK);
+    }
     private UserDTO convertToDto(User user) {
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
 

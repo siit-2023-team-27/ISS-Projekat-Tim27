@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,6 +28,16 @@ public class AccommodationController {
     private ModelMapper modelMapper;
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
+        Collection<Accommodation> accommodations = accommodationService.findAll();
+        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    }
+    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<AccommodationDTO>> filterAccommodations(@RequestParam(required = false) String name,
+        @RequestParam(required = false) Integer minimumGuests, @RequestParam(required = false) Integer maximumGuests,
+        @RequestParam(required = false) Date minimumDate, @RequestParam(required = false) Date maximumDate,
+        @RequestParam(required = false) Double minimumPrice, @RequestParam(required = false) Double maximumPrice,
+        @RequestParam(required = false) List<String> amenity) {
         Collection<Accommodation> accommodations = accommodationService.findAll();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
