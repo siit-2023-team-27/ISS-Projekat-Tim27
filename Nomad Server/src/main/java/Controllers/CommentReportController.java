@@ -27,7 +27,7 @@ import java.util.Collection;
                 RequestMethod.POST
         })
 @RestController
-@RequestMapping("/api/commentReports")
+@RequestMapping("/api/comment-reports")
 @ComponentScan(basePackageClasses = IService.class)
 public class CommentReportController {
     @Autowired

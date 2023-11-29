@@ -12,7 +12,6 @@ public class UserDTO {
     private UserType userType;
     private boolean suspended;
 
-
     // Constructor
     public UserDTO(String firstName, String lastName, String address, String username, String password, String phoneNumber, UserType userType) {
         this.firstName = firstName;
