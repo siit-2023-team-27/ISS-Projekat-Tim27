@@ -1,12 +1,9 @@
 package DTO;
 
-import model.Accommodation;
 import model.Comment;
-import model.User;
 import model.enums.AccommodationStatus;
 import model.enums.ConfirmationType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AccommodationDTO {

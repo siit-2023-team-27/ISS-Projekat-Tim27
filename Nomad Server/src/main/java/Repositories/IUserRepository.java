@@ -1,9 +1,9 @@
 package Repositories;
 
 import DTO.LoginDTO;
-import model.User;
+import model.AppUser;
 
-public interface IUserRepository extends IRepository<User, Long>{
+public interface IUserRepository extends IRepository<AppUser, Long>{
 
-    User getExisting(LoginDTO loginDTO);
+    AppUser getExisting(LoginDTO loginDTO);
 }

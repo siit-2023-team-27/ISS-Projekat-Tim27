@@ -3,12 +3,12 @@ package model;
 public class Notification {
     private String text;
     private Long id;
-    private User targetUser;
+    private AppUser targetAppUser;
     private String title;
 
-    public Notification(String text, User targetUser, String title) {
+    public Notification(String text, AppUser targetAppUser, String title) {
         this.text = text;
-        this.targetUser = targetUser;
+        this.targetAppUser = targetAppUser;
         this.title = title;
     }
     public Notification(){}
@@ -28,12 +28,12 @@ public class Notification {
         this.text = text;
     }
 
-    public User getTargetUser() {
-        return targetUser;
+    public AppUser getTargetUser() {
+        return targetAppUser;
     }
 
-    public void setTargetUser(User targetUser) {
-        this.targetUser = targetUser;
+    public void setTargetUser(AppUser targetAppUser) {
+        this.targetAppUser = targetAppUser;
     }
 
     public String getTitle() {
@@ -46,6 +46,6 @@ public class Notification {
     public void copyValues(Notification notification){
         this.title = notification.title;
         this.text = notification.text;
-        this.targetUser = notification.targetUser;
+        this.targetAppUser = notification.targetAppUser;
     }
 }

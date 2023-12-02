@@ -4,13 +4,11 @@ import model.enums.AccommodationStatus;
 import model.enums.ConfirmationType;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public class Accommodation {
     private long id;
-    private User host;
+    private AppUser host;
     private int minGuests;
     private int maxGuests;
     private String name;
@@ -26,7 +24,7 @@ public class Accommodation {
     public Accommodation(){}
 
     // Constructor
-    public Accommodation(User host, int minGuests, int maxGuests, String name, String description, String address, List<String> amenities,
+    public Accommodation(AppUser host, int minGuests, int maxGuests, String name, String description, String address, List<String> amenities,
                          List<String> images, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation) {
         this.host = host;
         this.minGuests = minGuests;
@@ -100,11 +98,11 @@ public class Accommodation {
     }
 
 
-    public User getHost() {
+    public AppUser getHost() {
         return host;
     }
 
-    public void setHost(User host) {
+    public void setHost(AppUser host) {
         this.host = host;
     }
 

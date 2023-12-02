@@ -1,21 +1,21 @@
 package DTO;
 
+import model.AppUser;
 import model.Comment;
-import model.User;
 
 import java.util.List;
 
 public class CommentDTO {
     private String title;
     private String text;
-    private User user;
+    private AppUser appUser;
     private int rating; // Optional rating from 1 to 5
 
     public CommentDTO(){}
-    public CommentDTO(String title, String text, User user, int rating, List<Comment> responses) {
+    public CommentDTO(String title, String text, AppUser appUser, int rating, List<Comment> responses) {
         this.title = title;
         this.text = text;
-        this.user = user;
+        this.appUser = appUser;
         this.rating = rating;
     }
 
@@ -27,8 +27,8 @@ public class CommentDTO {
         this.text = text;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     public void setRating(int rating) {
@@ -44,8 +44,8 @@ public class CommentDTO {
         return text;
     }
 
-    public User getUser() {
-        return user;
+    public AppUser getUser() {
+        return appUser;
     }
 
     public int getRating() {

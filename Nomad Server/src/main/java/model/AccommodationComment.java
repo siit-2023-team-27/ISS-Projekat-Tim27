@@ -5,8 +5,8 @@ public class AccommodationComment extends Comment{
 
     public AccommodationComment() {}
 
-    public AccommodationComment(String text, User user, Accommodation accommodation) {
-        super(text, user);
+    public AccommodationComment(String text, AppUser appUser, Accommodation accommodation) {
+        super(text, appUser);
         this.accommodation = accommodation;
     }
 

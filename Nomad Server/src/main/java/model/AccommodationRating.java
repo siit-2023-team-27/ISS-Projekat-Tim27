@@ -5,8 +5,8 @@ public class AccommodationRating extends Rating{
 
     public AccommodationRating() {}
 
-    public AccommodationRating(User user, Accommodation accommodation, int rating) {
-        super(rating, user);
+    public AccommodationRating(AppUser appUser, Accommodation accommodation, int rating) {
+        super(rating, appUser);
         this.accommodation = accommodation;
     }
 

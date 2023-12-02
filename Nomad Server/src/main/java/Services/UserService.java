@@ -1,48 +1,49 @@
 package Services;
 
-import DTO.LoginDTO;
-import Repositories.IRepository;
-import Repositories.IUserRepository;
-import Repositories.InMemoryUserRepository;
-import model.Reservation;
-import model.User;
+import Repositories.UserRepository;
+import model.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
+
 
 import java.util.Collection;
 
 @Service
-public class UserService implements IService<User, Long> {
+@ComponentScan("Repositories")
+@EnableJpaRepositories("Repositories")
+public class UserService implements IService<AppUser, Long> {
 
     @Autowired
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
-    public User getExisting(LoginDTO loginDto){
-        return userRepository.getExisting(loginDto);
-    }
+//    public User getExisting(LoginDTO loginDto){
+//        return userRepository.getExisting(loginDto);
+//    }
     @Override
-    public Collection<User> findAll() {
+    public Collection<AppUser> findAll() {
         return userRepository.findAll();
     }
 
     @Override
-    public User findOne(Long id) {
-        return userRepository.findOne(id);
+    public AppUser findOne(Long id) {
+        return userRepository.findOneById(id);
     }
 
     @Override
-    public void create(User user) {
-        userRepository.create(user);
+    public void create(AppUser appUser) {
+        userRepository.save(appUser);
     }
 
     @Override
-    public void update(User user) {
-        userRepository.update(user);
+    public void update(AppUser appUser) {
+        userRepository.save(appUser);
     }
 
     @Override
     public void delete(Long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 
 }

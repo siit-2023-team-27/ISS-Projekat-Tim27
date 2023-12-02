@@ -1,11 +1,15 @@
 package model;
 
-import DTO.LoginDTO;
 import DTO.LoginResponseDTO;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import model.enums.UserType;
-
-public class User {
-    private long id;
+@Entity
+public class AppUser {
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private String firstName;
     private String lastName;
@@ -18,7 +22,7 @@ public class User {
 
 
     // Constructor
-    public User(String firstName, String lastName, String address, String username, String password, String phoneNumber, UserType userType) {
+    public AppUser(String firstName, String lastName, String address, String username, String password, String phoneNumber, UserType userType) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -28,14 +32,14 @@ public class User {
         this.userType = userType;
         this.suspended = false;
     }
-    public User(){}
+    public AppUser(){}
 
     // Getters and setters for each attribute
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public void suspend(){
@@ -113,13 +117,13 @@ public class User {
                 ", userType=" + userType +
                 '}';
     }
-    public void copyValues(User user){
-        this.firstName = user.firstName;
-        this.lastName = user.lastName;
-        this.address = user.address;
-        this.password = user.password;
-        this.phoneNumber = user.phoneNumber;
-        this.userType = user.userType;
+    public void copyValues(AppUser appUser){
+        this.firstName = appUser.firstName;
+        this.lastName = appUser.lastName;
+        this.address = appUser.address;
+        this.password = appUser.password;
+        this.phoneNumber = appUser.phoneNumber;
+        this.userType = appUser.userType;
     }
     public LoginResponseDTO toLoginResponse(){
         return new LoginResponseDTO(this.id, this.username, this.userType.toString());

@@ -1,20 +1,20 @@
 package model;
 
 public class HostComment extends Comment{
-    private User host;
+    private AppUser host;
 
     public HostComment() {}
 
-    public HostComment(String text, User user, User host) {
-        super(text, user);
+    public HostComment(String text, AppUser appUser, AppUser host) {
+        super(text, appUser);
         this.host = host;
     }
 
-    public User getHost() {
+    public AppUser getHost() {
         return host;
     }
 
-    public void setHost(User host) {
+    public void setHost(AppUser host) {
         this.host = host;
     }
 

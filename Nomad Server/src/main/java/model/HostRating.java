@@ -1,20 +1,20 @@
 package model;
 
 public class HostRating extends Rating{
-    private User host;
+    private AppUser host;
 
     public HostRating () {}
 
-    public HostRating(int rating, User user, User host) {
-        super(rating, user);
+    public HostRating(int rating, AppUser appUser, AppUser host) {
+        super(rating, appUser);
         this.host = host;
     }
 
-    public User getHost() {
+    public AppUser getHost() {
         return host;
     }
 
-    public void setHost(User host) {
+    public void setHost(AppUser host) {
         this.host = host;
     }
 

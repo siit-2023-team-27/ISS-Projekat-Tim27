@@ -1,19 +1,16 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Comment {
 
     private long id;
     private String text;
-    private User user;
+    private AppUser appUser;
 
     public Comment(){}
 
-    public Comment(String text, User user) {
+    public Comment(String text, AppUser appUser) {
         this.text = text;
-        this.user = user;
+        this.appUser = appUser;
     }
 
     public long getId() {
@@ -32,12 +29,12 @@ public class Comment {
         this.text = text;
     }
 
-    public User getUser() {
-        return user;
+    public AppUser getUser() {
+        return appUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     @Override
@@ -45,12 +42,12 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", text='" + text + '\'' +
-                ", user=" + user +
+                ", user=" + appUser +
                 '}';
     }
 
     public void copyValues(Comment comment){
         this.text = comment.text;
-        this.user = comment.user;
+        this.appUser = comment.appUser;
     }
 }

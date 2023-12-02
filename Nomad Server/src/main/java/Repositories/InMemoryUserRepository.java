@@ -1,8 +1,7 @@
 package Repositories;
 
 import DTO.LoginDTO;
-import model.Accommodation;
-import model.User;
+import model.AppUser;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
@@ -10,15 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 @Repository
 public class InMemoryUserRepository implements IUserRepository {
-    private ConcurrentMap<Long, User> users = new ConcurrentHashMap<Long, User>();
+    private ConcurrentMap<Long, AppUser> users = new ConcurrentHashMap<Long, AppUser>();
     private static Long id = 0l;
     @Override
-    public Collection<User> findAll() {
+    public Collection<AppUser> findAll() {
         return users.values();
     }
 
-    public User getExisting(LoginDTO loginDTO) {
-        for(User u: users.values()){
+    public AppUser getExisting(LoginDTO loginDTO) {
+        for(AppUser u: users.values()){
             if(u.getUsername().equals(loginDTO.getUsername()) && u.getPassword().equals(loginDTO.getPassword())){
                 return u;
             }
@@ -26,18 +25,18 @@ public class InMemoryUserRepository implements IUserRepository {
         return null;
     }
     @Override
-    public void create(User object) {
+    public void create(AppUser object) {
         this.users.put(id, object);
         object.setId(id++);
     }
 
     @Override
-    public User findOne(Long id) {
+    public AppUser findOne(Long id) {
         return this.users.get(id);
     }
 
     @Override
-    public void update(User object) {
+    public void update(AppUser object) {
         this.users.replace(object.getId(), object);
     }
 
