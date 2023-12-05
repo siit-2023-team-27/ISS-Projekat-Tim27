@@ -2,33 +2,56 @@ package model;
 
 import DTO.LoginDTO;
 import DTO.LoginResponseDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import model.enums.UserType;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-public class User {
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+public class User implements UserDetails {
     private long id;
-
     private String firstName;
     private String lastName;
     private String address;
     private String username;
     private String password;
     private String phoneNumber;
-    private UserType userType;
+    //private UserType userType;
     private boolean suspended;
 
-
+    private List<UserType> roles;
+    private Timestamp lastPasswordResetDate;
     // Constructor
-    public User(String firstName, String lastName, String address, String username, String password, String phoneNumber, UserType userType) {
+    public User(String firstName, String lastName, String address, String username, String password, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.userType = userType;
         this.suspended = false;
     }
     public User(){}
+
+    public boolean isSuspended() {
+        return suspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        this.suspended = suspended;
+    }
+
+    public List<UserType> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserType> roles) {
+        this.roles = roles;
+    }
 
     // Getters and setters for each attribute
     public long getId() {
@@ -72,8 +95,41 @@ public class User {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !suspended;
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @JsonIgnore
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    public Timestamp getLastPasswordResetDate() {
+        return lastPasswordResetDate;
+    }
+    public void setLastPasswordResetDate(Timestamp lastPasswordResetDate) {
+        this.lastPasswordResetDate = lastPasswordResetDate;
     }
 
     public String getPassword() {
@@ -81,6 +137,8 @@ public class User {
     }
 
     public void setPassword(String password) {
+        Timestamp now = new Timestamp(new Date().getTime());
+        this.setLastPasswordResetDate(now);
         this.password = password;
     }
 
@@ -92,13 +150,6 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public void setUserType(UserType userType) {
-        this.userType = userType;
-    }
 
     // toString method to represent the user as a string
     @Override
@@ -110,7 +161,6 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", userType=" + userType +
                 '}';
     }
     public void copyValues(User user){
@@ -119,9 +169,8 @@ public class User {
         this.address = user.address;
         this.password = user.password;
         this.phoneNumber = user.phoneNumber;
-        this.userType = user.userType;
     }
     public LoginResponseDTO toLoginResponse(){
-        return new LoginResponseDTO(this.id, this.username, this.userType.toString());
+        return new LoginResponseDTO(this.id, this.username, "");
     }
 }

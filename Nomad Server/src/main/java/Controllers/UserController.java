@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -53,21 +54,22 @@ public class UserController {
 
         return new ResponseEntity<UserDTO>(this.convertToDto(user), HttpStatus.OK);
     }
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
         User user = this.convertToEntity(userDTO);
         userService.create(user);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
-    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
-        User user = userService.getExisting(loginDTO);
-        if(user != null){
-            LoginResponseDTO response = user.toLoginResponse();
-            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
-    }
+//    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
+//        User user = userService.getExisting(loginDTO);
+//        if(user != null){
+//            LoginResponseDTO response = user.toLoginResponse();
+//            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+//        }
+//        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
+//    }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
         userService.delete(id);

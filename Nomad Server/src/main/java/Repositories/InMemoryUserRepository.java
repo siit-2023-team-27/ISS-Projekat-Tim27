@@ -25,6 +25,14 @@ public class InMemoryUserRepository implements IUserRepository {
         }
         return null;
     }
+    public User loadUserByUsername(String username) {
+        for(User u: users.values()){
+            if(u.getUsername().equals(username)){
+                return u;
+            }
+        }
+        return null;
+    }
     @Override
     public void create(User object) {
         this.users.put(id, object);
