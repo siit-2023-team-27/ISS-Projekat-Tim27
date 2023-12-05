@@ -1,10 +1,14 @@
 package Controllers;
 
 import DTO.LoginDTO;
+import DTO.UserDTO;
+import DTO.UserRegistrationDTO;
 import DTO.UserTokenState;
 import Services.UserService;
+import exceptions.ResourceConflictException;
 import jakarta.servlet.http.HttpServletResponse;
 import model.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +17,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import util.TokenUtils;
@@ -30,7 +35,8 @@ import util.TokenUtils;
 @RestController
 @RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
-
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private TokenUtils tokenUtils;
 
@@ -56,7 +62,7 @@ public class AuthController {
 
         // Kreiraj token za tog korisnika
         User user = (User) authentication.getPrincipal();
-        String jwt = tokenUtils.generateToken(user.getUsername());
+        String jwt = tokenUtils.generateToken(user.getUsername(), user.getAuthorities());
         int expiresIn = tokenUtils.getExpiredIn();
 
         // Vrati token kao odgovor na uspesnu autentifikaciju
@@ -64,16 +70,24 @@ public class AuthController {
     }
 
     // Endpoint za registraciju novog korisnika
-//    @PostMapping("/signup")
-//    public ResponseEntity<User> addUser(@RequestBody UserRequest userRequest, UriComponentsBuilder ucBuilder) {
-//        User existUser = this.userService.findByUsername(userRequest.getUsername());
-//
-//        if (existUser != null) {
-//            throw new ResourceConflictException(userRequest.getId(), "Username already exists");
-//        }
-//
-//        User user = this.userService.save(userRequest);
-//
-//        return new ResponseEntity<>(user, HttpStatus.CREATED);
-//    }
+    @PostMapping("/signup")
+    public ResponseEntity<User> addUser(@RequestBody UserRegistrationDTO userDTO) {
+        UserDetails existUser = this.userService.findByUsername(userDTO.getUsername());
+
+        if (existUser != null) {
+            throw new ResourceConflictException(existUser.getUsername(), "Username already exists");
+        }
+        User user = convertToEntity(userDTO);
+        this.userService.create(user);
+
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
+    }
+    private UserRegistrationDTO convertToDto(User user) {
+        UserRegistrationDTO userDTO = modelMapper.map(user, UserRegistrationDTO.class);
+
+        return userDTO;
+    }
+    private User convertToEntity(UserRegistrationDTO userDTO) {
+        return modelMapper.map(userDTO, User.class);
+    }
 }

@@ -11,15 +11,16 @@ import java.util.concurrent.ConcurrentMap;
 @Repository
 public class InMemoryUserRepository implements IUserRepository {
     private ConcurrentMap<Long, User> users = new ConcurrentHashMap<Long, User>();
+
     private static Long id = 0l;
     @Override
     public Collection<User> findAll() {
         return users.values();
     }
 
-    public User getExisting(LoginDTO loginDTO) {
+    public User findByUsername(String username) {
         for(User u: users.values()){
-            if(u.getUsername().equals(loginDTO.getUsername()) && u.getPassword().equals(loginDTO.getPassword())){
+            if(u.getUsername().equals(username)){
                 return u;
             }
         }
@@ -35,6 +36,7 @@ public class InMemoryUserRepository implements IUserRepository {
     }
     @Override
     public void create(User object) {
+
         this.users.put(id, object);
         object.setId(id++);
     }

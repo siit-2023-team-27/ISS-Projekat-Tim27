@@ -45,9 +45,6 @@ public class User implements UserDetails {
         this.suspended = suspended;
     }
 
-    public List<UserType> getRoles() {
-        return roles;
-    }
 
     public void setRoles(List<UserType> roles) {
         this.roles = roles;
@@ -119,9 +116,8 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    @JsonIgnore
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<UserType> getAuthorities() {
         return roles;
     }
 

@@ -6,10 +6,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import model.User;
+import model.enums.UserType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Date;
 
 
@@ -18,7 +21,7 @@ import java.util.Date;
 public class TokenUtils {
 
     // Izdavac tokena
-    @Value("spring-security-example")
+    @Value("Nomad-server")
     private String APP_NAME;
 
     // Tajna koju samo backend aplikacija treba da zna kako bi mogla da generise i proveri JWT https://jwt.io/
@@ -54,10 +57,11 @@ public class TokenUtils {
      * @param username Korisničko ime korisnika kojem se token izdaje
      * @return JWT token
      */
-    public String generateToken(String username) {
+    public String generateToken(String username, Collection<UserType> authorities) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
                 .setSubject(username)
+                .claim("role", authorities)
                 .setAudience(generateAudience())
                 .setIssuedAt(new Date())
                 .setExpiration(generateExpirationDate())
@@ -127,7 +131,7 @@ public class TokenUtils {
      */
     public String getUsernameFromToken(String token) {
         String username;
-
+        System.out.println("getUsernameFromToken");
         try {
             final Claims claims = this.getAllClaimsFromToken(token);
             username = claims.getSubject();

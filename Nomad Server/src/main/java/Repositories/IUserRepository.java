@@ -5,6 +5,6 @@ import model.User;
 
 public interface IUserRepository extends IRepository<User, Long>{
 
-    User getExisting(LoginDTO loginDTO);
+    User findByUsername(String username);
     User loadUserByUsername(String username);
 }
