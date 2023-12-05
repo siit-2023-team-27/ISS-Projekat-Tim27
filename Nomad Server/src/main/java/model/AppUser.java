@@ -1,14 +1,13 @@
 package model;
 
 import DTO.LoginResponseDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import model.enums.UserType;
 @Entity
+@Table (name = "users")
 public class AppUser {
     @Id
-    @GeneratedValue
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;

@@ -1,12 +1,15 @@
 package model;
 
+import jakarta.persistence.*;
 import model.enums.AccommodationStatus;
 import model.enums.ConfirmationType;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Accommodation {
+
     private long id;
     private AppUser host;
     private int minGuests;
