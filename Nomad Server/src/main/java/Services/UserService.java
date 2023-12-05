@@ -1,5 +1,6 @@
 package Services;
 
+import Repositories.IRepository;
 import Repositories.UserRepository;
 import model.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 
 @Service
-@ComponentScan("Repositories")
-@EnableJpaRepositories("Repositories")
+@ComponentScan(basePackageClasses = IRepository.class)
 public class UserService implements IService<AppUser, Long> {
 
     @Autowired

@@ -3,9 +3,14 @@ package model;
 import DTO.LoginResponseDTO;
 import jakarta.persistence.*;
 import model.enums.UserType;
+
+import java.io.Serializable;
+
 @Entity
 @Table (name = "users")
-public class AppUser {
+@Inheritance (strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
+public class AppUser implements Serializable {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
@@ -16,19 +21,17 @@ public class AppUser {
     private String username;
     private String password;
     private String phoneNumber;
-    private UserType userType;
     private boolean suspended;
 
 
     // Constructor
-    public AppUser(String firstName, String lastName, String address, String username, String password, String phoneNumber, UserType userType) {
+    public AppUser(String firstName, String lastName, String address, String username, String password, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.userType = userType;
         this.suspended = false;
     }
     public AppUser(){}
@@ -95,14 +98,6 @@ public class AppUser {
         this.phoneNumber = phoneNumber;
     }
 
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public void setUserType(UserType userType) {
-        this.userType = userType;
-    }
-
     // toString method to represent the user as a string
     @Override
     public String toString() {
@@ -113,7 +108,6 @@ public class AppUser {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", userType=" + userType +
                 '}';
     }
     public void copyValues(AppUser appUser){
@@ -122,9 +116,8 @@ public class AppUser {
         this.address = appUser.address;
         this.password = appUser.password;
         this.phoneNumber = appUser.phoneNumber;
-        this.userType = appUser.userType;
     }
-    public LoginResponseDTO toLoginResponse(){
-        return new LoginResponseDTO(this.id, this.username, this.userType.toString());
-    }
+//    public LoginResponseDTO toLoginResponse(){
+//        return new LoginResponseDTO(this.id, this.username, "type");
+//    }
 }

@@ -1,9 +1,20 @@
 package model;
 
-public class Comment {
+import jakarta.persistence.*;
+import jdk.jfr.Enabled;
 
+import java.io.Serializable;
+
+@Entity
+@Table (name = "comments")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class Comment implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String text;
+    @ManyToOne
     private AppUser appUser;
 
     public Comment(){}

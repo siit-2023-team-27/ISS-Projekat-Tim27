@@ -4,22 +4,29 @@ import jakarta.persistence.*;
 import model.enums.AccommodationStatus;
 import model.enums.ConfirmationType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Accommodation {
-
+@Entity
+@Table (name = "accommodations")
+public class Accommodation implements Serializable {
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
-    private AppUser host;
+    @ManyToOne (cascade = {})
+    private Host host;
     private int minGuests;
     private int maxGuests;
     private String name;
     private String description;
     private String address;
-    private List<String> amenities;
+    @ManyToMany (fetch = FetchType.EAGER)
+    private List<Amenity> amenities;
+    @ElementCollection
     private List<String> images;
-    private List<Comment> comments;
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "accommodation")
+    private List<AccommodationComment> comments;
     private AccommodationStatus status;
     private ConfirmationType confirmationType;
     private int deadlineForCancellation;
@@ -27,7 +34,7 @@ public class Accommodation {
     public Accommodation(){}
 
     // Constructor
-    public Accommodation(AppUser host, int minGuests, int maxGuests, String name, String description, String address, List<String> amenities,
+    public Accommodation(Host host, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities,
                          List<String> images, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation) {
         this.host = host;
         this.minGuests = minGuests;
@@ -37,7 +44,7 @@ public class Accommodation {
         this.address = address;
         this.amenities = amenities;
         this.images = images;
-        this.comments = new ArrayList<Comment>();
+        this.comments = new ArrayList<AccommodationComment>();
         this.status = status;
         this.confirmationType = confirmationType;
         this.deadlineForCancellation = deadlineForCancellation;
@@ -83,15 +90,15 @@ public class Accommodation {
         this.id = id;
     }
 
-    public void addComment(Comment comment){
+    public void addComment(AccommodationComment comment){
         this.comments.add(comment);
     }
 
-    public List<Comment> getComments() {
+    public List<AccommodationComment> getComments() {
         return comments;
     }
 
-    public void setComments(List<Comment> comments) {
+    public void setComments(List<AccommodationComment> comments) {
         this.comments = comments;
     }
 
@@ -101,11 +108,11 @@ public class Accommodation {
     }
 
 
-    public AppUser getHost() {
+    public Host getHost() {
         return host;
     }
 
-    public void setHost(AppUser host) {
+    public void setHost(Host host) {
         this.host = host;
     }
 
@@ -149,11 +156,11 @@ public class Accommodation {
         this.address = address;
     }
 
-    public List<String> getAmenities() {
+    public List<Amenity> getAmenities() {
         return amenities;
     }
 
-    public void setAmenities(List<String> amenities) {
+    public void setAmenities(List<Amenity> amenities) {
         this.amenities = amenities;
     }
 
