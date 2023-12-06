@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @Entity
-@DiscriminatorValue("amdin")
+@DiscriminatorValue("admin")
 public class Admin extends AppUser{
     @Override
     public Collection<UserType> getAuthorities() {
