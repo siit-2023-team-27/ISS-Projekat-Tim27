@@ -32,8 +32,6 @@ import util.TokenUtils;
 public class WebSecurityConfig {
 
     // Servis koji se koristi za citanje podataka o korisnicima aplikacije
-//    @Autowired
-//    private UserService userService;
     @Autowired
     private UserService userService;
 
@@ -85,7 +83,7 @@ public class WebSecurityConfig {
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeRequests()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/**").permitAll()// /api/foo
+                .requestMatchers("/api/**").permitAll()
                 // ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
                 // koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
                 // samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin:

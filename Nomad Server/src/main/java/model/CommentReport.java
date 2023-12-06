@@ -1,9 +1,17 @@
 package model;
 
+import jakarta.persistence.*;
 import model.enums.ReportStatus;
+
+@Entity
+@Table (name = "comment-reports")
 public class CommentReport {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @ManyToOne
     private AppUser reportingAppUser;
+    @ManyToOne
     private Comment reportedComment;
     private String reason;
     private ReportStatus reportStatus;

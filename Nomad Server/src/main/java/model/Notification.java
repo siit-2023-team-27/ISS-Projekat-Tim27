@@ -1,8 +1,14 @@
 package model;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Notification {
     private String text;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne (fetch = FetchType.EAGER)
     private AppUser targetAppUser;
     private String title;
 

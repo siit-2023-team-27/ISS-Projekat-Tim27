@@ -5,6 +5,7 @@ import model.enums.UserType;
 import java.util.List;
 
 public class UserDTO {
+        private Long id;
         private String firstName;
         private String lastName;
         private String address;
@@ -15,7 +16,8 @@ public class UserDTO {
         private boolean suspended;
 
     // Constructor
-    public UserDTO(String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
+    public UserDTO(Long id, String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -27,6 +29,15 @@ public class UserDTO {
     }
     public UserDTO(){}
     // Getters and setters for each attribute
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public void suspend(){
         this.suspended = true;
     }

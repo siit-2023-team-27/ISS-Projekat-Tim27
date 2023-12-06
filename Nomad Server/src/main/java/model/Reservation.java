@@ -1,21 +1,30 @@
 package model;
 
+import jakarta.persistence.*;
 import model.enums.ReservationStatus;
 
+@Entity
+@Table(name = "reservations")
 public class Reservation {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    private AppUser appUser;
+    @ManyToOne (cascade = {})
+    private Guest guest;
+    @ManyToOne
     private Accommodation accommodation;
+
+    @Embedded
     private DateRange dateRange;
     private int numGuests;
+    @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
     // Enum to represent reservation status: pending, accepted, rejected
 
     // Constructor
-    public Reservation(AppUser appUser, Accommodation accommodation, DateRange dateRange, int numGuests, ReservationStatus status) {
-        this.appUser = appUser;
+    public Reservation(Guest guest, Accommodation accommodation, DateRange dateRange, int numGuests, ReservationStatus status) {
+        this.guest = guest;
         this.accommodation = accommodation;
         this.dateRange = dateRange;
         this.numGuests = numGuests;
@@ -32,12 +41,12 @@ public class Reservation {
     public void setId(long id) {
         this.id = id;
     }
-    public AppUser getUser() {
-        return appUser;
+    public Guest getUser() {
+        return guest;
     }
 
-    public void setUser(AppUser appUser) {
-        this.appUser = appUser;
+    public void setUser(Guest appUser) {
+        this.guest = appUser;
     }
 
     public Accommodation getAccommodation() {
@@ -74,7 +83,7 @@ public class Reservation {
 
     public void copyValues(Reservation reservation) {
         this.id = reservation.id;
-        this.appUser = reservation.appUser;
+        this.guest = reservation.guest;
         this.accommodation = reservation.accommodation;
         this.dateRange = reservation.dateRange;
         this.numGuests = reservation.numGuests;

@@ -61,15 +61,15 @@ public class UserController {
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
-//    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
-//        User user = userService.getExisting(loginDTO);
-//        if(user != null){
-//            LoginResponseDTO response = user.toLoginResponse();
-//            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
-//        }
-//        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
-//    }
+    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
+        AppUser user = (AppUser) userService.loadUserByUsername(loginDTO.getUsername());
+        if(user != null){
+            LoginResponseDTO response = user.toLoginResponse();
+            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
+    }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
         userService.delete(id);

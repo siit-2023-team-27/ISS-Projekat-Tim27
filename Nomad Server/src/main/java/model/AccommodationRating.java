@@ -1,6 +1,11 @@
 package model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class AccommodationRating extends Rating{
+    @ManyToOne
     private Accommodation accommodation;
 
     public AccommodationRating() {}

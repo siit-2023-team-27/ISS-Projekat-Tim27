@@ -1,10 +1,16 @@
 package model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
 import java.util.Date;
 
+@Embeddable
 public class DateRange {
-    private final Date startDate;
-    private final Date finishDate;
+    @Column (name = "start_date")
+    private Date startDate;
+    @Column(name = "finish_date")
+    private Date finishDate;
 
     // Constructor
     public DateRange(Date startDate, Date finishDate) {
@@ -14,11 +20,14 @@ public class DateRange {
         this.startDate = startDate;
         this.finishDate = finishDate;
     }
+
+    public DateRange() {}
+
     public boolean overlaps(DateRange comparedDateRange) {
         return !this.finishDate.before(comparedDateRange.getStartDate()) && !this.startDate.after(comparedDateRange.getFinishDate());
     }
 
-    // Getters and setters for each attribute
+    // Getters for each attribute
     public Date getStartDate() {
         return startDate;
     }
@@ -26,6 +35,4 @@ public class DateRange {
     public Date getFinishDate() {
         return finishDate;
     }
-
-
 }

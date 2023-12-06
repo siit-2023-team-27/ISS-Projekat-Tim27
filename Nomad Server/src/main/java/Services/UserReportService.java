@@ -1,6 +1,7 @@
 package Services;
 
 import Repositories.IRepository;
+import Repositories.UserReportRepository;
 import model.UserReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import java.util.Collection;
 public class UserReportService implements IService<UserReport, Long> {
 
     @Autowired
-    private IRepository<UserReport, Long> userReportRepository;
+    private UserReportRepository userReportRepository;
 
     @Override
     public Collection<UserReport> findAll() {
@@ -20,22 +21,22 @@ public class UserReportService implements IService<UserReport, Long> {
 
     @Override
     public UserReport findOne(Long id) {
-        return userReportRepository.findOne(id);
+        return userReportRepository.findOneById(id);
     }
 
     @Override
     public void create(UserReport userReport) {
-        userReportRepository.create(userReport);
+        userReportRepository.save(userReport);
     }
 
     @Override
     public void update(UserReport userReport) {
-        userReportRepository.update(userReport);
+        userReportRepository.save(userReport);
     }
 
     @Override
     public void delete(Long id) {
-        userReportRepository.delete(id);
+        userReportRepository.deleteById(id);
     }
 
 }

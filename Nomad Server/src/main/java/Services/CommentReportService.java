@@ -1,5 +1,6 @@
 package Services;
 
+import Repositories.CommentReportRepository;
 import Repositories.IRepository;
 import model.Comment;
 import model.CommentReport;
@@ -12,7 +13,7 @@ import java.util.Collection;
 public class CommentReportService implements IService<CommentReport, Long> {
 
     @Autowired
-    private IRepository<CommentReport, Long> commentReportRepository;
+    private CommentReportRepository commentReportRepository;
 
     @Override
     public Collection<CommentReport> findAll() {
@@ -21,22 +22,22 @@ public class CommentReportService implements IService<CommentReport, Long> {
 
     @Override
     public CommentReport findOne(Long id) {
-        return commentReportRepository.findOne(id);
+        return commentReportRepository.findOneById(id);
     }
 
     @Override
     public void create(CommentReport commentReport) {
-        commentReportRepository.create(commentReport);
+        commentReportRepository.save(commentReport);
     }
 
     @Override
     public void update(CommentReport commentReport) {
-        commentReportRepository.update(commentReport);
+        commentReportRepository.save(commentReport);
     }
 
     @Override
     public void delete(Long id) {
-        commentReportRepository.delete(id);
+        commentReportRepository.deleteById(id);
     }
 
 }

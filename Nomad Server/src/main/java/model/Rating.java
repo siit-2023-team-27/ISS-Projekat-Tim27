@@ -1,8 +1,16 @@
 package model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "ratings")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Rating {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private int rating; // rating from 1 to 5
+    @ManyToOne
     private AppUser appUser;
 
     public Rating() {}

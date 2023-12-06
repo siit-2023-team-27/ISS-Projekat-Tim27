@@ -1,5 +1,6 @@
 package Services;
 
+import Repositories.HostRatingRepository;
 import Repositories.IRepository;
 import model.Accommodation;
 import model.HostRating;
@@ -15,7 +16,7 @@ public class HostRatingService implements IService<HostRating, Long> {
 
 
     @Autowired
-    private IRepository<HostRating, Long> hostRatingRepository;
+    private HostRatingRepository hostRatingRepository;
 
     @Override
     public Collection<HostRating> findAll() {
@@ -24,21 +25,21 @@ public class HostRatingService implements IService<HostRating, Long> {
 
     @Override
     public void create(HostRating object) {
-        hostRatingRepository.create(object);
+        hostRatingRepository.save(object);
     }
 
     @Override
     public HostRating findOne(Long id) {
-        return hostRatingRepository.findOne(id);
+        return hostRatingRepository.findOneById(id);
     }
 
     @Override
     public void update(HostRating object) {
-        hostRatingRepository.update(object);
+        hostRatingRepository.save(object);
     }
 
     @Override
     public void delete(Long id) {
-        hostRatingRepository.delete(id);
+        hostRatingRepository.deleteById(id);
     }
 }

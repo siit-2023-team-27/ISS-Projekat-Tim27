@@ -1,6 +1,11 @@
 package model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class HostRating extends Rating{
+    @ManyToOne
     private AppUser host;
 
     public HostRating () {}

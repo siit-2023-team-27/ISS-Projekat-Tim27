@@ -1,6 +1,11 @@
 package model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+
+@Entity
 public class HostComment extends Comment{
+    @ManyToOne
     private AppUser host;
 
     public HostComment() {}
