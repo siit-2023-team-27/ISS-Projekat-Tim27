@@ -7,6 +7,7 @@ import DTO.UserTokenState;
 import Services.UserService;
 import exceptions.ResourceConflictException;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Admin;
 import model.AppUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +62,12 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Kreiraj token za tog korisnika
-        AppUser user = (AppUser) authentication.getPrincipal();
-        String jwt = tokenUtils.generateToken(user.getUsername(), user.getAuthorities());
+        //AppUser user = (AppUser) authentication.getPrincipal();
+        AppUser user = (AppUser) userService.loadUserByUsername(loginDto.getUsername());
+        System.out.println("ROLE");
+        System.out.println(user.getAuthorities());
+        System.out.println(user instanceof Admin);
+        String jwt = tokenUtils.generateToken(user.getId(), user.getUsername(), user.getAuthorities());
         int expiresIn = tokenUtils.getExpiredIn();
 
         // Vrati token kao odgovor na uspesnu autentifikaciju

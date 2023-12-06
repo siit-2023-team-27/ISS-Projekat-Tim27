@@ -6,9 +6,11 @@ import DTO.LoginResponseDTO;
 import DTO.UserDTO;
 import Services.IService;
 import Services.UserService;
+import model.Admin;
 import model.AppUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,7 +57,7 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        AppUser appUser = this.convertToEntity(userDTO);
+        Admin appUser = this.convertToEntityAdmin(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
@@ -105,5 +107,8 @@ public class UserController {
     }
     private AppUser convertToEntity(UserDTO userDTO) {
         return modelMapper.map(userDTO, AppUser.class);
+    }
+    private Admin convertToEntityAdmin(UserDTO userDTO) {
+        return modelMapper.map(userDTO, Admin.class);
     }
 }

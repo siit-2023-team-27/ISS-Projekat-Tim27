@@ -17,7 +17,7 @@ import java.util.List;
 @Table (name = "users")
 @Inheritance (strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
-public class AppUser implements Serializable, UserDetails {
+public abstract class AppUser implements Serializable, UserDetails {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
@@ -123,9 +123,7 @@ public class AppUser implements Serializable, UserDetails {
     }
 
     @Override
-    public Collection<UserType> getAuthorities() {
-        return null;
-    }
+    public abstract Collection<UserType> getAuthorities();
 
     public Timestamp getLastPasswordResetDate() {
         return lastPasswordResetDate;

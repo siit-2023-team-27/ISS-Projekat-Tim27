@@ -57,9 +57,10 @@ public class TokenUtils {
      * @param username Korisničko ime korisnika kojem se token izdaje
      * @return JWT token
      */
-    public String generateToken(String username, Collection<UserType> authorities) {
+    public String generateToken( Long id, String username, Collection<UserType> authorities) {
         return Jwts.builder()
                 .setIssuer(APP_NAME)
+                .claim("id", id)
                 .setSubject(username)
                 .claim("role", authorities)
                 .setAudience(generateAudience())
