@@ -1,7 +1,6 @@
 package Services;
 
 import Repositories.IRepository;
-import model.User;
 import model.UserReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

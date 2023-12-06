@@ -1,12 +1,18 @@
 package model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jdk.jfr.Enabled;
+
+@Entity
 public class AccommodationComment extends Comment{
+    @ManyToOne
     private Accommodation accommodation;
 
     public AccommodationComment() {}
 
-    public AccommodationComment(String text, User user, Accommodation accommodation) {
-        super(text, user);
+    public AccommodationComment(String text, AppUser appUser, Accommodation accommodation) {
+        super(text, appUser);
         this.accommodation = accommodation;
     }
 

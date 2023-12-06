@@ -5,7 +5,7 @@ import model.enums.ReservationStatus;
 public class Reservation {
     private long id;
 
-    private User user;
+    private AppUser appUser;
     private Accommodation accommodation;
     private DateRange dateRange;
     private int numGuests;
@@ -14,8 +14,8 @@ public class Reservation {
     // Enum to represent reservation status: pending, accepted, rejected
 
     // Constructor
-    public Reservation(User user, Accommodation accommodation, DateRange dateRange, int numGuests, ReservationStatus status) {
-        this.user = user;
+    public Reservation(AppUser appUser, Accommodation accommodation, DateRange dateRange, int numGuests, ReservationStatus status) {
+        this.appUser = appUser;
         this.accommodation = accommodation;
         this.dateRange = dateRange;
         this.numGuests = numGuests;
@@ -32,12 +32,12 @@ public class Reservation {
     public void setId(long id) {
         this.id = id;
     }
-    public User getUser() {
-        return user;
+    public AppUser getUser() {
+        return appUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     public Accommodation getAccommodation() {
@@ -74,7 +74,7 @@ public class Reservation {
 
     public void copyValues(Reservation reservation) {
         this.id = reservation.id;
-        this.user = reservation.user;
+        this.appUser = reservation.appUser;
         this.accommodation = reservation.accommodation;
         this.dateRange = reservation.dateRange;
         this.numGuests = reservation.numGuests;

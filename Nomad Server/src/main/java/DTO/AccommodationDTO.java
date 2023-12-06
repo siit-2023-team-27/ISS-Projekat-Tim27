@@ -1,21 +1,20 @@
 package DTO;
 
-import model.Accommodation;
+import model.Amenity;
 import model.Comment;
-import model.User;
 import model.enums.AccommodationStatus;
 import model.enums.ConfirmationType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AccommodationDTO {
+    private long id;
     private int minGuests;
     private int maxGuests;
     private String name;
     private String description;
     private String address;
-    private List<String> amenities;
+    private List<Amenity> amenities;
     private List<String> images;
     private List<Comment> comments;
     private AccommodationStatus status;
@@ -25,7 +24,8 @@ public class AccommodationDTO {
     private boolean verified;
     public AccommodationDTO(){}
 
-    public AccommodationDTO(int minGuests, int maxGuests, String name, String description, String address, List<String> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation, boolean verified) {
+    public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation, boolean verified) {
+        this.id = id;
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
         this.name = name;
@@ -38,6 +38,14 @@ public class AccommodationDTO {
         this.confirmationType = confirmationType;
         this.deadlineForCancellation = deadlineForCancellation;
         this.verified = verified;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public boolean isVerified() {
@@ -131,11 +139,11 @@ public class AccommodationDTO {
         this.address = address;
     }
 
-    public List<String> getAmenities() {
+    public List<Amenity> getAmenities() {
         return amenities;
     }
 
-    public void setAmenities(List<String> amenities) {
+    public void setAmenities(List<Amenity> amenities) {
         this.amenities = amenities;
     }
 

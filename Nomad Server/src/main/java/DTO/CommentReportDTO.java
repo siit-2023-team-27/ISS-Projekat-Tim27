@@ -1,30 +1,30 @@
 package DTO;
 
+import model.AppUser;
 import model.Comment;
-import model.User;
 import model.enums.ReportStatus;
 
 public class CommentReportDTO {
-    private User reportingUser;
+    private AppUser reportingAppUser;
     private Comment reportedComment;
     private String reason;
     private ReportStatus reportStatus;
 
     public CommentReportDTO(){}
-    public CommentReportDTO(User reportingUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
-        this.reportingUser = reportingUser;
+    public CommentReportDTO(AppUser reportingAppUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
+        this.reportingAppUser = reportingAppUser;
         this.reportedComment = reportedComment;
         this.reason = reason;
         this.reportStatus = reportStatus;
     }
 
     // Getters and setters for each attribute
-    public User getReportingUser() {
-        return reportingUser;
+    public AppUser getReportingUser() {
+        return reportingAppUser;
     }
 
-    public void setReportingUser(User reportingUser) {
-        this.reportingUser = reportingUser;
+    public void setReportingUser(AppUser reportingAppUser) {
+        this.reportingAppUser = reportingAppUser;
     }
 
     public Comment getReportedComment() {

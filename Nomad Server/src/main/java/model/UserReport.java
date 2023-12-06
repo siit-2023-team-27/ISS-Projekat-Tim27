@@ -4,17 +4,17 @@ import model.enums.ReportStatus;
 public class UserReport {
     private long id;
 
-    private User reportingUser;
-    private User reportedUser;
+    private AppUser reportingAppUser;
+    private AppUser reportedAppUser;
     private String reason;
     private ReportStatus reportStatus;
 
 
 
     // Constructor
-    public UserReport(User reportingUser, User reportedComment, String reason, ReportStatus reportStatus) {
-        this.reportingUser = reportingUser;
-        this.reportedUser = reportedComment;
+    public UserReport(AppUser reportingAppUser, AppUser reportedComment, String reason, ReportStatus reportStatus) {
+        this.reportingAppUser = reportingAppUser;
+        this.reportedAppUser = reportedComment;
         this.reason = reason;
         this.reportStatus = reportStatus;
     }
@@ -27,20 +27,20 @@ public class UserReport {
     public void setId(long id) {
         this.id = id;
     }
-    public User getReportingUser() {
-        return reportingUser;
+    public AppUser getReportingUser() {
+        return reportingAppUser;
     }
 
-    public void setReportingUser(User reportingUser) {
-        this.reportingUser = reportingUser;
+    public void setReportingUser(AppUser reportingAppUser) {
+        this.reportingAppUser = reportingAppUser;
     }
 
-    public User getReportedUser() {
-        return reportedUser;
+    public AppUser getReportedUser() {
+        return reportedAppUser;
     }
 
-    public void setReportedUser(User reportedUser) {
-        this.reportedUser = reportedUser;
+    public void setReportedUser(AppUser reportedAppUser) {
+        this.reportedAppUser = reportedAppUser;
     }
 
     public String getReason() {

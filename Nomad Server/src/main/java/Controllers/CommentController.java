@@ -1,10 +1,8 @@
 package Controllers;
 
 import DTO.CommentDTO;
-import DTO.UserDTO;
 import Services.IService;
 import model.Comment;
-import model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;

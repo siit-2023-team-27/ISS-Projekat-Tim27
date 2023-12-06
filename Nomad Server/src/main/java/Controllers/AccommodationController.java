@@ -4,6 +4,7 @@ import DTO.AccommodationDTO;
 import Services.AccommodationService;
 import Services.IService;
 import model.Accommodation;
+import model.Amenity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -35,7 +36,7 @@ import java.util.stream.Stream;
 @ComponentScan(basePackageClasses = IService.class)
 public class AccommodationController {
     @Autowired
-    private IService<Accommodation, Long> accommodationService;
+    private AccommodationService accommodationService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -43,6 +44,13 @@ public class AccommodationController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findAll();
+        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    }
+    @GetMapping(value = "/unverified", produces = MediaType.APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<Collection<AccommodationDTO>> getUnverifiedAccommodations() {
+        Collection<Accommodation> accommodations = accommodationService.getUnverifiedAccommodations();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
@@ -66,6 +74,17 @@ public class AccommodationController {
 
         return new ResponseEntity<AccommodationDTO>(this.convertToDto(accommodation), HttpStatus.OK);
     }
+
+    @GetMapping("/{accommodationId}/amenities")
+    public ResponseEntity<Collection<Amenity>> getAmenitiesForAccommodation(@PathVariable long accommodationId) {
+        return new ResponseEntity<Collection<Amenity>>(accommodationService.getAllAmenitiesForAccommodation(accommodationId), HttpStatus.OK);
+    }
+    @PostMapping("/{accommodationId}/amenities")
+    public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
+        accommodationService.addAmenityToAccommodation(accommodationId, newAmenity);
+        return new ResponseEntity<Amenity>(newAmenity, HttpStatus.CREATED);
+    }
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
         Accommodation accommodation = this.convertToEntity(accommodationDTO);

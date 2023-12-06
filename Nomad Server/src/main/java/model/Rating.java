@@ -3,12 +3,12 @@ package model;
 public class Rating {
     private long id;
     private int rating; // rating from 1 to 5
-    private User user;
+    private AppUser appUser;
 
     public Rating() {}
-    public Rating(int rating, User user) {
+    public Rating(int rating, AppUser appUser) {
         this.rating = rating;
-        this.user = user;
+        this.appUser = appUser;
     }
 
     public long getId() {
@@ -27,11 +27,11 @@ public class Rating {
         this.rating = rating;
     }
 
-    public User getUser() {
-        return user;
+    public AppUser getUser() {
+        return appUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(AppUser appUser) {
+        this.appUser = appUser;
     }
 }

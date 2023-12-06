@@ -1,7 +1,5 @@
 package DTO;
 
-import model.User;
-
 public class NotificationDTO {
     private String text;
     private String title;

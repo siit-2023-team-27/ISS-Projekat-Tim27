@@ -4,18 +4,17 @@ import model.enums.UserType;
 
 import java.util.List;
 
-public class UserDTO {
-        private String firstName;
-        private String lastName;
-        private String address;
-        private String username;
-        private String password;
-        private String phoneNumber;
-        private List<UserType> roles;
-        private boolean suspended;
+public class UserRegistrationDTO {
+    private String firstName;
+    private String lastName;
+    private String address;
+    private String username;
+    private String password;
+    private String phoneNumber;
+    private List<UserType> roles;
 
     // Constructor
-    public UserDTO(String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
+    public UserRegistrationDTO(String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
@@ -23,16 +22,9 @@ public class UserDTO {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.roles = roles;
-        this.suspended = false;
     }
-    public UserDTO(){}
+    public UserRegistrationDTO(){}
     // Getters and setters for each attribute
-    public void suspend(){
-        this.suspended = true;
-    }
-    public void unsuspend(){
-        this.suspended = false;
-    }
     public String getFirstName() {
         return firstName;
     }
@@ -89,11 +81,4 @@ public class UserDTO {
         this.roles = roles;
     }
 
-    public boolean isSuspended() {
-        return suspended;
-    }
-
-    public void setSuspended(boolean suspended) {
-        this.suspended = suspended;
-    }
 }

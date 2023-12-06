@@ -3,15 +3,15 @@ package model;
 import model.enums.ReportStatus;
 public class CommentReport {
     private long id;
-    private User reportingUser;
+    private AppUser reportingAppUser;
     private Comment reportedComment;
     private String reason;
     private ReportStatus reportStatus;
 
     public CommentReport(){}
     // Constructor
-    public CommentReport(User reportingUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
-        this.reportingUser = reportingUser;
+    public CommentReport(AppUser reportingAppUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
+        this.reportingAppUser = reportingAppUser;
         this.reportedComment = reportedComment;
         this.reason = reason;
         this.reportStatus = reportStatus;
@@ -25,12 +25,12 @@ public class CommentReport {
     public void setId(long id) {
         this.id = id;
     }
-    public User getReportingUser() {
-        return reportingUser;
+    public AppUser getReportingUser() {
+        return reportingAppUser;
     }
 
-    public void setReportingUser(User reportingUser) {
-        this.reportingUser = reportingUser;
+    public void setReportingUser(AppUser reportingAppUser) {
+        this.reportingAppUser = reportingAppUser;
     }
 
     public Comment getReportedComment() {
@@ -58,7 +58,7 @@ public class CommentReport {
     }
 
     public void copyValues(CommentReport comment){
-        this.reportingUser = comment.reportingUser;
+        this.reportingAppUser = comment.reportingAppUser;
         this.reportedComment = comment.reportedComment;
         this.reason = comment.reason;
         this.reportStatus = comment.reportStatus;
