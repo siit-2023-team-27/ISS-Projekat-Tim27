@@ -32,6 +32,10 @@ public class AccommodationService implements IService<Accommodation, Long> {
         return accommodationRepository.findAll();
     }
 
+    public Collection<Accommodation> findAllOFHost(Long hostId) {
+        return accommodationRepository.findAllOFHost(hostId);
+    }
+
     @Override
     public Accommodation findOne(Long id) {
         return accommodationRepository.findOneById(id);
