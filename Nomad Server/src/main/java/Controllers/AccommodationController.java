@@ -47,6 +47,13 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
+    @GetMapping(value = "/unverified", produces = MediaType.APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<Collection<AccommodationDTO>> getUnverifiedAccommodations() {
+        Collection<Accommodation> accommodations = accommodationService.getUnverifiedAccommodations();
+        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    }
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> filterAccommodations(@RequestParam(required = false) String name,
         @RequestParam(required = false) Integer minimumGuests, @RequestParam(required = false) Integer maximumGuests,

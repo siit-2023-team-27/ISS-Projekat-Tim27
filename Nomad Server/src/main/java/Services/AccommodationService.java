@@ -1,5 +1,6 @@
 package Services;
 
+import DTO.AccommodationDTO;
 import Repositories.AccommodationRepository;
 import Repositories.AmenityRepository;
 import Repositories.IRepository;
@@ -55,6 +56,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
         Accommodation accommodation = accommodationRepository.findOneById(accommodationId);
         return accommodation.getAmenities();
     }
+    public Collection<Accommodation> getUnverifiedAccommodations() {return accommodationRepository.findAllByVerified(false);}
 
     public void addAmenityToAccommodation (long accommodationId, Amenity newAmenity) {
         Amenity savedAmenity = amenityRepository.save(newAmenity);
