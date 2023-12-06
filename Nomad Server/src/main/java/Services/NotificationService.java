@@ -1,16 +1,18 @@
 package Services;
 
 import Repositories.IRepository;
+import Repositories.NotificationRepository;
 import model.Notification;
-import model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 @Service
+@ComponentScan(basePackageClasses = IRepository.class)
 public class NotificationService implements IService<Notification, Long> {
     @Autowired
-    private IRepository<Notification, Long> notificationRepository;
+    private NotificationRepository notificationRepository;
     @Override
     public Collection<Notification> findAll() {
         return notificationRepository.findAll();
@@ -18,21 +20,21 @@ public class NotificationService implements IService<Notification, Long> {
 
     @Override
     public void create(Notification object) {
-        notificationRepository.create(object);
+        notificationRepository.save(object);
     }
 
     @Override
     public Notification findOne(Long id) {
-        return notificationRepository.findOne(id);
+        return notificationRepository.findOneById(id);
     }
 
     @Override
     public void update(Notification object) {
-        notificationRepository.update(object);
+        notificationRepository.save(object);
     }
 
     @Override
     public void delete(Long id) {
-        notificationRepository.delete(id);
+        notificationRepository.deleteById(id);
     }
 }

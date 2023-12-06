@@ -1,5 +1,6 @@
 package Services;
 
+import Repositories.AccommodationRatingRepository;
 import Repositories.IRepository;
 import model.Accommodation;
 import model.AccommodationRating;
@@ -14,7 +15,7 @@ import java.util.Collection;
 public class AccommodationRatingService implements IService<AccommodationRating, Long> {
 
     @Autowired
-    private IRepository<AccommodationRating, Long> accommodationRatingRepository;
+    private AccommodationRatingRepository accommodationRatingRepository;
 
     @Override
     public Collection<AccommodationRating> findAll() {
@@ -23,21 +24,21 @@ public class AccommodationRatingService implements IService<AccommodationRating,
 
     @Override
     public void create(AccommodationRating object) {
-        accommodationRatingRepository.create(object);
+        accommodationRatingRepository.save(object);
     }
 
     @Override
     public AccommodationRating findOne(Long id) {
-        return accommodationRatingRepository.findOne(id);
+        return accommodationRatingRepository.findOneById(id);
     }
 
     @Override
     public void update(AccommodationRating object) {
-        accommodationRatingRepository.update(object);
+        accommodationRatingRepository.save(object);
     }
 
     @Override
     public void delete(Long id) {
-        accommodationRatingRepository.delete(id);
+        accommodationRatingRepository.deleteById(id);
     }
 }

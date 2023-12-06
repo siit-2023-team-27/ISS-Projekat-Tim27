@@ -19,10 +19,9 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api/notifications")
 @ComponentScan(basePackageClasses = IService.class)
-
 public class NotificationController {
     @Autowired
-    private IService<Notification, Long> notificationService;
+    private NotificationService notificationService;
     @Autowired
     private ModelMapper modelMapper;
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,6 +43,7 @@ public class NotificationController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDTO> createNotification(@RequestBody NotificationDTO notificationDTO) throws Exception {
         Notification notification = this.convertToEntity(notificationDTO);
+        System.out.println(notification.getTargetUser().getUsername());
         notificationService.create(notification);
         return new ResponseEntity<NotificationDTO>(notificationDTO, HttpStatus.CREATED);
     }

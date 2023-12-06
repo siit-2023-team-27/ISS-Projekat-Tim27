@@ -1,5 +1,6 @@
 package Services;
 
+import Repositories.AccommodationCommentRepository;
 import Repositories.IRepository;
 import model.Accommodation;
 import model.AccommodationComment;
@@ -14,7 +15,7 @@ import java.util.Collection;
 public class AccommodationCommentService implements IService<AccommodationComment, Long> {
 
     @Autowired
-    private IRepository<AccommodationComment, Long> accommodationCommentRepository;
+    private AccommodationCommentRepository accommodationCommentRepository;
 
     @Override
     public Collection<AccommodationComment> findAll() {
@@ -23,21 +24,21 @@ public class AccommodationCommentService implements IService<AccommodationCommen
 
     @Override
     public void create(AccommodationComment object) {
-        accommodationCommentRepository.create(object);
+        accommodationCommentRepository.save(object);
     }
 
     @Override
     public AccommodationComment findOne(Long id) {
-        return accommodationCommentRepository.findOne(id);
+        return accommodationCommentRepository.findOneById(id);
     }
 
     @Override
     public void update(AccommodationComment object) {
-        accommodationCommentRepository.update(object);
+        accommodationCommentRepository.save(object);
     }
 
     @Override
     public void delete(Long id) {
-        accommodationCommentRepository.delete(id);
+        accommodationCommentRepository.deleteById(id);
     }
 }

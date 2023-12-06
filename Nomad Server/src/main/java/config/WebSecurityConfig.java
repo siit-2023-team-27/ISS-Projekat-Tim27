@@ -82,11 +82,8 @@ public class WebSecurityConfig {
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeRequests()
-                .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/auth/signup").permitAll()
-                .requestMatchers("/api/login").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
-                .requestMatchers("/api/users").permitAll()// /api/foo
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/**").permitAll()
                 // ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
                 // koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
                 // samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin:
@@ -118,9 +115,7 @@ public class WebSecurityConfig {
         // Dozvoljena POST metoda na ruti /auth/login, za svaki drugi tip HTTP metode greska je 401 Unauthorized
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
-                .requestMatchers(HttpMethod.POST, "/api/login")
-                .requestMatchers(HttpMethod.DELETE, "/api/users/**")
-
+                .requestMatchers( "/api/**")
                 // Ovim smo dozvolili pristup statickim resursima aplikacije
                 .requestMatchers(HttpMethod.GET);
 
