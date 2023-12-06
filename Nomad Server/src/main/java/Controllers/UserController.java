@@ -1,5 +1,8 @@
 package Controllers;
 
+import DTO.AccommodationDTO;
+import DTO.LoginDTO;
+import DTO.LoginResponseDTO;
 import DTO.UserDTO;
 import Services.IService;
 import Services.UserService;
@@ -10,6 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -55,7 +59,7 @@ public class UserController {
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
-    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 //    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
 //        User user = userService.getExisting(loginDTO);
 //        if(user != null){

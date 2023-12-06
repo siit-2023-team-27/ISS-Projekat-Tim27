@@ -1,5 +1,12 @@
 package model.enums;
 
-public enum UserType {
-    GUEST, HOST, ADMIN
+import org.springframework.security.core.GrantedAuthority;
+
+public enum UserType implements GrantedAuthority {
+    GUEST, HOST, ADMIN;
+
+    @Override
+    public String getAuthority() {
+        return this.toString();
+    }
 }
