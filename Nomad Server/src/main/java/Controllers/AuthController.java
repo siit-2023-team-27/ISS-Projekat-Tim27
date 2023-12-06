@@ -67,7 +67,7 @@ public class AuthController {
         System.out.println("ROLE");
         System.out.println(user.getAuthorities());
         System.out.println(user instanceof Admin);
-        String jwt = tokenUtils.generateToken(user.getUsername(), user.getAuthorities());
+        String jwt = tokenUtils.generateToken(user.getId(), user.getUsername(), user.getAuthorities());
         int expiresIn = tokenUtils.getExpiredIn();
 
         // Vrati token kao odgovor na uspesnu autentifikaciju
