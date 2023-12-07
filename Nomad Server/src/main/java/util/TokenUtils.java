@@ -117,9 +117,11 @@ public class TokenUtils {
 
         // JWT se prosledjuje kroz header 'Authorization' u formatu:
         // Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7); // preuzimamo samo token (vrednost tokena je nakon "Bearer " prefiksa)
+        System.out.println("authHeader");
+        System.out.println(authHeader);
+        //&& authHeader.startsWith("Bearer ")
+        if (authHeader != null ) {
+            return authHeader; // preuzimamo samo token (vrednost tokena je nakon "Bearer " prefiksa)
         }
 
         return null;
@@ -141,7 +143,7 @@ public class TokenUtils {
         } catch (Exception e) {
             username = null;
         }
-
+        System.out.println(username);
         return username;
     }
 

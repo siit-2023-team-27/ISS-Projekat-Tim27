@@ -32,8 +32,12 @@ import util.TokenUtils;
 public class WebSecurityConfig {
 
     // Servis koji se koristi za citanje podataka o korisnicima aplikacije
-    @Autowired
-    private UserService userService;
+//    @Autowired
+//    private UserService userService;
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new UserService(passwordEncoder());
+    }
 
     // Implementacija PasswordEncoder-a koriscenjem BCrypt hashing funkcije.
     // BCrypt po defalt-u radi 10 rundi hesiranja prosledjene vrednosti.
@@ -47,7 +51,7 @@ public class WebSecurityConfig {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         // 1. koji servis da koristi da izvuce podatke o korisniku koji zeli da se autentifikuje
         // prilikom autentifikacije, AuthenticationManager ce sam pozivati loadUserByUsername() metodu ovog servisa
-        authProvider.setUserDetailsService(userService);
+        authProvider.setUserDetailsService(userDetailsService());
         // 2. kroz koji enkoder da provuce lozinku koju je dobio od klijenta u zahtevu
         // da bi adekvatan hash koji dobije kao rezultat hash algoritma uporedio sa onim koji se nalazi u bazi (posto se u bazi ne cuva plain lozinka)
         authProvider.setPasswordEncoder(passwordEncoder());
@@ -78,12 +82,11 @@ public class WebSecurityConfig {
         // ovo znaci da server ne pamti nikakvo stanje, tokeni se ne cuvaju na serveru
         // ovo nije slucaj kao sa sesijama koje se cuvaju na serverskoj strani - STATEFULL aplikacija
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeRequests()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/accommodations").permitAll()
                 // ukoliko ne zelimo da koristimo @PreAuthorize anotacije nad metodama kontrolera, moze se iskoristiti hasRole() metoda da se ogranici
                 // koji tip korisnika moze da pristupi odgovarajucoj ruti. Npr. ukoliko zelimo da definisemo da ruti 'admin' moze da pristupi
                 // samo korisnik koji ima rolu 'ADMIN', navodimo na sledeci nacin:
@@ -95,7 +98,7 @@ public class WebSecurityConfig {
                 .cors().and()
 
                 // umetni custom filter TokenAuthenticationFilter kako bi se vrsila provera JWT tokena umesto cistih korisnickog imena i lozinke (koje radi BasicAuthenticationFilter)
-                .addFilterBefore(new TokenAuthFilter(tokenUtils,  userService), BasicAuthenticationFilter.class);
+                .addFilterBefore(new TokenAuthFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
 
         // zbog jednostavnosti primera ne koristimo Anti-CSRF token (https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html)
         http.csrf().disable();
@@ -114,10 +117,9 @@ public class WebSecurityConfig {
         // Zahtevi koji se mecuju za web.ignoring().antMatchers() nemaju pristup SecurityContext-u
         // Dozvoljena POST metoda na ruti /auth/login, za svaki drugi tip HTTP metode greska je 401 Unauthorized
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
-                .requestMatchers(HttpMethod.POST, "/auth/signup")
-                .requestMatchers( "/api/**")
-                // Ovim smo dozvolili pristup statickim resursima aplikacije
-                .requestMatchers(HttpMethod.GET);
+                .requestMatchers(HttpMethod.POST, "/auth/signup");
+                // DODATI @PreAuthorize("hasAuthority('ADMIN')") IZNAD APIJA za autorizaciju
+                //.requestMatchers( "/api/**");
 
     }
 
