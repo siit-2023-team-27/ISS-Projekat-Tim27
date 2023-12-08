@@ -3,8 +3,11 @@ package Controllers;
 
 import DTO.AccommodationDTO;
 import DTO.ReservationDTO;
+import Services.AccommodationService;
 import Services.IService;
+import Services.UserService;
 import model.Accommodation;
+import model.Guest;
 import model.Reservation;
 import model.enums.ReservationStatus;
 import org.modelmapper.ModelMapper;
@@ -39,15 +42,18 @@ public class ReservationController {
 
     @Autowired
     private IService<Reservation, Long> reservationService;
-
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private AccommodationService accommodationService;
     @Autowired
     private ModelMapper modelMapper;
 
     @GetMapping (produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<ReservationDTO>> getReservations() {
+    public ResponseEntity<Collection<Reservation>> getReservations() {
         Collection<Reservation> reservations = reservationService.findAll();
-        Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
-        return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
+        //Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<Reservation>>(reservations, HttpStatus.OK);
     }
 
     @GetMapping (value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -60,7 +66,10 @@ public class ReservationController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReservationDTO> createReservation (@RequestBody ReservationDTO reservationDTO) {
+        //System.out.println(reservationDTO.getDateRange());
         Reservation newReservation = this.convertToEntity(reservationDTO);
+        newReservation.setUser((Guest)userService.findOne(reservationDTO.getUser()));
+        newReservation.setAccommodation(accommodationService.findOne(reservationDTO.getAccommodation()));
         reservationService.create(newReservation);
         return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.CREATED);
     }
@@ -68,7 +77,7 @@ public class ReservationController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ReservationDTO> deteteReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.findOne(id);
-        reservationService.delete(id);
+       // reservationService.delete(id);
         if (reservation != null) {
             reservationService.delete(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);

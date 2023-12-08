@@ -3,8 +3,11 @@ package Controllers;
 import DTO.AccommodationDTO;
 import Services.AccommodationService;
 import Services.IService;
+import Services.ReservationService;
 import model.Accommodation;
 import model.Amenity;
+import model.DateRange;
+import model.Reservation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +59,16 @@ public class AccommodationController {
         Collection<Accommodation> accommodations = accommodationService.getUnverifiedAccommodations();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    }
+    @GetMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<Accommodation>> searchccommodations(@RequestParam(required = true) String city,
+                                                                       @RequestParam(required = true) LocalDate from,
+                                                                       @RequestParam(required = true) LocalDate to,
+                                                                       @RequestParam(required = true) int peopleNum) {
+
+        Collection<Accommodation> accommodations = accommodationService.search(city, new DateRange(from, to), peopleNum);
+
+        return new ResponseEntity<Collection<Accommodation>>(accommodations, HttpStatus.OK);
     }
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> filterAccommodations(@RequestParam(required = false) String name,

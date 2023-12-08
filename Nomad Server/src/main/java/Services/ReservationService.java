@@ -2,6 +2,7 @@ package Services;
 
 import Repositories.IRepository;
 import Repositories.ReservationRepository;
+import model.Accommodation;
 import model.Comment;
 import model.Reservation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @ComponentScan(basePackageClasses = IRepository.class)
@@ -17,6 +19,9 @@ public class ReservationService implements IService<Reservation, Long> {
     @Autowired
     private ReservationRepository reservationRepository;
 
+    public List<Reservation> findAllForAccommodation(Accommodation accommodation){
+        return reservationRepository.findAllForAccommodation(accommodation);
+    }
     @Override
     public Collection<Reservation> findAll() {
         return reservationRepository.findAll();

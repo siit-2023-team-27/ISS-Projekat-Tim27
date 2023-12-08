@@ -3,30 +3,38 @@ package DTO;
 import model.DateRange;
 import model.enums.ReservationStatus;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class ReservationDTO {
 
     private long user;
     private long accommodation;
-    private Date startDate;
-    private Date finishDate;
+//    private LocalDate startDate;
+//    private LocalDate finishDate;
+    private DateRange dateRange;
     private int numGuests;
     private ReservationStatus status;
+
+    public DateRange getDateRange() {
+        return dateRange;
+    }
+
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
+    }
 
     // Constructor
     public ReservationDTO(
             long user,
             long accommodation,
-            Date startDate,
-            Date finishDate,
+            DateRange dateRange,
             int numGuests,
             ReservationStatus status
     ) {
         this.user = user;
         this.accommodation = accommodation;
-        this.startDate = startDate;
-        this.finishDate = finishDate;
+        this.dateRange = dateRange;
         this.numGuests = numGuests;
         this.status = status;
     }
@@ -51,21 +59,7 @@ public class ReservationDTO {
         this.accommodation = accommodation;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getFinishDate() {
-        return finishDate;
-    }
-
-    public void setFinishDate(Date finishDate) {
-        this.finishDate = finishDate;
-    }
 
     public int getNumGuests() {
         return numGuests;
