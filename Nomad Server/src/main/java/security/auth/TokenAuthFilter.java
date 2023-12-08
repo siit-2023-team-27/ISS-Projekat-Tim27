@@ -54,7 +54,6 @@ public class TokenAuthFilter extends OncePerRequestFilter {
 
                     // 4. Provera da li je prosledjeni token validan
                     if (tokenUtils.validateToken(authToken, userDetails)) {
-                        System.out.println("VALIDAN");
                         // 5. Kreiraj autentifikaciju
                         TokenBasedAuth authentication = new TokenBasedAuth(userDetails);
                         authentication.setToken(authToken);
