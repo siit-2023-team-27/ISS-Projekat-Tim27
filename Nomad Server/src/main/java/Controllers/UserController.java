@@ -8,6 +8,8 @@ import Services.IService;
 import Services.UserService;
 import model.Admin;
 import model.AppUser;
+import model.Guest;
+import model.Host;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -39,12 +41,14 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
+    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserDTO>> getUsers() {
         Collection<AppUser> appUsers = userService.findAll();
         Collection<UserDTO> userDTOS = appUsers.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<UserDTO>>(userDTOS, HttpStatus.OK);
     }
+   // @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
         AppUser appUser = userService.findOne(id);
@@ -57,18 +61,9 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        Admin appUser = this.convertToEntityAdmin(userDTO);
+        Guest appUser = this.convertToEntityGuest(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
-    }
-    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
-        AppUser user = (AppUser) userService.loadUserByUsername(loginDTO.getUsername());
-        if(user != null){
-            LoginResponseDTO response = user.toLoginResponse();
-            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
-        }
-        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
@@ -110,5 +105,11 @@ public class UserController {
     }
     private Admin convertToEntityAdmin(UserDTO userDTO) {
         return modelMapper.map(userDTO, Admin.class);
+    }
+    private Host convertToEntityHost(UserDTO userDTO) {
+        return modelMapper.map(userDTO, Host.class);
+    }
+    private Guest convertToEntityGuest(UserDTO userDTO) {
+        return modelMapper.map(userDTO, Guest.class);
     }
 }

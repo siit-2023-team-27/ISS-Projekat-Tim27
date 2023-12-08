@@ -17,7 +17,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com")
 @SpringBootApplication()
 
-@ComponentScan(basePackageClasses = AccommodationController.class)
 @EntityScan("model")
 @ComponentScan(basePackageClasses = {AccommodationController.class, WebSecurityConfig.class})
 public class DemoApplication {
