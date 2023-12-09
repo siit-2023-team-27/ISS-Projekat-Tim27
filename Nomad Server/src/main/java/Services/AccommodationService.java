@@ -1,21 +1,17 @@
 package Services;
 
-import DTO.AccommodationDTO;
-import Repositories.AccommodationRepository;
-import Repositories.AmenityRepository;
-import Repositories.IRepository;
-import Repositories.InMemoryAccommodationRepository;
+import Repositories.*;
 import model.Accommodation;
 import model.Amenity;
-import model.Comment;
+import model.ReservationDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @ComponentScan("Repositories")
@@ -26,6 +22,8 @@ public class AccommodationService implements IService<Accommodation, Long> {
     private AccommodationRepository accommodationRepository;
     @Autowired
     private AmenityRepository amenityRepository;
+    @Autowired
+    private ReservationDateRepository reservationDateRepository;
 
     @Override
     public Collection<Accommodation> findAll() {
@@ -50,6 +48,15 @@ public class AccommodationService implements IService<Accommodation, Long> {
     @Override
     public void delete(Long id) {
         accommodationRepository.deleteById(id);
+    }
+
+    public boolean isAvailable(long accommodationId, Date date){
+        ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        if (reservationDate == null){
+            return true;
+        }else{
+            return reservationDate.getReservation() == null;
+        }
     }
 
     public List<Amenity> getAllAmenitiesForAccommodation(long accommodationId) {
