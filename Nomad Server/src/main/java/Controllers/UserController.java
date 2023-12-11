@@ -9,6 +9,9 @@ import Services.UserService;
 import model.Admin;
 import model.AppUser;
 import model.Guest;
+
+import model.Host;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -40,12 +43,14 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
+    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserDTO>> getUsers() {
         Collection<AppUser> appUsers = userService.findAll();
         Collection<UserDTO> userDTOS = appUsers.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<UserDTO>>(userDTOS, HttpStatus.OK);
     }
+   // @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
         AppUser appUser = userService.findOne(id);
@@ -58,7 +63,7 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        AppUser appUser = this.convertToEntityGuest(userDTO);
+        Guest appUser = this.convertToEntityGuest(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
@@ -114,6 +119,10 @@ public class UserController {
     private Admin convertToEntityAdmin(UserDTO userDTO) {
         return modelMapper.map(userDTO, Admin.class);
     }
+    private Host convertToEntityHost(UserDTO userDTO) {
+        return modelMapper.map(userDTO, Host.class);
+    }
+
     private Guest convertToEntityGuest(UserDTO userDTO) {
         return modelMapper.map(userDTO, Guest.class);
     }

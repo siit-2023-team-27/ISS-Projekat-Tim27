@@ -23,6 +23,12 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
     @Autowired
     private UserRepository userRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(PasswordEncoder pass){
+        passwordEncoder = pass;
+    }
+
 
     // Funkcija koja na osnovu username-a iz baze vraca objekat User-a
     @Override
@@ -51,7 +57,7 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
     @Override
     public void create(AppUser appUser) {
         //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        //appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         userRepository.save(appUser);
     }
 
