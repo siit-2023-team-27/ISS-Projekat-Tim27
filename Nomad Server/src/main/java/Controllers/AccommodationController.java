@@ -89,6 +89,11 @@ public class AccommodationController {
     public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
         return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
     }
+    @GetMapping("price/{accommodationId}/{date}")
+    public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable Date date) {
+        return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
+    }
+
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
         accommodationService.addAmenityToAccommodation(accommodationId, newAmenity);
