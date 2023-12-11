@@ -8,6 +8,7 @@ import Services.IService;
 import Services.UserService;
 import model.Admin;
 import model.AppUser;
+import model.Guest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -57,10 +58,12 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        Admin appUser = this.convertToEntityAdmin(userDTO);
+        AppUser appUser = this.convertToEntityGuest(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
+
+
     @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
         AppUser user = (AppUser) userService.loadUserByUsername(loginDTO.getUsername());
@@ -110,5 +113,8 @@ public class UserController {
     }
     private Admin convertToEntityAdmin(UserDTO userDTO) {
         return modelMapper.map(userDTO, Admin.class);
+    }
+    private Guest convertToEntityGuest(UserDTO userDTO) {
+        return modelMapper.map(userDTO, Guest.class);
     }
 }

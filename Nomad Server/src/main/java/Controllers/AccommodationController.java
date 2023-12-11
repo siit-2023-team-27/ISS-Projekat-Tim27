@@ -83,6 +83,10 @@ public class AccommodationController {
     public ResponseEntity<Boolean> isAvailable(@PathVariable long accommodationId, @PathVariable  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         return new ResponseEntity<Boolean>(accommodationService.isAvailable(accommodationId, date), HttpStatus.OK);
     }
+    @GetMapping("taken-dates/{accommodationId}")
+    public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
+        return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
+    }
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
         accommodationService.addAmenityToAccommodation(accommodationId, newAmenity);

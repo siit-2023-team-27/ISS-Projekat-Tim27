@@ -21,8 +21,7 @@ public class ReservationDate {
 
     public ReservationDate(){}
 
-    public ReservationDate(Long id, Accommodation accommodation, Reservation reservation, double price, Date date) {
-        this.id = id;
+    public ReservationDate(Accommodation accommodation, Reservation reservation, double price, Date date) {
         this.accommodation = accommodation;
         this.reservation = reservation;
         this.price = price;
