@@ -3,7 +3,9 @@ package DTO;
 import model.Amenity;
 import model.Comment;
 import model.enums.AccommodationStatus;
+import model.enums.AccommodationType;
 import model.enums.ConfirmationType;
+import model.enums.PriceType;
 
 import java.util.List;
 
@@ -18,13 +20,16 @@ public class AccommodationDTO {
     private List<String> images;
     private List<Comment> comments;
     private AccommodationStatus status;
-
     private ConfirmationType confirmationType;
+    private AccommodationType accommodationType;
+    private PriceType priceType;
+    private double defaultPrice;
     private int deadlineForCancellation;
     private boolean verified;
     public AccommodationDTO(){}
 
-    public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation, boolean verified) {
+
+    public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, AccommodationType accommodationType, PriceType priceType, double defaultPrice, int deadlineForCancellation, boolean verified) {
         this.id = id;
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
@@ -36,10 +41,36 @@ public class AccommodationDTO {
         this.comments = comments;
         this.status = status;
         this.confirmationType = confirmationType;
+        this.accommodationType = accommodationType;
+        this.priceType = priceType;
+        this.defaultPrice = defaultPrice;
         this.deadlineForCancellation = deadlineForCancellation;
         this.verified = verified;
     }
 
+    public AccommodationType getAccommodationType() {
+        return accommodationType;
+    }
+
+    public void setAccommodationType(AccommodationType accommodationType) {
+        this.accommodationType = accommodationType;
+    }
+
+    public PriceType getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(PriceType priceType) {
+        this.priceType = priceType;
+    }
+
+    public double getDefaultPrice() {
+        return defaultPrice;
+    }
+
+    public void setDefaultPrice(double defaultPrice) {
+        this.defaultPrice = defaultPrice;
+    }
     public long getId() {
         return id;
     }
