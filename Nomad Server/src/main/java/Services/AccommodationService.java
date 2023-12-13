@@ -9,10 +9,12 @@ import model.Accommodation;
 import model.Amenity;
 import model.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +31,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
     @Override
     public Collection<Accommodation> findAll() {
-        return accommodationRepository.findAll();
+        return  accommodationRepository.findAll();
     }
 
     @Override
