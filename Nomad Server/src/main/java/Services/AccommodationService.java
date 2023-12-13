@@ -1,8 +1,12 @@
 package Services;
 
+import DTO.AccommodationDTO;
+import DTO.SearchAccommodationDTO;
 import Repositories.*;
 import model.*;
 import model.enums.AccommodationType;
+import model.enums.PriceType;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -25,6 +29,8 @@ public class AccommodationService implements IService<Accommodation, Long> {
     @Autowired
     private ReservationDateRepository reservationDateRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
     @Override
     public Collection<Accommodation> findAll() {
         return accommodationRepository.findAll();
@@ -50,13 +56,13 @@ public class AccommodationService implements IService<Accommodation, Long> {
         accommodationRepository.deleteById(id);
     }
 
-    public Collection<Accommodation> getSearchedAndFiltered(String city, DateRange dateRange, int peopleNum, Double minimumPrice,
-                                                     Double maximumPrice, List<Amenity> amenity, AccommodationType type) {
-        Collection<Accommodation> filtered = new ArrayList<>();
+    public Collection<SearchAccommodationDTO> getSearchedAndFiltered(String city, DateRange dateRange, int peopleNum, Double minimumPrice,
+                                                     Double maximumPrice, List<Long> amenity, AccommodationType type) {
+        Collection<SearchAccommodationDTO> filtered = new ArrayList<>();
         for (Accommodation a: this.getFilteredAccommodations(peopleNum, city, type, amenity)) {
-            System.out.println("NASAAO APPPP");
-            if(this.isAvailable(a, dateRange, minimumPrice, maximumPrice)){
-                filtered.add(a);
+            SearchAccommodationDTO accommodationDTO = this.checkAvailability(a, dateRange, minimumPrice, maximumPrice, peopleNum);
+            if(accommodationDTO != null){
+                filtered.add(accommodationDTO);
             }
         }
         return filtered;
@@ -70,42 +76,88 @@ public class AccommodationService implements IService<Accommodation, Long> {
             return reservationDate.getReservation() == null;
         }
     }
-    public List<Accommodation> getFilteredAccommodations(int peopleNum, String city, AccommodationType accommodationType, List<Amenity> amenities){
-
-        return accommodationRepository.findAllBy(peopleNum, city, accommodationType, amenities);
-        //, city, accommodationType, amenities
-    }
-
-    public boolean isAvailable(long accommodationId, Date date, Double priceMin, Double priceMax){
-        ReservationDate reservationDate = reservationDateRepository.findBy(accommodationId, date, priceMin, priceMax);
-        System.out.println("NAASAO RES DATE"+reservationDate);
-        //dodati upit za min, max da ima
-        if (reservationDate == null){
-            //ako nema u resDate proveri da li cena odgovara za defaultnu cenu
-            //znaci da nije nasao ni rezervaciju za taj datum
-            if(priceMin != null && priceMax != null){
-                Accommodation accommodation = accommodationRepository.findOneById(accommodationId);
-                if(accommodation.getDefaultPrice()<=priceMax && accommodation.getDefaultPrice()>=priceMin){
-                    return true;
-                }else{
-                    return false;
-                }
-            } return true;
-        }
-            return reservationDate.getReservation() == null;
-    }
-
-    public boolean isAvailable(Accommodation accommodation, DateRange dateRange, Double priceMin, Double priceMax){
-        //proverava u ReservationDateRepo
-        //ukoliko ima postavljena dodatna cena za neki od datuma iz DateRange
-        Calendar c = Calendar.getInstance();
-        c.setTime(dateRange.getStartDate());
-        for(; c.getTime().before(dateRange.getFinishDate()); c.add(Calendar.DATE, 1)){
-            if (!this.isAvailable(accommodation.getId(), c.getTime(), priceMin, priceMax) ){
-                return false;
+    public List<Accommodation> getFilteredAccommodations(int peopleNum, String city, AccommodationType accommodationType, List<Long> amenities){
+        List<Accommodation> accommodations =  accommodationRepository.findAllBy(peopleNum, city, accommodationType);
+        List<Accommodation> filtered = new ArrayList<>();
+        for (Accommodation a: accommodations) {
+            if(hasAllAmenities(a, amenities)){
+                filtered.add(a);
             }
         }
-        return true;
+        return filtered;
+    }
+
+    public boolean hasAllAmenities(Accommodation accommodation, List<Long> amenities){
+        int found = 0;
+        for (Long id: amenities) {
+            for (Amenity amenity: accommodation.getAmenities()) {
+                if (id == amenity.getId()){
+                    found++;
+                    break;
+                }
+            }
+        }
+        if(found == amenities.size()){
+            return true;
+        }
+        return false;
+    }
+
+    public Double checkAvailabilityAndGetPrice(Accommodation accommodation, Date date, Double priceMin, Double priceMax, int peopleNum){
+        ReservationDate reservationDate = reservationDateRepository.findBy(accommodation.getId(), date, priceMin, priceMax, peopleNum);
+
+        if (reservationDate == null){
+            //goes here if reservationDate doesn't exist for date
+            if(priceMin != null && priceMax != null){
+                if(isPriceInRange(accommodation, priceMin,priceMax, peopleNum)){
+                    return accommodation.getDefaultPrice();
+                }else{
+                    return null;
+                }
+            }
+            return accommodation.getDefaultPrice();
+        }
+        if(reservationDate.getReservation() == null) {
+            return reservationDate.getPrice();
+        }
+        return null;
+    }
+    public boolean isPriceInRange(Accommodation accommodation, Double priceMin, Double priceMax, int peopleNum){
+        Double accomodationPrice = accommodation.getDefaultPrice();
+        if(accommodation.getPriceType() == PriceType.FOR_ACCOMMODATION){
+            accomodationPrice = accomodationPrice/peopleNum;
+        }
+        if(accomodationPrice<=priceMax && accomodationPrice>=priceMin){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public SearchAccommodationDTO checkAvailability(Accommodation accommodation, DateRange dateRange, Double priceMin, Double priceMax, int peopleNum){
+        Calendar c = Calendar.getInstance();
+        c.setTime(dateRange.getStartDate());
+        Double totalPrice = 0.0;
+        int nights = 0;
+        for(; c.getTime().before(dateRange.getFinishDate()); c.add(Calendar.DATE, 1)){
+            Double price = this.checkAvailabilityAndGetPrice(accommodation, c.getTime(), priceMin, priceMax, peopleNum);
+            if (price == null){
+                return null;
+            }
+            nights++;
+            totalPrice += price;
+        }
+        if(accommodation.getPriceType() == PriceType.FOR_GUEST){
+            totalPrice *= peopleNum;
+        }
+        return convertToSearchDto(accommodation, nights, totalPrice);
+    }
+    private SearchAccommodationDTO convertToSearchDto(Accommodation accommodation, int nights, Double totalPrice) {
+        SearchAccommodationDTO accommodationDTO = modelMapper.map(accommodation, SearchAccommodationDTO.class);
+        accommodationDTO.setAverageRating();
+        accommodationDTO.setTotalPrice(totalPrice);
+        accommodationDTO.setPricePerNight(nights);
+        return accommodationDTO;
     }
 //    public List<LocalDate> getTakenDates(long accommodationId, Date start, Date end){
 //        LocalDate startLocal = LocalDate.from(start.toInstant());

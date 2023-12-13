@@ -2,6 +2,7 @@ package DTO;
 
 import model.Amenity;
 import model.Comment;
+import model.Rating;
 import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
 import model.enums.ConfirmationType;
@@ -19,6 +20,7 @@ public class AccommodationDTO {
     private List<Amenity> amenities;
     private List<String> images;
     private List<Comment> comments;
+    private List<Rating> ratings;
     private AccommodationStatus status;
     private ConfirmationType confirmationType;
     private AccommodationType accommodationType;
@@ -28,8 +30,7 @@ public class AccommodationDTO {
     private boolean verified;
     public AccommodationDTO(){}
 
-
-    public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, AccommodationType accommodationType, PriceType priceType, double defaultPrice, int deadlineForCancellation, boolean verified) {
+    public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, List<Rating> ratings, AccommodationStatus status, ConfirmationType confirmationType, AccommodationType accommodationType, PriceType priceType, double defaultPrice, int deadlineForCancellation, boolean verified) {
         this.id = id;
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
@@ -39,6 +40,7 @@ public class AccommodationDTO {
         this.amenities = amenities;
         this.images = images;
         this.comments = comments;
+        this.ratings = ratings;
         this.status = status;
         this.confirmationType = confirmationType;
         this.accommodationType = accommodationType;
@@ -46,6 +48,14 @@ public class AccommodationDTO {
         this.defaultPrice = defaultPrice;
         this.deadlineForCancellation = deadlineForCancellation;
         this.verified = verified;
+    }
+
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     public AccommodationType getAccommodationType() {

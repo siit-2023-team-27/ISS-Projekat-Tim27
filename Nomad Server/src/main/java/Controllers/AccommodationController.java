@@ -1,6 +1,7 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
+import DTO.SearchAccommodationDTO;
 import Services.AccommodationService;
 import Services.AmenityService;
 import Services.IService;
@@ -61,22 +62,15 @@ public class AccommodationController {
     }
 
     @GetMapping(value = "/search-filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<Accommodation>> searchAndFIlterccommodations(@RequestParam(required = true) String city,
+    public ResponseEntity<Collection<SearchAccommodationDTO>> searchAndFIlterccommodations(@RequestParam(required = true) String city,
                              @RequestParam(required = true)@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from, @RequestParam(required = true)@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to,
                              @RequestParam(required = true) int peopleNum, @RequestParam(required = false) Double minimumPrice,
                              @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
                              @RequestParam(required = false) AccommodationType type) {
 
-        for (Long l: amenity
-             ) {
-            System.out.println("AAA"+l);
-        }
-
-        Collection<Accommodation> accommodations = accommodationService.getSearchedAndFiltered(city, new DateRange(from, to), peopleNum, minimumPrice,
-                                                    maximumPrice, amenityService.convertToAmenities(amenity), type);
-        //pre toga pretvoritii u DTO
-        //        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
-        return new ResponseEntity<Collection<Accommodation>>(accommodations, HttpStatus.OK);
+        Collection<SearchAccommodationDTO> accommodationsDTOs = accommodationService.getSearchedAndFiltered(city, new DateRange(from, to), peopleNum, minimumPrice,
+                                                    maximumPrice, amenity, type);
+        return new ResponseEntity<Collection<SearchAccommodationDTO>>(accommodationsDTOs, HttpStatus.OK);
     }
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable("id") Long id) {
@@ -169,4 +163,5 @@ public class AccommodationController {
     private Accommodation convertToEntity(AccommodationDTO accommodationDTO) {
         return modelMapper.map(accommodationDTO, Accommodation.class);
     }
+
 }
