@@ -89,6 +89,9 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
     public boolean hasAllAmenities(Accommodation accommodation, List<Long> amenities){
         int found = 0;
+        if(amenities == null){
+            return true;
+        }
         for (Long id: amenities) {
             for (Amenity amenity: accommodation.getAmenities()) {
                 if (id == amenity.getId()){

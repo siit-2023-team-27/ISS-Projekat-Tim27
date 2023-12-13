@@ -63,7 +63,7 @@ public class AccommodationController {
 
     @GetMapping(value = "/search-filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<SearchAccommodationDTO>> searchAndFIlterccommodations(@RequestParam(required = true) String city,
-                             @RequestParam(required = true)@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date from, @RequestParam(required = true)@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date to,
+                             @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date from, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date to,
                              @RequestParam(required = true) int peopleNum, @RequestParam(required = false) Double minimumPrice,
                              @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
                              @RequestParam(required = false) AccommodationType type) {
