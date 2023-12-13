@@ -1,8 +1,10 @@
 package Services;
 
+import DTO.ReservationDTO;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
+import jakarta.transaction.Transactional;
 import model.Comment;
 import model.Reservation;
 import model.ReservationDate;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
+import java.beans.Transient;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -46,7 +49,12 @@ public class ReservationService implements IService<Reservation, Long> {
             this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, 100, c.getTime()));
         }
     }
-
+    public Collection<Reservation> findReservationsForUser(long userId){
+        return reservationRepository.findAllByAccommodation_Host_id(userId);
+    }
+    public Collection<Reservation> findReservationsForGuest(long userId){
+        return reservationRepository.findAllByGuest_id(userId);
+    }
     private void createReservationDate(ReservationDate reservationDate) {
         ReservationDate reservationDateToUpdate = reservationDateRepository.findOneByAccommodation_IdAndDate(reservationDate.getAccommodation().getId(), reservationDate.getDate());
         if(reservationDateToUpdate == null){
@@ -81,7 +89,10 @@ public class ReservationService implements IService<Reservation, Long> {
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
+        reservationDateRepository.deleteByReservation_id(id);
+
         reservationRepository.deleteById(id);
     }
 

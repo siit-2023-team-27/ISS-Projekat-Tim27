@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.ReservationStatus;
+import org.hibernate.annotations.Fetch;
+import org.springframework.context.annotation.Lazy;
 
 @Entity
 @Table(name = "reservations")
@@ -9,9 +11,9 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne (cascade = {})
+    @ManyToOne (fetch = FetchType.LAZY, cascade = {})
     private Guest guest;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Accommodation accommodation;
 
     @Embedded

@@ -66,6 +66,18 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(this.convertToDto(reservation), HttpStatus.OK);
     }
+    @GetMapping (value = "/with-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> getReservationForUser(@PathVariable("id") Long id) {
+        Collection<ReservationDTO> reservations = reservationService.findReservationsForUser(id).stream().map(this::convertToDto).toList();
+
+        return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
+    }
+    @GetMapping (value = "/with-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> getReservationForGuest(@PathVariable("id") Long id) {
+        Collection<ReservationDTO> reservations = reservationService.findReservationsForGuest(id).stream().map(this::convertToDto).toList();
+
+        return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
+    }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReservationDTO> createReservation (@RequestBody ReservationDTO reservationDTO) {
@@ -77,15 +89,9 @@ public class ReservationController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<ReservationDTO> deteteReservation(@PathVariable("id") Long id) {
-        Reservation reservation = reservationService.findOne(id);
+    public ResponseEntity<ReservationDTO> deleteReservation(@PathVariable("id") Long id) {
         reservationService.delete(id);
-        if (reservation != null) {
-            reservationService.delete(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<ReservationDTO>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping (value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -135,6 +141,7 @@ public class ReservationController {
         reservationDTO.setStartDate(reservation.getDateRange().getStartDate());
         reservationDTO.setFinishDate(reservation.getDateRange().getFinishDate());
         reservationDTO.setStatus(reservation.getStatus());
+        reservationDTO.setId(reservation.getId());
         return reservationDTO;
     }
     private Reservation convertToEntity(ReservationDTO reservationDTO) {
@@ -142,6 +149,7 @@ public class ReservationController {
         reservation.setDateRange(new DateRange(reservationDTO.getStartDate(), reservationDTO.getFinishDate()));
         reservation.setUser((Guest)userService.findOne(reservationDTO.getUser()));
         reservation.setAccommodation(accommodationService.findOne(reservationDTO.getAccommodation()));
+        reservation.setId(reservationDTO.getId());
         return reservation;
     }
 
