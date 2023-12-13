@@ -61,6 +61,7 @@ public class UserController {
 
         return new ResponseEntity<UserDTO>(this.convertToDto(appUser), HttpStatus.OK);
     }
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
         Host appUser = this.convertToEntityHost(userDTO);

@@ -87,6 +87,10 @@ public class WebSecurityConfig {
         //OVIM RUTAMA MOGU NEREGISTROVANI DA PRISTUPE
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
+                .requestMatchers(HttpMethod.POST, "/api/**")
+                .requestMatchers(HttpMethod.GET, "/api/**")
+                .requestMatchers(HttpMethod.GET, "/**")
+                .requestMatchers(HttpMethod.GET, "/api/accommodations/**");
                 .requestMatchers("/api/**");
     }
 

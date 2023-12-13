@@ -1,5 +1,5 @@
 package model.enums;
 
 public enum AccommodationStatus {
-    APPROVED, REJECTED
+    APPROVED, REJECTED, PENDING
 }

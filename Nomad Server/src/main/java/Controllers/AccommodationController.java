@@ -55,6 +55,7 @@ public class AccommodationController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findAll();
+        for(Accommodation a: accommodations) {System.out.println(a.getImages().get(0));}
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
