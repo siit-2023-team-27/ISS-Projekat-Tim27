@@ -28,6 +28,7 @@ public class AccommodationDTO {
     private double defaultPrice;
     private int deadlineForCancellation;
     private boolean verified;
+    private long hostId;
     public AccommodationDTO(){}
 
     public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, List<Rating> ratings, AccommodationStatus status, ConfirmationType confirmationType, AccommodationType accommodationType, PriceType priceType, double defaultPrice, int deadlineForCancellation, boolean verified) {
@@ -80,6 +81,13 @@ public class AccommodationDTO {
 
     public void setDefaultPrice(double defaultPrice) {
         this.defaultPrice = defaultPrice;
+    }
+    public long getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(long host) {
+        this.hostId = host;
     }
     public long getId() {
         return id;

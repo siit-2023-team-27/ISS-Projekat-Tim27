@@ -190,4 +190,12 @@ public class AccommodationService implements IService<Accommodation, Long> {
         accommodation.setAmenities(amenities);
         accommodationRepository.save(accommodation);
     }
+    public Double getPrice(long accommodationId, Date date) {
+        ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        if (reservationDate == null){
+            return 100D;
+        }else{
+            return reservationDate.getPrice();
+        }
+    }
 }

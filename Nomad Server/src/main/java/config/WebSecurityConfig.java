@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                 .anyRequest().authenticated().and()
                 .cors().and()
                 .addFilterBefore(new TokenAuthFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
-
+//        http.authorizeRequests().anyRequest().permitAll();
         http.csrf().disable();
         http.headers().frameOptions().disable();
         http.authenticationProvider(authenticationProvider());

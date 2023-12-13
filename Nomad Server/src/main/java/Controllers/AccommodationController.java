@@ -5,10 +5,12 @@ import DTO.SearchAccommodationDTO;
 import Services.AccommodationService;
 import Services.AmenityService;
 import Services.IService;
+import Services.UserService;
 import model.Accommodation;
 import model.Amenity;
 import model.DateRange;
 import model.enums.AccommodationType;
+import model.Host;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -46,6 +48,8 @@ public class AccommodationController {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private UserService userService;
 
     //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -96,6 +100,11 @@ public class AccommodationController {
     public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
         return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
     }
+    @GetMapping("price/{accommodationId}/{date}")
+    public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable Date date) {
+        return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
+    }
+
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
         accommodationService.addAmenityToAccommodation(accommodationId, newAmenity);
@@ -161,7 +170,9 @@ public class AccommodationController {
         return accommodationDTO;
     }
     private Accommodation convertToEntity(AccommodationDTO accommodationDTO) {
-        return modelMapper.map(accommodationDTO, Accommodation.class);
+        Accommodation accommodation = modelMapper.map(accommodationDTO, Accommodation.class);
+        accommodation.setHost((Host)userService.findOne(accommodationDTO.getHostId()));
+        return accommodation;
     }
 
 }
