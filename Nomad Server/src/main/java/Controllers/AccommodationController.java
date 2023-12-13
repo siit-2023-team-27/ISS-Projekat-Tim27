@@ -1,11 +1,15 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
+import DTO.SearchAccommodationDTO;
 import Services.AccommodationService;
+import Services.AmenityService;
 import Services.IService;
 import Services.UserService;
 import model.Accommodation;
 import model.Amenity;
+import model.DateRange;
+import model.enums.AccommodationType;
 import model.Host;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,8 @@ import java.util.List;
 public class AccommodationController {
     @Autowired
     private AccommodationService accommodationService;
+    @Autowired
+    private AmenityService amenityService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -54,21 +60,22 @@ public class AccommodationController {
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
     @GetMapping(value = "/unverified", produces = MediaType.APPLICATION_JSON_VALUE)
-
     public ResponseEntity<Collection<AccommodationDTO>> getUnverifiedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.getUnverifiedAccommodations();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
-    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<AccommodationDTO>> filterAccommodations(@RequestParam(required = false) String name,
-        @RequestParam(required = false) Integer minimumGuests, @RequestParam(required = false) Integer maximumGuests,
-        @RequestParam(required = false) Date minimumDate, @RequestParam(required = false) Date maximumDate,
-        @RequestParam(required = false) Double minimumPrice, @RequestParam(required = false) Double maximumPrice,
-        @RequestParam(required = false) List<String> amenity) {
-        Collection<Accommodation> accommodations = accommodationService.findAll();
-        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
-        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+
+    @GetMapping(value = "/search-filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<SearchAccommodationDTO>> searchAndFIlterccommodations(@RequestParam(required = true) String city,
+                             @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date from, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date to,
+                             @RequestParam(required = true) int peopleNum, @RequestParam(required = false) Double minimumPrice,
+                             @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
+                             @RequestParam(required = false) AccommodationType type) {
+
+        Collection<SearchAccommodationDTO> accommodationsDTOs = accommodationService.getSearchedAndFiltered(city, new DateRange(from, to), peopleNum, minimumPrice,
+                                                    maximumPrice, amenity, type);
+        return new ResponseEntity<Collection<SearchAccommodationDTO>>(accommodationsDTOs, HttpStatus.OK);
     }
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable("id") Long id) {
@@ -168,4 +175,5 @@ public class AccommodationController {
         accommodation.setHost((Host)userService.findOne(accommodationDTO.getHostId()));
         return accommodation;
     }
+
 }

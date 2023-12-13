@@ -2,7 +2,9 @@ package model;
 
 import jakarta.persistence.*;
 import model.enums.AccommodationStatus;
+import model.enums.AccommodationType;
 import model.enums.ConfirmationType;
+import model.enums.PriceType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,15 +29,23 @@ public class Accommodation implements Serializable {
     private List<String> images;
     @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "accommodation")
     private List<AccommodationComment> comments;
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "accommodation")
+    private List<AccommodationRating> ratings;
     private AccommodationStatus status;
     private ConfirmationType confirmationType;
+    private AccommodationType accommodationType;
+    private PriceType priceType;
+    private double defaultPrice;
     private int deadlineForCancellation;
     private boolean verified;
     public Accommodation(){}
 
     // Constructor
-    public Accommodation(Host host, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities,
-                         List<String> images, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation) {
+    public Accommodation(long id, Host host, int minGuests, int maxGuests, String name, String description,
+                         String address, List<Amenity> amenities, List<String> images, List<AccommodationComment> comments,
+                         List<AccommodationRating> ratings, AccommodationStatus status, ConfirmationType confirmationType,
+                         AccommodationType accommodationType, PriceType priceType, double defaultPrice, int deadlineForCancellation, boolean verified) {
+        this.id = id;
         this.host = host;
         this.minGuests = minGuests;
         this.maxGuests = maxGuests;
@@ -44,13 +54,48 @@ public class Accommodation implements Serializable {
         this.address = address;
         this.amenities = amenities;
         this.images = images;
-        this.comments = new ArrayList<AccommodationComment>();
+        this.comments = comments;
+        this.ratings = ratings;
         this.status = status;
         this.confirmationType = confirmationType;
+        this.accommodationType = accommodationType;
+        this.priceType = priceType;
+        this.defaultPrice = defaultPrice;
         this.deadlineForCancellation = deadlineForCancellation;
-        this.verified = false;
+        this.verified = verified;
     }
 
+    public List<AccommodationRating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<AccommodationRating> ratings) {
+        this.ratings = ratings;
+    }
+
+    public double getDefaultPrice() {
+        return defaultPrice;
+    }
+
+    public void setDefaultPrice(double defaultPrice) {
+        this.defaultPrice = defaultPrice;
+    }
+
+    public PriceType getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(PriceType priceType) {
+        this.priceType = priceType;
+    }
+
+    public AccommodationType getAccommodationType() {
+        return accommodationType;
+    }
+
+    public void setAccommodationType(AccommodationType accommodationType) {
+        this.accommodationType = accommodationType;
+    }
     public boolean isVerified() {
         return verified;
     }
@@ -188,6 +233,7 @@ public class Accommodation implements Serializable {
                 ", status=" + status +
                 ", confirmationType=" + confirmationType +
                 ", deadlineForCancellation=" + deadlineForCancellation +
+                ", accommodationType=" + accommodationType +
                 '}';
     }
 
@@ -202,5 +248,8 @@ public class Accommodation implements Serializable {
         this.status = accommodation.status;
         this.deadlineForCancellation = accommodation.deadlineForCancellation;
         this.confirmationType = accommodation.confirmationType;
+        this.accommodationType = accommodation.accommodationType;
+        this.priceType = accommodation.priceType;
+        this.defaultPrice = accommodation.defaultPrice;
     }
 }
