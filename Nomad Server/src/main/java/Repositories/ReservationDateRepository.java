@@ -19,4 +19,5 @@ public interface ReservationDateRepository extends JpaRepository<ReservationDate
 
     ReservationDate findOneByAccommodation_IdAndDate(long id, Date date);
 
+    void deleteByReservation_id(Long id);
 }

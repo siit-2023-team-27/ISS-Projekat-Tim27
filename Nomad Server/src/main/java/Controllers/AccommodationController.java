@@ -3,8 +3,10 @@ package Controllers;
 import DTO.AccommodationDTO;
 import Services.AccommodationService;
 import Services.IService;
+import Services.UserService;
 import model.Accommodation;
 import model.Amenity;
+import model.Host;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -40,6 +42,8 @@ public class AccommodationController {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private UserService userService;
 
     //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -159,6 +163,8 @@ public class AccommodationController {
         return accommodationDTO;
     }
     private Accommodation convertToEntity(AccommodationDTO accommodationDTO) {
-        return modelMapper.map(accommodationDTO, Accommodation.class);
+        Accommodation accommodation = modelMapper.map(accommodationDTO, Accommodation.class);
+        accommodation.setHost((Host)userService.findOne(accommodationDTO.getHostId()));
+        return accommodation;
     }
 }
