@@ -22,6 +22,7 @@ public class AccommodationDTO {
     private ConfirmationType confirmationType;
     private int deadlineForCancellation;
     private boolean verified;
+    private long hostId;
     public AccommodationDTO(){}
 
     public AccommodationDTO(long id, int minGuests, int maxGuests, String name, String description, String address, List<Amenity> amenities, List<String> images, List<Comment> comments, AccommodationStatus status, ConfirmationType confirmationType, int deadlineForCancellation, boolean verified) {
@@ -38,6 +39,14 @@ public class AccommodationDTO {
         this.confirmationType = confirmationType;
         this.deadlineForCancellation = deadlineForCancellation;
         this.verified = verified;
+    }
+
+    public long getHostId() {
+        return hostId;
+    }
+
+    public void setHostId(long host) {
+        this.hostId = host;
     }
 
     public long getId() {

@@ -3,11 +3,14 @@ package Controllers;
 import DTO.AccommodationDTO;
 import Services.AccommodationService;
 import Services.IService;
+import Services.UserService;
 import model.Accommodation;
 import model.Amenity;
+import model.Host;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @CrossOrigin(
         origins = {
@@ -41,6 +42,8 @@ public class AccommodationController {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private UserService userService;
 
     //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -82,6 +85,20 @@ public class AccommodationController {
     public ResponseEntity<Collection<Amenity>> getAmenitiesForAccommodation(@PathVariable long accommodationId) {
         return new ResponseEntity<Collection<Amenity>>(accommodationService.getAllAmenitiesForAccommodation(accommodationId), HttpStatus.OK);
     }
+
+    @GetMapping("isAvailable/{accommodationId}/{date}")
+    public ResponseEntity<Boolean> isAvailable(@PathVariable long accommodationId, @PathVariable  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
+        return new ResponseEntity<Boolean>(accommodationService.isAvailable(accommodationId, date), HttpStatus.OK);
+    }
+    @GetMapping("taken-dates/{accommodationId}")
+    public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
+        return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
+    }
+    @GetMapping("price/{accommodationId}/{date}")
+    public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable Date date) {
+        return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
+    }
+
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
         accommodationService.addAmenityToAccommodation(accommodationId, newAmenity);
@@ -147,6 +164,8 @@ public class AccommodationController {
         return accommodationDTO;
     }
     private Accommodation convertToEntity(AccommodationDTO accommodationDTO) {
-        return modelMapper.map(accommodationDTO, Accommodation.class);
+        Accommodation accommodation = modelMapper.map(accommodationDTO, Accommodation.class);
+        accommodation.setHost((Host)userService.findOne(accommodationDTO.getHostId()));
+        return accommodation;
     }
 }

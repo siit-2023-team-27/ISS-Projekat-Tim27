@@ -9,7 +9,9 @@ import Services.UserService;
 import model.Admin;
 import model.AppUser;
 import model.Guest;
+
 import model.Host;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -62,9 +64,20 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        Guest appUser = this.convertToEntityGuest(userDTO);
+        Host appUser = this.convertToEntityHost(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
+    }
+
+
+    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
+        AppUser user = (AppUser) userService.loadUserByUsername(loginDTO.getUsername());
+        if(user != null){
+            LoginResponseDTO response = user.toLoginResponse();
+            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
@@ -110,6 +123,7 @@ public class UserController {
     private Host convertToEntityHost(UserDTO userDTO) {
         return modelMapper.map(userDTO, Host.class);
     }
+
     private Guest convertToEntityGuest(UserDTO userDTO) {
         return modelMapper.map(userDTO, Guest.class);
     }

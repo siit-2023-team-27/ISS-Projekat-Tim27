@@ -6,7 +6,7 @@ import model.enums.ReservationStatus;
 import java.util.Date;
 
 public class ReservationDTO {
-
+    private long id;
     private long user;
     private long accommodation;
     private Date startDate;
@@ -16,6 +16,7 @@ public class ReservationDTO {
 
     // Constructor
     public ReservationDTO(
+            long id,
             long user,
             long accommodation,
             Date startDate,
@@ -29,11 +30,18 @@ public class ReservationDTO {
         this.finishDate = finishDate;
         this.numGuests = numGuests;
         this.status = status;
+        this.id = id;
     }
 
     public ReservationDTO () {}
 
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getUser() {
         return user;
