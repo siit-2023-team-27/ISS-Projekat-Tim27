@@ -63,7 +63,7 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        Host appUser = this.convertToEntityHost(userDTO);
+        Guest appUser = this.convertToEntityGuest(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
