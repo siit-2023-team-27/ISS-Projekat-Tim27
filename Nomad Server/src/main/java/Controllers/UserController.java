@@ -12,17 +12,23 @@ import model.Guest;
 
 import model.Host;
 
+import model.enums.UserType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+
+import static model.enums.UserType.ADMIN;
+
 @CrossOrigin(
         origins = {
                 "http://localhost:4200"
@@ -64,7 +70,7 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        Host appUser = this.convertToEntityHost(userDTO);
+        Guest appUser = this.convertToEntityGuest(userDTO);
         userService.create(appUser);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
@@ -88,7 +94,21 @@ public class UserController {
     public ResponseEntity<UserDTO> updateAccommodation(@RequestBody UserDTO userDTO, @PathVariable Long id)
             throws Exception {
         AppUser appUserForUpdate = userService.findOne(id);
-        AppUser updatedAppUser = this.convertToEntity(userDTO);
+        AppUser updatedAppUser;
+        switch (userDTO.getRoles().get(0)){
+            case ADMIN:
+                updatedAppUser = this.convertToEntityAdmin(userDTO);
+                break;
+            case HOST:
+                updatedAppUser = this.convertToEntityHost(userDTO);
+                break;
+            case GUEST:
+                updatedAppUser = this.convertToEntityGuest(userDTO);
+                break;
+            default:
+                updatedAppUser = this.convertToEntity(userDTO);
+        }
+
         appUserForUpdate.copyValues(updatedAppUser);
 
         userService.update(appUserForUpdate);
@@ -110,7 +130,16 @@ public class UserController {
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
     private UserDTO convertToDto(AppUser appUser) {
+        ArrayList<UserType> roles = new ArrayList<UserType>();
         UserDTO userDTO = modelMapper.map(appUser, UserDTO.class);
+        if(appUser.getClass() == Admin.class){
+            roles.add(UserType.ADMIN);
+        }else if(appUser.getClass() == Guest.class){
+            roles.add(UserType.GUEST);
+        }else{
+            roles.add(UserType.HOST);
+        }
+        userDTO.setRoles(roles);
 
         return userDTO;
     }

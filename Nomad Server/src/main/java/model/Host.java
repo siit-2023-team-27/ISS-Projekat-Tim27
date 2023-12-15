@@ -17,4 +17,7 @@ public class Host extends AppUser{
     public Collection<UserType> getAuthorities() {
         return Collections.singletonList(UserType.HOST);
     }
+    public Host(){
+        super();
+    };
 }

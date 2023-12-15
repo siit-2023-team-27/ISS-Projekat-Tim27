@@ -16,4 +16,7 @@ public class Guest extends AppUser{
     public Collection<UserType> getAuthorities() {
         return Collections.singletonList(UserType.GUEST);
     }
+    public Guest(){
+        super();
+    };
 }
