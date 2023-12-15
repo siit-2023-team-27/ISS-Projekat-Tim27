@@ -91,7 +91,6 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/**")
                 .requestMatchers(HttpMethod.GET, "/**")
                 .requestMatchers(HttpMethod.GET, "/api/accommodations/**");
-                .requestMatchers("/api/**");
     }
 
 }
