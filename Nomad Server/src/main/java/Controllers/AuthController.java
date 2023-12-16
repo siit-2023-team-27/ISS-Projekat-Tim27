@@ -73,7 +73,16 @@ public class AuthController {
         // Vrati token kao odgovor na uspesnu autentifikaciju
         return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
     }
+    @PostMapping("/reauthenticate")
+    public ResponseEntity<LoginDTO> reauthenticate(
+            @RequestBody LoginDTO loginDto) {
+        // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
+        // AuthenticationException
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUsername(), loginDto.getPassword()));
+        return ResponseEntity.ok(loginDto);
 
+    }
     // Endpoint za registraciju novog korisnika
     @PostMapping("/signup")
     public ResponseEntity<AppUser> addUser(@RequestBody UserRegistrationDTO userDTO) {

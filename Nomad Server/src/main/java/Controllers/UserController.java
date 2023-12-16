@@ -85,6 +85,7 @@ public class UserController {
         }
         return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
     }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
         userService.delete(id);
