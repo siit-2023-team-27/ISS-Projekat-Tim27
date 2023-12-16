@@ -12,8 +12,9 @@ public class UserDTO {
         private String username;
         private String password;
         private String phoneNumber;
-        private List<UserType> roles;
         private boolean suspended;
+        private boolean verified;
+        private List<UserType> roles;
 
     // Constructor
     public UserDTO(Long id, String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
@@ -24,9 +25,27 @@ public class UserDTO {
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.roles = roles;
         this.suspended = false;
+        this.verified = true;
+        this.roles = roles;
     }
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public List<UserType> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<UserType> roles) {
+        this.roles = roles;
+    }
+
     public UserDTO(){}
     // Getters and setters for each attribute
 
@@ -90,14 +109,6 @@ public class UserDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public List<UserType> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<UserType> roles) {
-        this.roles = roles;
     }
 
     public boolean isSuspended() {

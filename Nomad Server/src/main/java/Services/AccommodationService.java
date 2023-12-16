@@ -67,6 +67,20 @@ public class AccommodationService implements IService<Accommodation, Long> {
         }
         return filtered;
     }
+    public Collection<Accommodation> getFiltered(Double minimumPrice, Double maximumPrice, List<Long> amenity, AccommodationType type) {
+        Collection<Accommodation> filtered = new ArrayList<>();
+
+        for (Accommodation a: this.getFilteredAccommodations(type, amenity)) {
+            if(minimumPrice != null && maximumPrice != null){
+                if(isPriceInRange(a,minimumPrice, maximumPrice, 1)){
+                    filtered.add(a);
+                }
+            }else{
+                filtered.add(a);
+            }
+        }
+        return filtered;
+    }
 
     public boolean isAvailable(long accommodationId, Date date){
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
@@ -78,6 +92,16 @@ public class AccommodationService implements IService<Accommodation, Long> {
     }
     public List<Accommodation> getFilteredAccommodations(int peopleNum, String city, AccommodationType accommodationType, List<Long> amenities){
         List<Accommodation> accommodations =  accommodationRepository.findAllBy(peopleNum, city, accommodationType);
+        List<Accommodation> filtered = new ArrayList<>();
+        for (Accommodation a: accommodations) {
+            if(hasAllAmenities(a, amenities)){
+                filtered.add(a);
+            }
+        }
+        return filtered;
+    }
+    public List<Accommodation> getFilteredAccommodations(AccommodationType accommodationType, List<Long> amenities){
+        List<Accommodation> accommodations =  accommodationRepository.findAllBy(accommodationType);
         List<Accommodation> filtered = new ArrayList<>();
         for (Accommodation a: accommodations) {
             if(hasAllAmenities(a, amenities)){

@@ -2,6 +2,7 @@ package Controllers;
 
 import DTO.AccommodationDTO;
 import DTO.SearchAccommodationDTO;
+import DTO.UserDTO;
 import Services.AccommodationService;
 import Services.AmenityService;
 import Services.IService;
@@ -74,7 +75,19 @@ public class AccommodationController {
 
         Collection<SearchAccommodationDTO> accommodationsDTOs = accommodationService.getSearchedAndFiltered(city, new DateRange(from, to), peopleNum, minimumPrice,
                                                     maximumPrice, amenity, type);
+
         return new ResponseEntity<Collection<SearchAccommodationDTO>>(accommodationsDTOs, HttpStatus.OK);
+    }
+    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<AccommodationDTO>> filterccommodations(@RequestParam(required = false) Double minimumPrice,
+                                                                                           @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
+                                                                                           @RequestParam(required = false) AccommodationType type) {
+        if(minimumPrice == null && maximumPrice == null && type == null){
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        Collection<Accommodation> accommodations = accommodationService.getFiltered( minimumPrice, maximumPrice, amenity, type);
+        Collection<AccommodationDTO> accommodationsDTOs = accommodations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationsDTOs, HttpStatus.OK);
     }
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable("id") Long id) {
@@ -143,9 +156,6 @@ public class AccommodationController {
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
         accommodationForUpdate.setVerified(true);
         accommodationService.update(accommodationForUpdate);
-
-
-
         return new ResponseEntity<AccommodationDTO>(convertToDto(accommodationForUpdate), HttpStatus.OK);
     }
     @PutMapping(value = "/favourite", produces = MediaType.APPLICATION_JSON_VALUE)

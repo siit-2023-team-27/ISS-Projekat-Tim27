@@ -6,12 +6,14 @@ import DTO.LoginResponseDTO;
 import DTO.UserDTO;
 import Services.IService;
 import Services.UserService;
+import exceptions.ResourceConflictException;
 import model.Admin;
 import model.AppUser;
 import model.Guest;
 
 import model.Host;
 
+import model.enums.UserType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -63,20 +65,22 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        Host appUser = this.convertToEntityHost(userDTO);
-        userService.create(appUser);
-        return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
-    }
+        //Host appUser = this.convertToEntityHost(userDTO);
+        boolean existUser = this.userService.isRegistrated(userDTO.getUsername());
 
-
-    @PostMapping(value = "/login",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO loginDTO) throws Exception {
-        AppUser user = (AppUser) userService.loadUserByUsername(loginDTO.getUsername());
-        if(user != null){
-            LoginResponseDTO response = user.toLoginResponse();
-            return new ResponseEntity<LoginResponseDTO>(response, HttpStatus.OK);
+        if (existUser) {
+            throw new ResourceConflictException(null,"Username already exists");
         }
-        return new ResponseEntity<LoginResponseDTO>(HttpStatus.NOT_FOUND);
+        AppUser user = null;
+        if(userDTO.getRoles().get(0)== UserType.GUEST){
+            user = convertToEntityGuest(userDTO);
+        }else if(userDTO.getRoles().get(0)== UserType.HOST){
+            user = convertToEntityHost(userDTO);
+        }else{
+            user = convertToEntityAdmin(userDTO);
+        }
+        userService.create(user);
+        return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {

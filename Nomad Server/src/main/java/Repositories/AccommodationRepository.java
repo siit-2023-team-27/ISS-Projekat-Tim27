@@ -18,8 +18,12 @@ public interface AccommodationRepository extends JpaRepository <Accommodation, L
 
     @Query("select a from Accommodation a " +
             "where a.maxGuests >=:peopleNum and a.minGuests<=:peopleNum " +
-            "and a.address like CONCAT('%', :city, '%') " +
+            "and lower(a.address) like lower(CONCAT('%', :city, '%')) " +
             "and (:type IS NULL OR a.accommodationType = :type )")
     List<Accommodation> findAllBy(@Param("peopleNum")int peopleNum, @Param("city")String city,
                                   @Param("type")AccommodationType accommodationType);
+
+    @Query("select a from Accommodation a " +
+            "where (:type IS NULL OR a.accommodationType = :type )")
+    List<Accommodation> findAllBy(@Param("type")AccommodationType accommodationType);
 }

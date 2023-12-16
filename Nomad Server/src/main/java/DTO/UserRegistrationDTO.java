@@ -80,5 +80,4 @@ public class UserRegistrationDTO {
     public void setRoles(List<UserType> roles) {
         this.roles = roles;
     }
-
 }
