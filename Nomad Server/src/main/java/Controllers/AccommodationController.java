@@ -20,7 +20,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.yaml.snakeyaml.events.CollectionEndEvent;
 
+import javax.sound.midi.SysexMessage;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -45,17 +47,16 @@ public class AccommodationController {
     private AccommodationService accommodationService;
     @Autowired
     private AmenityService amenityService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private UserService userService;
 
     //@PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findAll();
-        for(Accommodation a: accommodations) {System.out.println(a.getImages().get(0));}
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
@@ -93,6 +94,14 @@ public class AccommodationController {
         return new ResponseEntity<Collection<Amenity>>(accommodationService.getAllAmenitiesForAccommodation(accommodationId), HttpStatus.OK);
     }
 
+    @GetMapping("/host/{hostId}")
+    public ResponseEntity<Collection<AccommodationDTO>> getAccommodationsForHost(@PathVariable("hostId") Long hostId) {
+        Collection<Accommodation> accommodations = this.accommodationService.findByHost( hostId);
+        System.out.println(accommodations.size());
+        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    }
+
     @GetMapping("isAvailable/{accommodationId}/{date}")
     public ResponseEntity<Boolean> isAvailable(@PathVariable long accommodationId, @PathVariable  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         return new ResponseEntity<Boolean>(accommodationService.isAvailable(accommodationId, date), HttpStatus.OK);
@@ -115,6 +124,7 @@ public class AccommodationController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
         Accommodation accommodation = this.convertToEntity(accommodationDTO);
+        accommodation.setHost( (Host) userService.findOne(accommodationDTO.getHostId()) );
         accommodationService.create(accommodation);
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.CREATED);
     }
@@ -123,13 +133,13 @@ public class AccommodationController {
         accommodationService.delete(id);
         return new ResponseEntity<AccommodationDTO>(HttpStatus.NO_CONTENT);
     }
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/nesto/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO, @PathVariable Long id)
             throws Exception {
+        System.out.println("hejj ovde sam, put kod accommodations");
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
         Accommodation updatedAccommodation = this.convertToEntity(accommodationDTO);
         accommodationForUpdate.copyValues(updatedAccommodation);
-
         accommodationService.update(accommodationForUpdate);
 
         if (updatedAccommodation == null) {
