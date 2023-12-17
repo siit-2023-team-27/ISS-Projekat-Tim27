@@ -90,6 +90,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
                 .requestMatchers("/api/**");
 
+                .requestMatchers(HttpMethod.GET, "/**")
     }
 
 }

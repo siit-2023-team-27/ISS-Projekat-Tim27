@@ -16,4 +16,7 @@ public class Admin extends AppUser{
     public Collection<UserType> getAuthorities() {
         return Collections.singletonList(UserType.ADMIN);
     }
+    public Admin(){
+        super();
+    };
 }

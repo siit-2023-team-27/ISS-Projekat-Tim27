@@ -2,6 +2,7 @@ package Repositories;
 
 import model.Accommodation;
 import model.Amenity;
+import model.Host;
 import model.enums.AccommodationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,8 @@ public interface AccommodationRepository extends JpaRepository <Accommodation, L
     Accommodation findOneById(Long id);
 
     Collection<Accommodation> findAllByVerified(boolean b);
+
+    Collection<Accommodation>findAllByHost_id(long hostId);
 
     @Query("select a from Accommodation a " +
             "where a.maxGuests >=:peopleNum and a.minGuests<=:peopleNum " +

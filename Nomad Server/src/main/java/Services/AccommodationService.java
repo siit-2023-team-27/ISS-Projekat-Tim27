@@ -8,10 +8,10 @@ import model.enums.AccommodationType;
 import model.enums.PriceType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -33,7 +33,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
     private ModelMapper modelMapper;
     @Override
     public Collection<Accommodation> findAll() {
-        return accommodationRepository.findAll();
+        return  accommodationRepository.findAll();
     }
 
     @Override
@@ -55,6 +55,8 @@ public class AccommodationService implements IService<Accommodation, Long> {
     public void delete(Long id) {
         accommodationRepository.deleteById(id);
     }
+
+    public Collection<Accommodation> findByHost(Long host) { return this.accommodationRepository.findAllByHost_id(host); }
 
     public Collection<SearchAccommodationDTO> getSearchedAndFiltered(String city, DateRange dateRange, int peopleNum, Double minimumPrice,
                                                      Double maximumPrice, List<Long> amenity, AccommodationType type) {

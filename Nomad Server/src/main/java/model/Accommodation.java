@@ -16,7 +16,7 @@ public class Accommodation implements Serializable {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne (cascade = {})
+    @ManyToOne (fetch = FetchType.LAZY, cascade = {})
     private Host host;
     private int minGuests;
     private int maxGuests;
