@@ -29,6 +29,12 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
         passwordEncoder = pass;
     }
 
+    public void confirmRegistration(String username){
+        AppUser user = (AppUser)this.loadUserByUsername(username);
+        user.setVerified(true);
+        this.save(user);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findOneByUsername(username);

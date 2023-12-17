@@ -77,47 +77,43 @@ public class AuthController {
         return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
     }
 
-    // Endpoint za registraciju novog korisnika
     @PostMapping("/signup")
     public ResponseEntity<AppUser> addUser(@RequestBody UserRegistrationDTO userDTO) throws IOException {
-        if(!Helper.isEmailPatternValid(userDTO.getUsername()) || !Helper.isPasswordValid(userDTO.getPassword())
-                || !userDTO.getPassword().equals(userDTO.getPasswordConfirmation())){
+        if(!userDTO.isRequestObjectValid()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         boolean existUser = this.userService.isRegistrated(userDTO.getUsername());
-
         if (existUser) {
             throw new ResourceConflictException(null,"Username already exists");
         }
+
         AppUser user = null;
-        if(userDTO.getRoles().get(0)== UserType.GUEST){
+        if(userDTO.getRoles().get(0) == UserType.GUEST){
             user = convertToGuest(userDTO);
-        }else if(userDTO.getRoles().get(0)== UserType.HOST){
+        }else if(userDTO.getRoles().get(0) == UserType.HOST){
             user = convertToHost(userDTO);
+        }
+        if(user == null){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         this.userService.create(user);
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
         confirmationTokenService.create(confirmationToken);
-
         mailService.sendVerificationLink(confirmationToken, user.getUsername());
 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
     @GetMapping(value="/confirm-account")
-    public RedirectView confirmUserAccount( @RequestParam("token")String confirmationToken)
+    public RedirectView confirmUserAccount(@RequestParam("token")String confirmationToken)
     {
         ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);
 
         if(token != null && !token.isTokenExpired())
         {
-            AppUser user = (AppUser)userService.loadUserByUsername(token.getUserEntity().getUsername());
-            user.setVerified(true);
-            userService.save(user);
-            //return new ResponseEntity<AppUser>(user, HttpStatus.OK);
+            userService.confirmRegistration(token.getUserEntity().getUsername());
             return new RedirectView("http://localhost:4200/login");
         }
-            //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new RedirectView("http://localhost:4200/login");
+        return new RedirectView("http://localhost:4200/home");
     }
     private UserRegistrationDTO convertToDto(AppUser user) {
         UserRegistrationDTO userDTO = modelMapper.map(user, UserRegistrationDTO.class);

@@ -33,24 +33,4 @@ public class MailService {
             throw ex;
         }
     }
-    public String sendTextEmail() throws IOException {
-        Email from = new Email("nomadteam27@gmail.com");
-        String subject = "The subject";
-        Email to = new Email("nomadteam27@gmail.com");
-        Content content = new Content("text/plain", "This is a test email");
-        Mail mail = new Mail(from, subject, to, content);
-
-        SendGrid sg = new SendGrid("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\n");
-        Request request = new Request();
-        try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
-            Response response = sg.api(request);
-            logger.info(response.getBody());
-            return response.getBody();
-        } catch (IOException ex) {
-            throw ex;
-        }
-    }
 }

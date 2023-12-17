@@ -1,6 +1,7 @@
 package DTO;
 
 import model.enums.UserType;
+import util.Helper;
 
 import java.util.List;
 
@@ -13,8 +14,6 @@ public class UserRegistrationDTO {
     private String passwordConfirmation;
     private String phoneNumber;
     private List<UserType> roles;
-
-    // Constructor
 
     public String getPasswordConfirmation() {
         return passwordConfirmation;
@@ -33,6 +32,12 @@ public class UserRegistrationDTO {
         this.passwordConfirmation = passwordConfirmation;
         this.phoneNumber = phoneNumber;
         this.roles = roles;
+    }
+
+    public boolean isRequestObjectValid(){
+        return Helper.isEmailPatternValid(this.username) && Helper.isPasswordValid(this.password)
+                && this.password.equals(this.passwordConfirmation)
+                && Helper.isStringValid(this.lastName) && Helper.isStringValid(this.firstName);
     }
 
     public UserRegistrationDTO(){}

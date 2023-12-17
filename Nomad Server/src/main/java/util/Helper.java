@@ -20,4 +20,7 @@ public class Helper {
 //                .matches();
         return password.length() > 7;
     }
+        public static boolean isStringValid(String str) {
+            return str.length() > 1;
+        }
 }

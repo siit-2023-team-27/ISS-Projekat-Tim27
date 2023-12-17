@@ -65,12 +65,11 @@ public class UserController {
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
-        //Host appUser = this.convertToEntityHost(userDTO);
         boolean existUser = this.userService.isRegistrated(userDTO.getUsername());
-
         if (existUser) {
             throw new ResourceConflictException(null,"Username already exists");
         }
+
         AppUser user = null;
         if(userDTO.getRoles().get(0)== UserType.GUEST){
             user = convertToEntityGuest(userDTO);
