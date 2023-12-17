@@ -56,6 +56,8 @@ public class AccommodationService implements IService<Accommodation, Long> {
         accommodationRepository.deleteById(id);
     }
 
+    public Collection<Accommodation> findByHost(Long host) { return this.accommodationRepository.findAllByHost_id(host); }
+
     public Collection<SearchAccommodationDTO> getSearchedAndFiltered(String city, DateRange dateRange, int peopleNum, Double minimumPrice,
                                                      Double maximumPrice, List<Long> amenity, AccommodationType type) {
         Collection<SearchAccommodationDTO> filtered = new ArrayList<>();
