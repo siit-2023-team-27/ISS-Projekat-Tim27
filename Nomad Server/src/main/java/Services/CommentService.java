@@ -1,7 +1,6 @@
 package Services;
 
 import Repositories.IRepository;
-import Repositories.InMemoryAccommodationRepository;
 import model.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

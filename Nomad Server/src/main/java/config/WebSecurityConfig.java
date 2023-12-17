@@ -69,7 +69,7 @@ public class WebSecurityConfig {
                 //OVDE DOZVOLJAVA RUTE AUTENTIFIKOVANIM KORISNICIMA KO GDE MOZE
                 // DODATI @PreAuthorize("hasAuthority('ADMIN')") IZNAD APIJA za autorizaciju
                 // ILI OVDE STAVITI .requestMatchers("/api/accommodations").hasAuthority("ADMIN")
-
+                //.requestMatchers("/api/**").permitAll()
                 // za svaki drugi zahtev korisnik mora biti autentifikovan
                 .anyRequest().authenticated().and()
                 .cors().and()
@@ -87,9 +87,9 @@ public class WebSecurityConfig {
         //OVIM RUTAMA MOGU NEREGISTROVANI DA PRISTUPE
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
-                .requestMatchers(HttpMethod.POST, "/api/**")
-                .requestMatchers(HttpMethod.PUT, "/api/**")
-                .requestMatchers(HttpMethod.GET, "/api/**")
+                .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
+                .requestMatchers("/api/**");
+
                 .requestMatchers(HttpMethod.GET, "/**")
     }
 

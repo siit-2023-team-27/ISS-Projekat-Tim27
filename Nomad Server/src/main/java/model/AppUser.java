@@ -28,8 +28,8 @@ public abstract class AppUser implements Serializable, UserDetails {
     private String password;
     private String phoneNumber;
     private boolean suspended;
+    private boolean verified;
 
-    //private List<UserType> roles;
     private Timestamp lastPasswordResetDate;
     // Constructor
     public AppUser(String firstName, String lastName, String address, String username, String password, String phoneNumber) {
@@ -40,8 +40,17 @@ public abstract class AppUser implements Serializable, UserDetails {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.suspended = false;
+        this.verified = false;
     }
     public AppUser(){}
+
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
 
     public boolean isSuspended() {
         return suspended;
@@ -51,12 +60,6 @@ public abstract class AppUser implements Serializable, UserDetails {
         this.suspended = suspended;
     }
 
-
-//    public void setRoles(List<UserType> roles) {
-//        this.roles = roles;
-//    }
-
-    // Getters and setters for each attribute
     public Long getId() {
         return id;
     }
@@ -148,14 +151,6 @@ public abstract class AppUser implements Serializable, UserDetails {
         this.phoneNumber = phoneNumber;
     }
 
-//    public UserType getUserType() {
-//        return userType;
-//    }
-
-//    public void setUserType(UserType userType) {
-//        this.userType = userType;
-//    }
-
     // toString method to represent the user as a string
     @Override
     public String toString() {
@@ -174,6 +169,10 @@ public abstract class AppUser implements Serializable, UserDetails {
         this.address = appUser.address;
         this.password = appUser.password;
         this.phoneNumber = appUser.phoneNumber;
+        this.verified = appUser.verified;
+        this.lastPasswordResetDate = appUser.lastPasswordResetDate;
+        this.suspended = appUser.suspended;
+        this.username = appUser.username;
     }
     public LoginResponseDTO toLoginResponse(){
         return new LoginResponseDTO(this.id, this.username, "");
