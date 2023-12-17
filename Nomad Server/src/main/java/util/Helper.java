@@ -12,11 +12,12 @@ public class Helper {
                 .matches();
     }
     public static boolean isPasswordValid(String password) {
-        return Pattern.compile("^(?=.*[0-9])"
-                        + "(?=.*[a-z])(?=.*[A-Z])"
-                        + "(?=.*[@#$%^&+=])"
-                        + "(?=\\S+$).{8,20}$")
-                .matcher(password)
-                .matches();
+//        return Pattern.compile("^(?=.*[0-9])"
+//                        + "(?=.*[a-z])(?=.*[A-Z])"
+//                        + "(?=.*[@#$%^&+=])"
+//                        + "(?=\\S+$).{8,20}$")
+//                .matcher(password)
+//                .matches();
+        return password.length() > 7;
     }
 }

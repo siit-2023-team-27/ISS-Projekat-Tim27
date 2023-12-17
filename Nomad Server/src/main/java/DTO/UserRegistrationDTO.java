@@ -10,19 +10,31 @@ public class UserRegistrationDTO {
     private String address;
     private String username;
     private String password;
+    private String passwordConfirmation;
     private String phoneNumber;
     private List<UserType> roles;
 
     // Constructor
-    public UserRegistrationDTO(String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
+
+    public String getPasswordConfirmation() {
+        return passwordConfirmation;
+    }
+
+    public void setPasswordConfirmation(String passwordConfirmation) {
+        this.passwordConfirmation = passwordConfirmation;
+    }
+
+    public UserRegistrationDTO(String firstName, String lastName, String address, String username, String password, String passwordConfirmation, String phoneNumber, List<UserType> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.username = username;
         this.password = password;
+        this.passwordConfirmation = passwordConfirmation;
         this.phoneNumber = phoneNumber;
         this.roles = roles;
     }
+
     public UserRegistrationDTO(){}
     // Getters and setters for each attribute
     public String getFirstName() {

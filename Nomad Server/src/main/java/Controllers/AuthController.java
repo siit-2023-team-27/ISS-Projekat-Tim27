@@ -22,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponentsBuilder;
 import util.Helper;
 import util.TokenUtils;
@@ -79,7 +80,8 @@ public class AuthController {
     // Endpoint za registraciju novog korisnika
     @PostMapping("/signup")
     public ResponseEntity<AppUser> addUser(@RequestBody UserRegistrationDTO userDTO) throws IOException {
-        if(!Helper.isEmailPatternValid(userDTO.getUsername()) || !Helper.isPasswordValid(userDTO.getPassword())){
+        if(!Helper.isEmailPatternValid(userDTO.getUsername()) || !Helper.isPasswordValid(userDTO.getPassword())
+                || !userDTO.getPassword().equals(userDTO.getPasswordConfirmation())){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         boolean existUser = this.userService.isRegistrated(userDTO.getUsername());
@@ -102,7 +104,7 @@ public class AuthController {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
     @GetMapping(value="/confirm-account")
-    public ResponseEntity<AppUser> confirmUserAccount( @RequestParam("token")String confirmationToken)
+    public RedirectView confirmUserAccount( @RequestParam("token")String confirmationToken)
     {
         ConfirmationToken token = confirmationTokenService.findByConfirmationToken(confirmationToken);
 
@@ -111,9 +113,11 @@ public class AuthController {
             AppUser user = (AppUser)userService.loadUserByUsername(token.getUserEntity().getUsername());
             user.setVerified(true);
             userService.save(user);
-            return new ResponseEntity<AppUser>(user, HttpStatus.OK);
+            //return new ResponseEntity<AppUser>(user, HttpStatus.OK);
+            return new RedirectView("http://localhost:4200/login");
         }
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new RedirectView("http://localhost:4200/login");
     }
     private UserRegistrationDTO convertToDto(AppUser user) {
         UserRegistrationDTO userDTO = modelMapper.map(user, UserRegistrationDTO.class);
