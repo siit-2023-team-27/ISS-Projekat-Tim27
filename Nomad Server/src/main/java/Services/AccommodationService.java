@@ -56,6 +56,8 @@ public class AccommodationService implements IService<Accommodation, Long> {
         accommodationRepository.deleteById(id);
     }
 
+    public Collection<Accommodation> findByHost(Long host) { return this.accommodationRepository.findAllByHost_id(host); }
+
     public Collection<SearchAccommodationDTO> getSearchedAndFiltered(String city, DateRange dateRange, int peopleNum, Double minimumPrice,
                                                      Double maximumPrice, List<Long> amenity, AccommodationType type) {
         Collection<SearchAccommodationDTO> filtered = new ArrayList<>();
@@ -63,6 +65,20 @@ public class AccommodationService implements IService<Accommodation, Long> {
             SearchAccommodationDTO accommodationDTO = this.checkAvailability(a, dateRange, minimumPrice, maximumPrice, peopleNum);
             if(accommodationDTO != null){
                 filtered.add(accommodationDTO);
+            }
+        }
+        return filtered;
+    }
+    public Collection<Accommodation> getFiltered(Double minimumPrice, Double maximumPrice, List<Long> amenity, AccommodationType type) {
+        Collection<Accommodation> filtered = new ArrayList<>();
+
+        for (Accommodation a: this.getFilteredAccommodations(type, amenity)) {
+            if(minimumPrice != null && maximumPrice != null){
+                if(isPriceInRange(a,minimumPrice, maximumPrice, 1)){
+                    filtered.add(a);
+                }
+            }else{
+                filtered.add(a);
             }
         }
         return filtered;
@@ -78,6 +94,16 @@ public class AccommodationService implements IService<Accommodation, Long> {
     }
     public List<Accommodation> getFilteredAccommodations(int peopleNum, String city, AccommodationType accommodationType, List<Long> amenities){
         List<Accommodation> accommodations =  accommodationRepository.findAllBy(peopleNum, city, accommodationType);
+        List<Accommodation> filtered = new ArrayList<>();
+        for (Accommodation a: accommodations) {
+            if(hasAllAmenities(a, amenities)){
+                filtered.add(a);
+            }
+        }
+        return filtered;
+    }
+    public List<Accommodation> getFilteredAccommodations(AccommodationType accommodationType, List<Long> amenities){
+        List<Accommodation> accommodations =  accommodationRepository.findAllBy(accommodationType);
         List<Accommodation> filtered = new ArrayList<>();
         for (Accommodation a: accommodations) {
             if(hasAllAmenities(a, amenities)){

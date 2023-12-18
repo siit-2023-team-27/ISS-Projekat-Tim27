@@ -32,8 +32,12 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
         passwordEncoder = pass;
     }
 
+    public void confirmRegistration(String username){
+        AppUser user = (AppUser)this.loadUserByUsername(username);
+        user.setVerified(true);
+        this.save(user);
+    }
 
-    // Funkcija koja na osnovu username-a iz baze vraca objekat User-a
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findOneByUsername(username);
@@ -43,9 +47,13 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
             return user;
         }
     }
-//    public AppUser findByUsername(String username){
-//        return userRepository.findOneByUsername(username);
-//    }
+    public boolean isRegistrated(String username) throws UsernameNotFoundException {
+        AppUser user = userRepository.findOneByUsername(username);
+        if(user!= null){
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public Collection<AppUser> findAll() {
@@ -61,6 +69,9 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
     public void create(AppUser appUser) {
         //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        userRepository.save(appUser);
+    }
+    public void save(AppUser appUser) {
         userRepository.save(appUser);
     }
 
