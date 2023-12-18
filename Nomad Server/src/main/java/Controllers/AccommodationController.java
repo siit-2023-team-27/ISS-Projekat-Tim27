@@ -146,10 +146,9 @@ public class AccommodationController {
         accommodationService.delete(id);
         return new ResponseEntity<AccommodationDTO>(HttpStatus.NO_CONTENT);
     }
-    @PutMapping(value = "/nesto/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO, @PathVariable Long id)
             throws Exception {
-        System.out.println("hejj ovde sam, put kod accommodations");
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
         Accommodation updatedAccommodation = this.convertToEntity(accommodationDTO);
         accommodationForUpdate.copyValues(updatedAccommodation);

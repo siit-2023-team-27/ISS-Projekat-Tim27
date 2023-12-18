@@ -88,9 +88,11 @@ public class WebSecurityConfig {
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
-                .requestMatchers("/api/**");
-
+                .requestMatchers(HttpMethod.PUT, "/api/**")
+                .requestMatchers(HttpMethod.POST, "/api/**")
+                .requestMatchers(HttpMethod.GET, "/api/**")
+                .requestMatchers(HttpMethod.DELETE, "/api/**")
                 .requestMatchers(HttpMethod.GET, "/**")
+                .requestMatchers(HttpMethod.POST, "/**");
     }
-
 }

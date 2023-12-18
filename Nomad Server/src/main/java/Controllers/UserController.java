@@ -80,6 +80,7 @@ public class UserController {
         if(userDTO.getRoles().get(0)== UserType.GUEST){
             user = convertToEntityGuest(userDTO);
         }else if(userDTO.getRoles().get(0)== UserType.HOST){
+        }else if(userDTO.getRoles().get(0)== UserType.HOST){
             user = convertToEntityHost(userDTO);
         }else{
             user = convertToEntityAdmin(userDTO);
