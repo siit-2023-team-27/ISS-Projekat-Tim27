@@ -87,6 +87,7 @@ public class UserController {
         userService.create(user);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
         userService.delete(id);
