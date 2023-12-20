@@ -54,7 +54,6 @@ public class AccommodationController {
     @Autowired
     private ModelMapper modelMapper;
     //config
-    @PreAuthorize("hasAuthority('HOST')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findAll();
