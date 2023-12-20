@@ -49,6 +49,7 @@ public class AmenityController {
 
         return new ResponseEntity<Amenity>(amenity, HttpStatus.OK);
     }
+    //config
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Amenity> createAmenity(@RequestBody Amenity amenity) throws Exception {
         amenityService.create(amenity);

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -19,6 +20,7 @@ import java.util.Date;
 @ComponentScan(basePackageClasses = IService.class)
 
 public class PriceController {
+    //config
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<Double>> getPrices() {
         return new ResponseEntity<Collection<Double>>(HttpStatus.OK);
@@ -29,11 +31,13 @@ public class PriceController {
         return new ResponseEntity<Double>(0.0, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('HOST')")
     @PostMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Double> addPrice(@PathVariable("id") Long id, @RequestParam Date date, @RequestParam Double price) {
 
         return new ResponseEntity<Double>(0.0, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST')")
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Double> updatePrice(@PathVariable("id") Long id, @RequestParam Date date, @RequestParam Double price) {
 

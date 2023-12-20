@@ -18,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,12 +67,14 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(this.convertToDto(reservation), HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST')")
     @GetMapping (value = "/with-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> getReservationForUser(@PathVariable("id") Long id) {
         Collection<ReservationDTO> reservations = reservationService.findReservationsForUser(id).stream().map(this::convertToDto).toList();
 
         return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping (value = "/with-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> getReservationForGuest(@PathVariable("id") Long id) {
         Collection<ReservationDTO> reservations = reservationService.findReservationsForGuest(id).stream().map(this::convertToDto).toList();
@@ -79,6 +82,7 @@ public class ReservationController {
         return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReservationDTO> createReservation (@RequestBody ReservationDTO reservationDTO) {
         System.out.println("CREATE RESERV");
@@ -89,6 +93,7 @@ public class ReservationController {
         return new ResponseEntity<ReservationDTO>(HttpStatus.FORBIDDEN);
     }
 
+    @PreAuthorize("hasAuthority('GUEST')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ReservationDTO> deleteReservation(@PathVariable("id") Long id) {
         reservationService.delete(id);
@@ -106,15 +111,16 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/confirm/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReservationDTO> confirmReservation(@PathVariable Long id) {
         Reservation reservationForUpdate = reservationService.findOne(id);
         reservationForUpdate.setStatus(ReservationStatus.ACCEPTED);
         reservationService.update(reservationForUpdate);
 
-
         return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/reject/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReservationDTO> rejectReservation(@PathVariable Long id) {
         Reservation reservationForUpdate = reservationService.findOne(id);
@@ -124,6 +130,7 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> filterReservations(@RequestParam(required = false) String name,
                                                                              @RequestParam(required = false) Integer minimumGuests, @RequestParam(required = false) Integer maximumGuests,

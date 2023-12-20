@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -52,6 +53,7 @@ public class UserReportController {
 
         return new ResponseEntity<UserReport>(userReport, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserReport> createUserReport(@RequestBody UserReport userReport) throws Exception {
         userReportService.create(userReport);

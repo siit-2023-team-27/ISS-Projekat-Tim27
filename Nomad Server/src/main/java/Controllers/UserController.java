@@ -50,14 +50,16 @@ public class UserController {
     private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
-    //@PreAuthorize("hasAuthority('ROLE_ADMIN')")
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserDTO>> getUsers() {
         Collection<AppUser> appUsers = userService.findAll();
         Collection<UserDTO> userDTOS = appUsers.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<UserDTO>>(userDTOS, HttpStatus.OK);
     }
-   // @PreAuthorize("hasAuthority('ADMIN')")
+
+    //config
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> getUser(@PathVariable("id") Long id) {
         AppUser appUser = userService.findOne(id);
@@ -69,8 +71,9 @@ public class UserController {
         return new ResponseEntity<UserDTO>(this.convertToDto(appUser), HttpStatus.OK);
     }
 
+    //config
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> createAccommodation(@RequestBody UserDTO userDTO) throws Exception {
+    public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) throws Exception {
         boolean existUser = this.userService.isRegistrated(userDTO.getUsername());
         if (existUser) {
             throw new ResourceConflictException(null,"Username already exists");
@@ -87,14 +90,15 @@ public class UserController {
         userService.create(user);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
-
+    //config
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable("id") Long id) {
         userService.delete(id);
         return new ResponseEntity<UserDTO>(HttpStatus.NO_CONTENT);
     }
+    //config
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> updateAccommodation(@RequestBody UserDTO userDTO, @PathVariable Long id)
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id)
             throws Exception {
         AppUser appUserForUpdate = userService.findOne(id);
         AppUser updatedAppUser;
@@ -122,11 +126,13 @@ public class UserController {
 
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> suspendUser(@PathVariable Long id) {
 
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/un-suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> unsuspentUser(@PathVariable Long id) {
 

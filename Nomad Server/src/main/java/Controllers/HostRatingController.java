@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -51,13 +52,13 @@ public class HostRatingController {
 
         return new ResponseEntity<HostRating>(rating, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HostRating> createRating(@RequestBody HostRating rating) throws Exception {
         hostRatingService.create(rating);
         return new ResponseEntity<HostRating>(rating, HttpStatus.CREATED);
     }
-
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HostRating> deleteRating(@PathVariable("id") Long id) {
         hostRatingService.delete(id);
