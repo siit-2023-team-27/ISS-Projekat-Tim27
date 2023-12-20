@@ -143,6 +143,9 @@ public class AccommodationController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
         Accommodation accommodation = this.convertToEntity(accommodationDTO);
+        if(!accommodationService.validateAccommodation(accommodation)){
+            return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.BAD_REQUEST);
+        }
         accommodation.setHost( (Host) userService.findOne(accommodationDTO.getHostId()) );
         accommodationService.create(accommodation);
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.CREATED);

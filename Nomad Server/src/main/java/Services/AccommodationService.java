@@ -224,4 +224,34 @@ public class AccommodationService implements IService<Accommodation, Long> {
             return reservationDate.getPrice();
         }
     }
+    public boolean validateAccommodation(Accommodation accommodation){
+        if (accommodation.getAmenities() == null){
+            accommodation.setAmenities(new ArrayList<Amenity>());
+        }
+        if (accommodation.getAddress().length() < 2){
+            return false;
+        }
+        if (accommodation.getHost() == null){
+            return false;
+        }
+        if (accommodation.getAccommodationType() == null){
+            return false;
+        }
+        if (accommodation.getImages() == null){
+            accommodation.setImages(new ArrayList<String>());
+        }
+        if(accommodation.getDeadlineForCancellation() < 0){
+            return false;
+        }
+        if(accommodation.getDescription() == null){
+            return false;
+        }
+        if(accommodation.getDescription().length() < 3){
+            return false;
+        }
+        if(accommodation.getMinGuests() < accommodation.getMaxGuests() || accommodation.getMinGuests() < 0){
+            return false;
+        }
+        return true;
+    }
 }

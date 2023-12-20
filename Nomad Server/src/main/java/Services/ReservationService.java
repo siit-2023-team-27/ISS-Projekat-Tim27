@@ -95,6 +95,20 @@ public class ReservationService implements IService<Reservation, Long> {
 
         reservationRepository.deleteById(id);
     }
-
+    public boolean validateReservation(Reservation reservation){
+        if(reservation.getAccommodation() == null){
+            return false;
+        }
+        if(reservation.getNumGuests() < reservation.getAccommodation().getMinGuests()){
+            return false;
+        }
+        if(reservation.getNumGuests() > reservation.getAccommodation().getMaxGuests()){
+            return false;
+        }
+        if(reservation.getUser() == null){
+            return false;
+        }
+        return true;
+    }
 
 }
