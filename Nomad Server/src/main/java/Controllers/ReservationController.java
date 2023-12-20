@@ -81,7 +81,6 @@ public class ReservationController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ReservationDTO> createReservation (@RequestBody ReservationDTO reservationDTO) {
-        System.out.println("CREATE RESERV");
         Reservation newReservation = this.convertToEntity(reservationDTO);
         if(reservationService.reserve(newReservation)){
             return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.CREATED);

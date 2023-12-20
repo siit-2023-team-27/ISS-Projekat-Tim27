@@ -4,7 +4,9 @@ import DTO.AccommodationDTO;
 import DTO.LoginDTO;
 import DTO.LoginResponseDTO;
 import DTO.UserDTO;
+import Services.AccommodationService;
 import Services.IService;
+import Services.ReservationService;
 import Services.UserService;
 import exceptions.ResourceConflictException;
 import model.Admin;
@@ -48,6 +50,13 @@ import static model.enums.UserType.ADMIN;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    ReservationService reservationService;
+
+    @Autowired
+    AccommodationService accommodationService;
+
     @Autowired
     private ModelMapper modelMapper;
     //@PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -79,8 +88,7 @@ public class UserController {
         AppUser user = null;
         if(userDTO.getRoles().get(0)== UserType.GUEST){
             user = convertToEntityGuest(userDTO);
-        }else if(userDTO.getRoles().get(0)== UserType.HOST){
-        }else if(userDTO.getRoles().get(0)== UserType.HOST){
+        } else if(userDTO.getRoles().get(0)== UserType.HOST){
             user = convertToEntityHost(userDTO);
         }else{
             user = convertToEntityAdmin(userDTO);
@@ -89,9 +97,23 @@ public class UserController {
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
     }
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> deleteAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteAccommodation(@PathVariable("id") Long id) {
+        AppUser user = userService.findOne(id);
+        UserDTO userDto = convertToDto(user);
+        switch(userDto.getRoles().get(0)) {
+            case HOST:
+                if(reservationService.findActiveReservationsForHost(user.getId()).size() > 0) {
+                    return new ResponseEntity<String>("This account cannot be deleted, because host has active reservations.", HttpStatus.OK);
+                }else{
+                    accommodationService.deleteAllForHost(id);
+                }
+            case GUEST:
+                if(reservationService.findActiveReservationsForGuest(user.getId()).size() > 0){
+                    return new ResponseEntity<String>("This account cannot be deleted, because guest has active reservations.", HttpStatus.OK);
+                }
+        }
         userService.delete(id);
-        return new ResponseEntity<UserDTO>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<String>("User is successfully deleted", HttpStatus.OK);
     }
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> updateAccommodation(@RequestBody UserDTO userDTO, @PathVariable Long id)

@@ -1,18 +1,16 @@
 package Services;
 
-import DTO.ReservationDTO;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
 import jakarta.transaction.Transactional;
-import model.Comment;
 import model.Reservation;
 import model.ReservationDate;
+import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
-import java.beans.Transient;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -54,6 +52,13 @@ public class ReservationService implements IService<Reservation, Long> {
     }
     public Collection<Reservation> findReservationsForGuest(long userId){
         return reservationRepository.findAllByGuest_id(userId);
+    }
+    public Collection<Reservation> findActiveReservationsForHost(Long hostId) {
+        return this.reservationRepository.findAllFutureByHost(ReservationStatus.ACCEPTED, new Date(), hostId);
+    }
+    
+    public Collection<Reservation> findActiveReservationsForGuest(long guestId) {
+        return this.reservationRepository.findAllActiveByGuestId(ReservationStatus.ACCEPTED, new Date(), guestId);
     }
     private void createReservationDate(ReservationDate reservationDate) {
         ReservationDate reservationDateToUpdate = reservationDateRepository.findOneByAccommodation_IdAndDate(reservationDate.getAccommodation().getId(), reservationDate.getDate());

@@ -3,6 +3,8 @@ package model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Embeddable
@@ -21,6 +23,22 @@ public class DateRange {
         this.finishDate = finishDate;
     }
 
+    public DateRange(String startDate, String finishDate)  {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date start = dateFormat.parse(startDate);
+            Date finish = dateFormat.parse(finishDate);
+
+            if (start == null || finish == null || start.after(finish)) {
+                throw new IllegalArgumentException("Invalid date range. Start date must be before the end date.");
+            }
+            this.startDate = start;
+            this.finishDate = finish;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
     public DateRange() {}
 
     public boolean overlaps(DateRange comparedDateRange) {
@@ -34,5 +52,10 @@ public class DateRange {
 
     public Date getFinishDate() {
         return finishDate;
+    }
+
+    @Override
+    public String toString() {
+        return "[ " + startDate.toString() + ", " + finishDate.toString() + " ]";
     }
 }

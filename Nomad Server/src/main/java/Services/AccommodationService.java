@@ -4,8 +4,10 @@ import DTO.AccommodationDTO;
 import DTO.SearchAccommodationDTO;
 import Repositories.*;
 import model.*;
+import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
 import model.enums.PriceType;
+import model.enums.ReservationStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +59,14 @@ public class AccommodationService implements IService<Accommodation, Long> {
     }
 
     public Collection<Accommodation> findByHost(Long host) { return this.accommodationRepository.findAllByHost_id(host); }
+
+    public Collection<Accommodation> findApprovedAccommodations () {return this.accommodationRepository.findAllByStatus(AccommodationStatus.APPROVED);}
+
+    public void deleteAllForHost(Long hostId) {
+        for(Accommodation ac: this.accommodationRepository.findAllByHost_id(hostId)) {
+            this.accommodationRepository.delete(ac);
+        }
+    }
 
     public Collection<SearchAccommodationDTO> getSearchedAndFiltered(String city, DateRange dateRange, int peopleNum, Double minimumPrice,
                                                      Double maximumPrice, List<Long> amenity, AccommodationType type) {
@@ -219,9 +229,74 @@ public class AccommodationService implements IService<Accommodation, Long> {
     public Double getPrice(long accommodationId, Date date) {
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
         if (reservationDate == null){
-            return 100D;
+            return accommodationRepository.findOneById(accommodationId).getDefaultPrice();
         }else{
-            return reservationDate.getPrice();
+            if(reservationDate.getPrice() != 0){
+                return reservationDate.getPrice();
+            }
+            return accommodationRepository.findOneById(accommodationId).getDefaultPrice();
+        }
+    }
+
+    public boolean setPrice(long accommodationId, double price, Date date) {
+        ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        if(reservationDate != null) {
+            if(reservationDate.getReservation() != null){
+                if(reservationDate.getReservation().getUser() != null){
+                    //cannot update price if there is available reservation
+                    return false;
+                }
+            }
+
+            reservationDate.setPrice(price);
+            this.reservationDateRepository.save(reservationDate);
+            return true;
+        }
+
+        reservationDate = new ReservationDate(this.accommodationRepository.findOneById(accommodationId), null, price, date);
+        this.reservationDateRepository.save(reservationDate);
+        return true;
+    }
+
+    public void setPriceForDateRange(long accommodationId, double price, DateRange dateRange) {
+        Date startDate = dateRange.getStartDate();
+        Date endDate = dateRange.getFinishDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+
+        while (calendar.getTime().before(endDate) || calendar.getTime().equals(endDate)) {
+            Date currentDate = calendar.getTime();
+            setPrice(accommodationId, price, currentDate);
+            calendar.add(Calendar.DATE, 1);
+        }
+    }
+
+    public void setUnavailable(long accommodationId, Date date) {
+        ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        if(reservationDate != null) {
+            if(reservationDate.getReservation() == null) {
+                reservationDate.setReservation(new Reservation());
+                this.reservationDateRepository.save(reservationDate);
+                return;
+            }
+        }
+        Accommodation ac = this.accommodationRepository.findOneById(accommodationId);
+        reservationDate = new ReservationDate(ac,
+                new Reservation(null, ac, null, 0, ReservationStatus.REJECTED),
+                0, date);
+        this.reservationDateRepository.save(reservationDate);
+    }
+
+    public void setUnavailableForDateRange(long accommodationId, DateRange dateRange) {
+        Date startDate = dateRange.getStartDate();
+        Date endDate = dateRange.getFinishDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+
+        while (calendar.getTime().before(endDate) || calendar.getTime().equals(endDate)) {
+            Date currentDate = calendar.getTime();
+            setUnavailable(accommodationId, currentDate);
+            calendar.add(Calendar.DATE, 1);
         }
     }
 }

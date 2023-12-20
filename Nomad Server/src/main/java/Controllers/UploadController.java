@@ -33,8 +33,13 @@ public class UploadController {
         for(MultipartFile file: files){
             String filename = StringUtils.cleanPath(file.getOriginalFilename());
             Path fileStorage = get(UPLOAD_DIRECTORY, filename).toAbsolutePath().normalize();
-            copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
-            filenames.add(filename);
+            try{
+                copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
+                filenames.add(filename);
+            }catch (java.nio.file.FileSystemException e) {
+                System.out.println("File already exists in this folder!");
+            }
+
         }
 
         return ResponseEntity.ok().body(filenames);
