@@ -219,7 +219,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
     public Double getPrice(long accommodationId, Date date) {
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
         if (reservationDate == null){
-            return 100D;
+            return accommodationRepository.findById(accommodationId).get().getDefaultPrice();
         }else{
             return reservationDate.getPrice();
         }
