@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -50,12 +51,14 @@ public class AccommodationRatingController {
         return new ResponseEntity<AccommodationRating>(rating, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationRating> createRating(@RequestBody AccommodationRating rating) throws Exception {
         accommodationRatingService.create(rating);
         return new ResponseEntity<AccommodationRating>(rating, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<AccommodationRating> deleteRating(@PathVariable("id") Long id) {
         accommodationRatingService.delete(id);

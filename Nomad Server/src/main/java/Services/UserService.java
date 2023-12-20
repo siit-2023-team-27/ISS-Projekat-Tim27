@@ -4,6 +4,7 @@ import DTO.LoginDTO;
 import Repositories.IRepository;
 import Repositories.UserRepository;
 import model.AppUser;
+import model.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -14,7 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Date;
 
 @Service
 @ComponentScan(basePackageClasses = IRepository.class)
@@ -74,8 +77,11 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
 
     @Override
     public void update(AppUser appUser) {
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        appUser.setLastPasswordResetDate(new Timestamp(new Date().getTime()));
         userRepository.save(appUser);
     }
+
 
     @Override
     public void delete(Long id) {

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -50,12 +51,14 @@ public class HostCommentController {
         return new ResponseEntity<HostComment>(comment, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HostComment> createComment(@RequestBody HostComment comment) throws Exception {
         hostCommentService.create(comment);
         return new ResponseEntity<HostComment>(comment, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HostComment> deleteComment(@PathVariable("id") Long id) {
         hostCommentService.delete(id);

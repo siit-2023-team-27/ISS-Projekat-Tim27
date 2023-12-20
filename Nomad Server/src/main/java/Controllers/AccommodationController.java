@@ -53,27 +53,29 @@ public class AccommodationController {
 
     @Autowired
     private ModelMapper modelMapper;
-
-    //@PreAuthorize("hasAuthority('ADMIN')")
+    //config
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findAll();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
     @GetMapping(value = "/verified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getApprovedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findApprovedAccommodations();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
+  
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/unverified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getUnverifiedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.getUnverifiedAccommodations();
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
-
+    //config
     @GetMapping(value = "/search-filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<SearchAccommodationDTO>> searchAndFIlterccommodations(@RequestParam(required = true) String city,
                              @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date from, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date to,
@@ -86,6 +88,7 @@ public class AccommodationController {
 
         return new ResponseEntity<Collection<SearchAccommodationDTO>>(accommodationsDTOs, HttpStatus.OK);
     }
+    //config
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> filterccommodations(@RequestParam(required = false) Double minimumPrice,
                                                                                            @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
@@ -97,6 +100,7 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationsDTOs = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationsDTOs, HttpStatus.OK);
     }
+    //config
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable("id") Long id) {
         Accommodation accommodation = accommodationService.findOne(id);
@@ -107,12 +111,12 @@ public class AccommodationController {
 
         return new ResponseEntity<AccommodationDTO>(this.convertToDto(accommodation), HttpStatus.OK);
     }
-
+    //config
     @GetMapping("/{accommodationId}/amenities")
     public ResponseEntity<Collection<Amenity>> getAmenitiesForAccommodation(@PathVariable long accommodationId) {
         return new ResponseEntity<Collection<Amenity>>(accommodationService.getAllAmenitiesForAccommodation(accommodationId), HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAuthority('HOST')")
     @GetMapping("/host/{hostId}")
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodationsForHost(@PathVariable("hostId") Long hostId) {
         Collection<Accommodation> accommodations = this.accommodationService.findByHost(hostId);
@@ -120,15 +124,17 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
-
+    //config
     @GetMapping("isAvailable/{accommodationId}/{date}")
     public ResponseEntity<Boolean> isAvailable(@PathVariable long accommodationId, @PathVariable  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         return new ResponseEntity<Boolean>(accommodationService.isAvailable(accommodationId, date), HttpStatus.OK);
     }
+    //config
     @GetMapping("taken-dates/{accommodationId}")
     public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
         return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
     }
+    //config
     @GetMapping("price/{accommodationId}/{date}")
     public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable  Date date) {
         return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
@@ -154,25 +160,33 @@ public class AccommodationController {
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority('HOST')")
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
         accommodationService.addAmenityToAccommodation(accommodationId, newAmenity);
         return new ResponseEntity<Amenity>(newAmenity, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAuthority('HOST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
         Accommodation accommodation = this.convertToEntity(accommodationDTO);
+        if(!accommodationService.validateAccommodation(accommodation)){
+            return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.BAD_REQUEST);
+        }
         accommodation.setHost( (Host) userService.findOne(accommodationDTO.getHostId()) );
         accommodationService.create(accommodation);
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.CREATED);
     }
+    @PreAuthorize("hasAuthority('HOST')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<AccommodationDTO> deleteAccommodation(@PathVariable("id") Long id) {
         accommodationService.delete(id);
         return new ResponseEntity<AccommodationDTO>(HttpStatus.NO_CONTENT);
     }
+
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('HOST')")
     public ResponseEntity<AccommodationDTO> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO, @PathVariable Long id)
             throws Exception {
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
@@ -186,6 +200,7 @@ public class AccommodationController {
 
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "verify/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> updateAccommodation(@PathVariable Long id)
             throws Exception {
@@ -195,6 +210,7 @@ public class AccommodationController {
         accommodationService.update(accommodationForUpdate);
         return new ResponseEntity<AccommodationDTO>(convertToDto(accommodationForUpdate), HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(value = "/favourite", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> favouriteAccommodation(@RequestParam() Long userID, @RequestParam() Long accommodationID) {
         Accommodation accommodation = this.accommodationService.findOne(accommodationID);
@@ -203,6 +219,7 @@ public class AccommodationController {
         }
         return new ResponseEntity<AccommodationDTO>(this.convertToDto(accommodation),HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(value = "/un-favourite", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> unFavouriteAccommodation(@RequestParam() Long userID, @RequestParam() Long accommodationID) {
         Accommodation accommodation = this.accommodationService.findOne(accommodationID);

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -34,14 +35,16 @@ public class CommentReportController {
     private IService<CommentReport, Long> commentService;
     @Autowired
     private ModelMapper modelMapper;
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<CommentReportDTO>> getUsers() {
+    public ResponseEntity<Collection<CommentReportDTO>> getReports() {
         Collection<CommentReport> comments = commentService.findAll();
         Collection<CommentReportDTO> commentsDTOS = comments.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<CommentReportDTO>>(commentsDTOS, HttpStatus.OK);
     }
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommentReportDTO> getUser(@PathVariable("id") Long id) {
+    public ResponseEntity<CommentReportDTO> getReport(@PathVariable("id") Long id) {
         CommentReport comment = commentService.findOne(id);
 
         if (comment == null) {
@@ -50,19 +53,22 @@ public class CommentReportController {
 
         return new ResponseEntity<CommentReportDTO>(this.convertToDto(comment), HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommentReportDTO> createAccommodation(@RequestBody CommentReportDTO commentDTO) throws Exception {
+    public ResponseEntity<CommentReportDTO> createReport(@RequestBody CommentReportDTO commentDTO) throws Exception {
         CommentReport comment = this.convertToEntity(commentDTO);
         commentService.create(comment);
         return new ResponseEntity<CommentReportDTO>(commentDTO, HttpStatus.CREATED);
     }
+
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<CommentReportDTO> deleteAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<CommentReportDTO> deleteReport(@PathVariable("id") Long id) {
         commentService.delete(id);
         return new ResponseEntity<CommentReportDTO>(HttpStatus.NO_CONTENT);
     }
+
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommentReportDTO> updateAccommodation(@RequestBody CommentReportDTO commentDTO, @PathVariable Long id)
+    public ResponseEntity<CommentReportDTO> updateReport(@RequestBody CommentReportDTO commentDTO, @PathVariable Long id)
             throws Exception {
         CommentReport commentForUpdate = commentService.findOne(id);
         CommentReport updatedComment = this.convertToEntity(commentDTO);

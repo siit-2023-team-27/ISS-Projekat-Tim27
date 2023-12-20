@@ -62,6 +62,7 @@ public class AuthController {
     public ResponseEntity<UserTokenState> createAuthenticationToken(
             @RequestBody LoginDTO loginDto) {
         // false credentials exception
+        System.out.println(loginDto.getUsername()+" "+ loginDto.getPassword());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsername(), loginDto.getPassword()));
 
@@ -81,7 +82,15 @@ public class AuthController {
 
         return ResponseEntity.ok(new UserTokenState(jwt, expiresIn));
     }
-
+    @PostMapping("/reauthenticate")
+    public ResponseEntity<LoginDTO> reauthenticate(
+            @RequestBody LoginDTO loginDto) {
+        // Ukoliko kredencijali nisu ispravni, logovanje nece biti uspesno, desice se
+        // AuthenticationException
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginDto.getUsername(), loginDto.getPassword()));
+        return ResponseEntity.ok(loginDto);
+    }
     @PostMapping("/signup")
     public ResponseEntity<AppUser> addUser(@RequestBody UserRegistrationDTO userDTO) throws IOException {
         if(!userDTO.isRequestObjectValid()){
