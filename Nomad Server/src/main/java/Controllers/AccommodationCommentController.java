@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -39,7 +40,6 @@ public class AccommodationCommentController {
                 Collection<AccommodationComment> accommodationComments = accommodationCommentService.findAll();
                 return new ResponseEntity<Collection<AccommodationComment>>(accommodationComments, HttpStatus.OK);
         }
-
         @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<AccommodationComment> getComment(@PathVariable("id") Long id) {
                 AccommodationComment comment = accommodationCommentService.findOne(id);
@@ -51,12 +51,14 @@ public class AccommodationCommentController {
                 return new ResponseEntity<AccommodationComment>(comment, HttpStatus.OK);
         }
 
+        @PreAuthorize("hasAuthority('GUEST')")
         @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
         public ResponseEntity<AccommodationComment> createComment(@RequestBody AccommodationComment comment) throws Exception {
                 accommodationCommentService.create(comment);
                 return new ResponseEntity<AccommodationComment>(comment, HttpStatus.CREATED);
         }
 
+        @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
         @DeleteMapping(value = "/{id}")
         public ResponseEntity<AccommodationComment> deleteComment(@PathVariable("id") Long id) {
                 accommodationCommentService.delete(id);

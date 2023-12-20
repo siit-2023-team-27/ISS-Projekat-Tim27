@@ -62,6 +62,7 @@ public class AuthController {
     public ResponseEntity<UserTokenState> createAuthenticationToken(
             @RequestBody LoginDTO loginDto) {
         // false credentials exception
+        System.out.println(loginDto.getUsername()+" "+ loginDto.getPassword());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsername(), loginDto.getPassword()));
 
@@ -70,7 +71,7 @@ public class AuthController {
 
         // create token
         AppUser user = (AppUser) userService.loadUserByUsername(loginDto.getUsername());
-
+        System.out.println(user.getUsername()+" "+ user.getPassword());
         String jwt = tokenUtils.generateToken(user.getId(), user.getUsername(), user.getAuthorities());
         int expiresIn = tokenUtils.getExpiredIn();
 

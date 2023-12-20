@@ -62,15 +62,26 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println("1. FILTER CHAIN");
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeRequests()
                 //OVDE DOZVOLJAVA RUTE AUTENTIFIKOVANIM KORISNICIMA KO GDE MOZE
-                // DODATI @PreAuthorize("hasAuthority('ADMIN')") IZNAD APIJA za autorizaciju
-                // ILI OVDE STAVITI .requestMatchers("/api/accommodations").hasAuthority("ADMIN")
-                //.requestMatchers("/api/**").permitAll()
-                // za svaki drugi zahtev korisnik mora biti autentifikovan
+                //.requestMatchers("/api/accommodations").hasAuthority("GUEST")
+                .requestMatchers("/api/users/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST ,"/api/users").permitAll()
+                //.requestMatchers(HttpMethod.GET ,"/api/accommodations").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/search-filter").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/filter").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/prices").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/{accommodationId}/amenities").permitAll()
+                .requestMatchers(HttpMethod.POST,"/auth/reauthenticate").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/notifications").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/amenities").permitAll()
+                .requestMatchers("/api/amenities").permitAll()
+            // za svaki drugi zahtev korisnik mora biti autentifikovan
                 .anyRequest().authenticated().and()
                 .cors().and()
                 .addFilterBefore(new TokenAuthFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
@@ -88,9 +99,7 @@ public class WebSecurityConfig {
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
-                .requestMatchers("/api/**");
-
-                .requestMatchers(HttpMethod.GET, "/**")
+                .requestMatchers( "/images/**");
     }
 
 }

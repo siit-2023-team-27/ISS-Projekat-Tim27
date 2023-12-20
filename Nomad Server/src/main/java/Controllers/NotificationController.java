@@ -12,6 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -24,12 +25,14 @@ public class NotificationController {
     private NotificationService notificationService;
     @Autowired
     private ModelMapper modelMapper;
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<NotificationDTO>> getNotifications() {
         Collection<Notification> notifications = notificationService.findAll();
         Collection<NotificationDTO> notificationDTOS = notifications.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<NotificationDTO>>(notificationDTOS, HttpStatus.OK);
     }
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDTO> getNotification(@PathVariable("id") Long id) {
         Notification notification = notificationService.findOne(id);
@@ -40,6 +43,7 @@ public class NotificationController {
 
         return new ResponseEntity<NotificationDTO>(this.convertToDto(notification), HttpStatus.OK);
     }
+    //config
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDTO> createNotification(@RequestBody NotificationDTO notificationDTO) throws Exception {
         Notification notification = this.convertToEntity(notificationDTO);
@@ -47,11 +51,13 @@ public class NotificationController {
         notificationService.create(notification);
         return new ResponseEntity<NotificationDTO>(notificationDTO, HttpStatus.CREATED);
     }
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<NotificationDTO> deleteNotification(@PathVariable("id") Long id) {
         notificationService.delete(id);
         return new ResponseEntity<NotificationDTO>(HttpStatus.NO_CONTENT);
     }
+
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationDTO> updateNotification(@RequestBody NotificationDTO notificationDTO, @PathVariable Long id)
             throws Exception {
