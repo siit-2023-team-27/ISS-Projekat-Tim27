@@ -252,6 +252,9 @@ public class AccommodationService implements IService<Accommodation, Long> {
         if(accommodation.getMinGuests() < accommodation.getMaxGuests() || accommodation.getMinGuests() < 0){
             return false;
         }
+        if(accommodation.getDefaultPrice() < 1){
+            return false;
+        }
         return true;
     }
 }
