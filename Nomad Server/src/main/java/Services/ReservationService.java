@@ -46,7 +46,7 @@ public class ReservationService implements IService<Reservation, Long> {
         Calendar c = Calendar.getInstance();
         c.setTime(reservation.getDateRange().getStartDate());
         for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){
-            this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, 100, c.getTime()));
+            this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime()));
         }
     }
     public Collection<Reservation> findReservationsForUser(long userId){
@@ -95,6 +95,20 @@ public class ReservationService implements IService<Reservation, Long> {
 
         reservationRepository.deleteById(id);
     }
-
+    public boolean validateReservation(Reservation reservation){
+        if(reservation.getAccommodation() == null){
+            return false;
+        }
+        if(reservation.getNumGuests() < reservation.getAccommodation().getMinGuests()){
+            return false;
+        }
+        if(reservation.getNumGuests() > reservation.getAccommodation().getMaxGuests()){
+            return false;
+        }
+        if(reservation.getUser() == null){
+            return false;
+        }
+        return true;
+    }
 
 }

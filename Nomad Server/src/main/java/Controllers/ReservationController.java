@@ -87,6 +87,9 @@ public class ReservationController {
     public ResponseEntity<ReservationDTO> createReservation (@RequestBody ReservationDTO reservationDTO) {
         System.out.println("CREATE RESERV");
         Reservation newReservation = this.convertToEntity(reservationDTO);
+        if(!reservationService.validateReservation(newReservation)){
+            return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.BAD_REQUEST);
+        }
         if(reservationService.reserve(newReservation)){
             return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.CREATED);
         }
