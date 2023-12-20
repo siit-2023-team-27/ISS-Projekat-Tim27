@@ -116,15 +116,17 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
-
+    //config
     @GetMapping("isAvailable/{accommodationId}/{date}")
     public ResponseEntity<Boolean> isAvailable(@PathVariable long accommodationId, @PathVariable  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
         return new ResponseEntity<Boolean>(accommodationService.isAvailable(accommodationId, date), HttpStatus.OK);
     }
+    //config
     @GetMapping("taken-dates/{accommodationId}")
     public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
         return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
     }
+    //config
     @GetMapping("price/{accommodationId}/{date}")
     public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable Date date) {
         return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);

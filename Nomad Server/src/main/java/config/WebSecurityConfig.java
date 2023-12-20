@@ -81,6 +81,9 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/notifications").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/amenities").permitAll()
                 .requestMatchers("/api/amenities").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/price/{accommodationId}/{date}").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/taken-dates/{accommodationId}").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/isAvailable/{accommodationId}/{date}").permitAll()
             // za svaki drugi zahtev korisnik mora biti autentifikovan
                 .anyRequest().authenticated().and()
                 .cors().and()
