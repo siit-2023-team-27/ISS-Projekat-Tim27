@@ -66,12 +66,17 @@ public class AuthController {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 loginDto.getUsername(), loginDto.getPassword()));
 
+        AppUser user = (AppUser) userService.loadUserByUsername(loginDto.getUsername());
+        if(!user.isVerified()){
+            return ResponseEntity.badRequest().body(new UserTokenState("user not verified", 0));
+        }
+
         // add to security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // create token
-        AppUser user = (AppUser) userService.loadUserByUsername(loginDto.getUsername());
-        System.out.println(user.getUsername()+" "+ user.getPassword());
+//        AppUser user = (AppUser) userService.loadUserByUsername(loginDto.getUsername());
+
         String jwt = tokenUtils.generateToken(user.getId(), user.getUsername(), user.getAuthorities());
         int expiresIn = tokenUtils.getExpiredIn();
 

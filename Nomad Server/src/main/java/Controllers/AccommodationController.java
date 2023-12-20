@@ -7,11 +7,9 @@ import Services.AccommodationService;
 import Services.AmenityService;
 import Services.IService;
 import Services.UserService;
-import model.Accommodation;
-import model.Amenity;
-import model.DateRange;
+import model.*;
+import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
-import model.Host;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,9 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.events.CollectionEndEvent;
 
 import javax.sound.midi.SysexMessage;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(
         origins = {
@@ -60,6 +60,14 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
+    @GetMapping(value = "/verified", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<AccommodationDTO>> getApprovedAccommodations() {
+        Collection<Accommodation> accommodations = accommodationService.findApprovedAccommodations();
+        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
+    }
+  
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/unverified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getUnverifiedAccommodations() {
@@ -111,7 +119,7 @@ public class AccommodationController {
     @PreAuthorize("hasAuthority('HOST')")
     @GetMapping("/host/{hostId}")
     public ResponseEntity<Collection<AccommodationDTO>> getAccommodationsForHost(@PathVariable("hostId") Long hostId) {
-        Collection<Accommodation> accommodations = this.accommodationService.findByHost( hostId);
+        Collection<Accommodation> accommodations = this.accommodationService.findByHost(hostId);
         System.out.println(accommodations.size());
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
@@ -128,8 +136,28 @@ public class AccommodationController {
     }
     //config
     @GetMapping("price/{accommodationId}/{date}")
-    public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable Date date) {
+    public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable  Date date) {
         return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
+    }
+    @PostMapping("price/{accommodationId}")
+    public ResponseEntity<String> setPrice(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
+        double price = Double.parseDouble((String) requestBody.get("price"));
+        String startDateStr = (String) requestBody.get("startDate");
+        String finishDateStr = (String) requestBody.get("finishDate");
+        DateRange dateRange = new DateRange(startDateStr, finishDateStr);
+        this.accommodationService.setPriceForDateRange(accommodationId, price, dateRange);
+        String message = "Price is successfully updated for date range: " + dateRange.toString();
+        return new ResponseEntity<String>(message, HttpStatus.OK);
+    }
+
+    @PostMapping("unavailable/{accommodationId}")
+    public ResponseEntity<String> setUnavailable(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
+        String startDateStr = (String) requestBody.get("startDate");
+        String finishDateStr = (String) requestBody.get("finishDate");
+        DateRange dateRange = new DateRange(startDateStr, finishDateStr);
+        this.accommodationService.setUnavailableForDateRange(accommodationId, dateRange);
+        String message = "Accommodation is set to unavailable for dates: " + dateRange.toString();
+        return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('HOST')")
@@ -156,11 +184,11 @@ public class AccommodationController {
         accommodationService.delete(id);
         return new ResponseEntity<AccommodationDTO>(HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('HOST')")
-    @PutMapping(value = "/nesto/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO, @PathVariable Long id)
             throws Exception {
-        System.out.println("hejj ovde sam, put kod accommodations");
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
         Accommodation updatedAccommodation = this.convertToEntity(accommodationDTO);
         accommodationForUpdate.copyValues(updatedAccommodation);
@@ -178,6 +206,7 @@ public class AccommodationController {
             throws Exception {
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
         accommodationForUpdate.setVerified(true);
+        accommodationForUpdate.setStatus(AccommodationStatus.APPROVED);
         accommodationService.update(accommodationForUpdate);
         return new ResponseEntity<AccommodationDTO>(convertToDto(accommodationForUpdate), HttpStatus.OK);
     }

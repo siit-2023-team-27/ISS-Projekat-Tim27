@@ -3,6 +3,7 @@ package Repositories;
 import model.Accommodation;
 import model.Amenity;
 import model.Host;
+import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,6 @@ public interface AccommodationRepository extends JpaRepository <Accommodation, L
             "where (:type IS NULL OR a.accommodationType = :type )" +
             "and a.status = 0")
     List<Accommodation> findAllBy(@Param("type")AccommodationType accommodationType);
+
+    List<Accommodation> findAllByStatus(AccommodationStatus accommodationStatus);
 }
