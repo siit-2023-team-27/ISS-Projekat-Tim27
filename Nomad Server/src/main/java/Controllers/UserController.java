@@ -101,26 +101,31 @@ public class UserController {
     }
     //config
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> deleteAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<?> deleteAccommodation(@PathVariable("id") Long id) {
         AppUser user = userService.findOne(id);
         UserDTO userDto = convertToDto(user);
-        switch(userDto.getRoles().get(0)) {
+        switch (userDto.getRoles().get(0)) {
             case HOST:
-                if(reservationService.findActiveReservationsForHost(user.getId()).size() > 0) {
-                    return new ResponseEntity<String>("This account cannot be deleted, because host has active reservations.", HttpStatus.OK);
-                }else{
+                if (reservationService.findActiveReservationsForHost(user.getId()).size() > 0) {
+                    return new ResponseEntity<String>(HttpStatus.OK);
+                } else {
                     accommodationService.deleteAllForHost(id);
                 }
+                break;
             case GUEST:
-                if(reservationService.findActiveReservationsForGuest(user.getId()).size() > 0){
-                    return new ResponseEntity<String>("This account cannot be deleted, because guest has active reservations.", HttpStatus.OK);
+                if (reservationService.findActiveReservationsForGuest(user.getId()).size() > 0) {
+                    return new ResponseEntity<String>(HttpStatus.OK);
                 }
+                break;
         }
+
+        userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     //config
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id)
-            throws Exception {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id) throws Exception {
         AppUser appUserForUpdate = userService.findOne(id);
         AppUser updatedAppUser;
         switch (userDTO.getRoles().get(0)){
@@ -159,6 +164,7 @@ public class UserController {
 
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
+
     private UserDTO convertToDto(AppUser appUser) {
         ArrayList<UserType> roles = new ArrayList<UserType>();
         UserDTO userDTO = modelMapper.map(appUser, UserDTO.class);
@@ -186,4 +192,5 @@ public class UserController {
     private Guest convertToEntityGuest(UserDTO userDTO) {
         return modelMapper.map(userDTO, Guest.class);
     }
+
 }
