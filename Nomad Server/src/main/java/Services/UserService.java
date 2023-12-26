@@ -26,6 +26,7 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
     @Autowired
     private UserRepository userRepository;
 
+
     private final PasswordEncoder passwordEncoder;
 
     public UserService(PasswordEncoder pass){

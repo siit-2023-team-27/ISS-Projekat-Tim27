@@ -160,6 +160,17 @@ public class AccommodationController {
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 
+    @PostMapping("available/{accommodationId}")
+    public ResponseEntity<String> setAvailable(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
+        String startDateStr = (String) requestBody.get("startDate");
+        String finishDateStr = (String) requestBody.get("finishDate");
+        DateRange dateRange = new DateRange(startDateStr, finishDateStr);
+        this.accommodationService.setAvailableForDateRange(accommodationId, dateRange);
+        String message = "Accommodation is set to available for dates: " + dateRange.toString();
+        String essage = "Accommodation is set to available for dates: " + dateRange.toString();
+        return new ResponseEntity<String>(message, HttpStatus.OK);
+    }
+
     @PreAuthorize("hasAuthority('HOST')")
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
