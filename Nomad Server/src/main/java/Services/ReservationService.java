@@ -36,6 +36,43 @@ public class ReservationService implements IService<Reservation, Long> {
         return reservationRepository.findOneById(id);
     }
 
+    public boolean verify(Long id) {
+        Reservation reservation = findOne(id);
+        if (reservation == null){
+            return false;
+        }
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+
+        reservationRepository.save(reservation);
+        return true;
+    }
+    public boolean decline(Long id) {
+        Reservation reservation = findOne(id);
+        if (reservation == null){
+            return false;
+        }
+        if(reservation.getStatus() == ReservationStatus.PENDING){
+            reservation.setStatus(ReservationStatus.REJECTED);
+            reservationRepository.save(reservation);
+            return true;
+        }
+        return false;
+    }
+    public boolean cancel(Long id) {
+        Reservation reservation = findOne(id);
+        if (reservation == null){
+            return false;
+        }
+        if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
+            reservationDateRepository.deleteByReservation_id(reservation.getId());
+            reservation.setStatus(ReservationStatus.CANCELED);
+        }else{
+            return false;
+        }
+        reservationRepository.save(reservation);
+        return true;
+    }
+
     @Override
     public void create(Reservation reservation) {
         reservationRepository.save(reservation);
@@ -47,7 +84,7 @@ public class ReservationService implements IService<Reservation, Long> {
             this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime()));
         }
     }
-    public Collection<Reservation> findReservationsForUser(long userId){
+    public Collection<Reservation> findReservationsForHost(long userId){
         return reservationRepository.findAllByAccommodation_Host_id(userId);
     }
     public Collection<Reservation> findReservationsForGuest(long userId){
@@ -70,12 +107,21 @@ public class ReservationService implements IService<Reservation, Long> {
         reservationDateRepository.save(reservationDateToUpdate);
     }
 
-    public boolean reserve(Reservation reservation){
+    public boolean reserveAutomatically(Reservation reservation){
         if(!this.isAvailable(reservation)){
             return false;
         }
+        reservation.setStatus(ReservationStatus.ACCEPTED);
         this.create(reservation);
         this.createReservationDates(reservation);
+        return true;
+    }
+    public boolean reserveManually(Reservation reservation){
+        if(!this.isAvailable(reservation)){
+            return false;
+        }
+        reservation.setStatus(ReservationStatus.PENDING);
+        this.create(reservation);
         return true;
     }
     public boolean isAvailable(Reservation reservation){
