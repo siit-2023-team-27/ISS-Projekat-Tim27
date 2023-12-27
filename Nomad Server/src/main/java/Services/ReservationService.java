@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -36,16 +37,26 @@ public class ReservationService implements IService<Reservation, Long> {
         return reservationRepository.findOneById(id);
     }
 
-    public boolean verify(Long id) {
-        Reservation reservation = findOne(id);
+    public boolean verify(Reservation reservation) {
         if (reservation == null){
             return false;
         }
         reservation.setStatus(ReservationStatus.ACCEPTED);
-
+        this.createReservationDates(reservation);
         reservationRepository.save(reservation);
         return true;
     }
+    public void declineOverlaping(Reservation reservation){
+        ArrayList<Reservation> reservations = new ArrayList<>();
+        for(Reservation r: reservationRepository.findAllByAccommodation_id(reservation.getAccommodation().getId())){
+            if(r.getId() != reservation.getId() && r.getDateRange().overlaps(reservation.getDateRange())){
+                r.setStatus(ReservationStatus.REJECTED);
+                reservations.add(r);
+            }
+        }
+        reservationRepository.saveAll(reservations);
+    }
+
     public boolean decline(Long id) {
         Reservation reservation = findOne(id);
         if (reservation == null){
@@ -64,7 +75,11 @@ public class ReservationService implements IService<Reservation, Long> {
             return false;
         }
         if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
-            reservationDateRepository.deleteByReservation_id(reservation.getId());
+            reservationDateRepository.deleteBy(reservation.getAccommodation().getDefaultPrice(), reservation.getId());
+            for(ReservationDate r : reservationDateRepository.findAllByReservation_id(reservation.getId())){
+                r.setReservation(null);
+                reservationDateRepository.save(r);
+            }
             reservation.setStatus(ReservationStatus.CANCELED);
         }else{
             return false;
