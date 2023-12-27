@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                 //.requestMatchers("/api/accommodations").hasAuthority("GUEST")
                 .requestMatchers("/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST ,"/api/users").permitAll()
+                .requestMatchers(HttpMethod.DELETE ,"/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/search-filter").permitAll()
@@ -102,6 +103,7 @@ public class WebSecurityConfig {
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
+                .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
                 .requestMatchers( "/images/**");
     }
 }
