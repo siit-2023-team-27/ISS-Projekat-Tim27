@@ -70,6 +70,9 @@ public class AuthController {
         if(!user.isVerified()){
             return ResponseEntity.badRequest().body(new UserTokenState("user not verified", 0));
         }
+        if(user.isSuspended()){
+            return ResponseEntity.badRequest().body(new UserTokenState("user suspended", 0));
+        }
 
         // add to security context
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -20,7 +20,7 @@ public class AccommodationDTO {
     private List<Amenity> amenities;
     private List<String> images;
     private List<Comment> comments;
-    private List<Rating> ratings;
+//    private List<Rating> ratings;
     private AccommodationStatus status;
     private ConfirmationType confirmationType;
     private AccommodationType accommodationType;
@@ -41,7 +41,7 @@ public class AccommodationDTO {
         this.amenities = amenities;
         this.images = images;
         this.comments = comments;
-        this.ratings = ratings;
+//        this.ratings = ratings;
         this.status = status;
         this.confirmationType = confirmationType;
         this.accommodationType = accommodationType;
@@ -51,13 +51,13 @@ public class AccommodationDTO {
         this.verified = verified;
     }
 
-    public List<Rating> getRatings() {
-        return ratings;
-    }
-
-    public void setRatings(List<Rating> ratings) {
-        this.ratings = ratings;
-    }
+//    public List<Rating> getRatings() {
+//        return ratings;
+//    }
+//
+//    public void setRatings(List<Rating> ratings) {
+//        this.ratings = ratings;
+//    }
 
     public AccommodationType getAccommodationType() {
         return accommodationType;

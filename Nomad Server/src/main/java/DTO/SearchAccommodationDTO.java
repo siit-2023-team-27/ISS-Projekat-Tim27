@@ -44,10 +44,10 @@ public class SearchAccommodationDTO extends AccommodationDTO{
         return averageRating;
     }
 
-    public void setAverageRating() {
-        for(Rating rating: this.getRatings()){
-            this.averageRating += rating.getRating();
-        }
-        this.averageRating = this.averageRating/this.getRatings().size();
-    }
+//    public void setAverageRating() {
+//        for(Rating rating: this.getRatings()){
+//            this.averageRating += rating.getRating();
+//        }
+//        this.averageRating = this.averageRating/this.getRatings().size();
+//    }
 }
