@@ -11,7 +11,7 @@ public class HostRating extends Rating{
     public HostRating () {}
 
     public HostRating(int rating, AppUser appUser, AppUser host) {
-        super(rating, appUser, "");
+        super(rating, appUser);
         this.host = host;
     }
 

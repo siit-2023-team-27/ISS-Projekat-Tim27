@@ -107,14 +107,14 @@ public class UserController {
         switch (userDto.getRoles().get(0)) {
             case HOST:
                 if (reservationService.findActiveReservationsForHost(user.getId()).size() > 0) {
-                    return new ResponseEntity<String>("This account cannot be deleted, because host has active reservations.", HttpStatus.OK);
+                    return new ResponseEntity<String>(HttpStatus.OK);
                 } else {
                     accommodationService.deleteAllForHost(id);
                 }
                 break;
             case GUEST:
                 if (reservationService.findActiveReservationsForGuest(user.getId()).size() > 0) {
-                    return new ResponseEntity<String>("This account cannot be deleted, because guest has active reservations.", HttpStatus.OK);
+                    return new ResponseEntity<String>(HttpStatus.OK);
                 }
                 break;
         }
@@ -155,17 +155,13 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> suspendUser(@PathVariable Long id) {
-        AppUser user = userService.findOne(id);
-        user.setSuspended(true);
-        userService.update(user);
+
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "/un-suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> unsuspentUser(@PathVariable Long id) {
-        AppUser user = userService.findOne(id);
-        user.setSuspended(false);
-        userService.update(user);
+
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
 

@@ -1,25 +1,17 @@
 package model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @Entity
 public class AccommodationRating extends Rating{
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Accommodation accommodation;
-    @Transient
-    private Long userId;
-    @Transient
-    private Long accommodationId;
 
     public AccommodationRating() {}
 
-    public AccommodationRating(AppUser appUser, Accommodation accommodation, int rating, String text) {
-        super(rating, appUser, text);
+    public AccommodationRating(AppUser appUser, Accommodation accommodation, int rating) {
+        super(rating, appUser);
         this.accommodation = accommodation;
     }
 
@@ -29,22 +21,6 @@ public class AccommodationRating extends Rating{
 
     public void setAccommodation(Accommodation accommodation) {
         this.accommodation = accommodation;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getAccommodationId() {
-        return accommodationId;
-    }
-
-    public void setAccommodationId(Long accommodationId) {
-        this.accommodationId = accommodationId;
     }
 
     @Override
