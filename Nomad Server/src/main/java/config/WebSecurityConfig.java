@@ -59,7 +59,7 @@ public class WebSecurityConfig {
 
     @Autowired
     private TokenUtils tokenUtils;
-    //[TODO] PROVALI PROBLEM SA AUTORIZACIJOM
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("1. FILTER CHAIN");
