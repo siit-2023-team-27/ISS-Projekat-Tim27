@@ -29,11 +29,8 @@ public interface ReservationDateRepository extends JpaRepository<ReservationDate
 
     ReservationDate findOneByAccommodation_IdAndDate(long id, Date date);
 
-    @Modifying
-    @Transactional
-    @Query("DELETE FROM ReservationDate e WHERE e.id = :resId " +
-            "and e.price = :defaultPrice")
-    void deleteBy(@Param("defaultPrice")Double defaultPrice, @Param("resId")Long resId);
     List<ReservationDate> findAllByReservation_id(long reservationId);
     void deleteByReservation_id(Long id);
+    void deleteByReservation_idAndPrice(Long id, Double defaultPrice);
+    void deleteById(Long id);
 }
