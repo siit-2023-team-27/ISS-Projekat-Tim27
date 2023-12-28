@@ -5,8 +5,10 @@ import model.Amenity;
 import model.Reservation;
 import model.ReservationDate;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -27,5 +29,11 @@ public interface ReservationDateRepository extends JpaRepository<ReservationDate
 
     ReservationDate findOneByAccommodation_IdAndDate(long id, Date date);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM ReservationDate e WHERE e.id = :resId " +
+            "and e.price = :defaultPrice")
+    void deleteBy(@Param("defaultPrice")Double defaultPrice, @Param("resId")Long resId);
+    List<ReservationDate> findAllByReservation_id(long reservationId);
     void deleteByReservation_id(Long id);
 }

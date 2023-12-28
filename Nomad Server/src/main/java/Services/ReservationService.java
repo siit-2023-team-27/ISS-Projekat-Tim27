@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -36,6 +37,54 @@ public class ReservationService implements IService<Reservation, Long> {
         return reservationRepository.findOneById(id);
     }
 
+    public boolean verify(Reservation reservation) {
+        if (reservation == null){
+            return false;
+        }
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        this.createReservationDates(reservation);
+        reservationRepository.save(reservation);
+        return true;
+    }
+    public void declineOverlaping(Reservation reservation){
+        //ArrayList<Reservation> reservations = new ArrayList<>();
+        for(Reservation r: reservationRepository.findAllByAccommodation_id(reservation.getAccommodation().getId())){
+            if(r.getId() != reservation.getId() && r.getDateRange().overlaps(reservation.getDateRange()) && r.getStatus() == ReservationStatus.PENDING){
+                r.setStatus(ReservationStatus.REJECTED);
+                //reservations.add(r);
+                reservationRepository.save(r);
+            }
+        }
+       // reservationRepository.saveAll(reservations);
+    }
+
+    public void decline(Reservation reservation) {
+        if(reservation.getStatus() == ReservationStatus.PENDING){
+            reservation.setStatus(ReservationStatus.REJECTED);
+            reservationRepository.save(reservation);
+        }
+    }
+    public boolean cancel(Long id) {
+        Reservation reservation = findOne(id);
+        if (reservation == null){
+            System.out.println("NULLLLLLLLLLL");
+            return false;
+        }
+        if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
+            reservationDateRepository.deleteBy(reservation.getAccommodation().getDefaultPrice(), reservation.getId());
+            for(ReservationDate r : reservationDateRepository.findAllByReservation_id(reservation.getId())){
+                r.setReservation(null);
+                reservationDateRepository.save(r);
+            }
+            reservation.setStatus(ReservationStatus.CANCELED);
+        }else{
+            System.out.println("ELSEEEEEEE");
+            return false;
+        }
+        reservationRepository.save(reservation);
+        return true;
+    }
+
     @Override
     public void create(Reservation reservation) {
         reservationRepository.save(reservation);
@@ -47,7 +96,7 @@ public class ReservationService implements IService<Reservation, Long> {
             this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime()));
         }
     }
-    public Collection<Reservation> findReservationsForUser(long userId){
+    public Collection<Reservation> findReservationsForHost(long userId){
         return reservationRepository.findAllByAccommodation_Host_id(userId);
     }
     public Collection<Reservation> findReservationsForGuest(long userId){
@@ -70,12 +119,21 @@ public class ReservationService implements IService<Reservation, Long> {
         reservationDateRepository.save(reservationDateToUpdate);
     }
 
-    public boolean reserve(Reservation reservation){
+    public boolean reserveAutomatically(Reservation reservation){
         if(!this.isAvailable(reservation)){
             return false;
         }
+        reservation.setStatus(ReservationStatus.ACCEPTED);
         this.create(reservation);
         this.createReservationDates(reservation);
+        return true;
+    }
+    public boolean reserveManually(Reservation reservation){
+        if(!this.isAvailable(reservation)){
+            return false;
+        }
+        reservation.setStatus(ReservationStatus.PENDING);
+        this.create(reservation);
         return true;
     }
     public boolean isAvailable(Reservation reservation){
