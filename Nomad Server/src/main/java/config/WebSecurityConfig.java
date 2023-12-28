@@ -104,11 +104,6 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
                 .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
-                .requestMatchers("/api/reservations/cancel/{id}")
-                .requestMatchers("/api/reservations/verify/{id}")
-                .requestMatchers("/api/reservations/decline/{id}")
-                //.requestMatchers("/api/reservations")
-                .requestMatchers("/api/accommodations")
                 .requestMatchers( "/images/**");
     }
 }

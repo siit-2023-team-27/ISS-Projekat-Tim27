@@ -47,31 +47,27 @@ public class ReservationService implements IService<Reservation, Long> {
         return true;
     }
     public void declineOverlaping(Reservation reservation){
-        ArrayList<Reservation> reservations = new ArrayList<>();
+        //ArrayList<Reservation> reservations = new ArrayList<>();
         for(Reservation r: reservationRepository.findAllByAccommodation_id(reservation.getAccommodation().getId())){
-            if(r.getId() != reservation.getId() && r.getDateRange().overlaps(reservation.getDateRange())){
+            if(r.getId() != reservation.getId() && r.getDateRange().overlaps(reservation.getDateRange()) && r.getStatus() == ReservationStatus.PENDING){
                 r.setStatus(ReservationStatus.REJECTED);
-                reservations.add(r);
+                //reservations.add(r);
+                reservationRepository.save(r);
             }
         }
-        reservationRepository.saveAll(reservations);
+       // reservationRepository.saveAll(reservations);
     }
 
-    public boolean decline(Long id) {
-        Reservation reservation = findOne(id);
-        if (reservation == null){
-            return false;
-        }
+    public void decline(Reservation reservation) {
         if(reservation.getStatus() == ReservationStatus.PENDING){
             reservation.setStatus(ReservationStatus.REJECTED);
             reservationRepository.save(reservation);
-            return true;
         }
-        return false;
     }
     public boolean cancel(Long id) {
         Reservation reservation = findOne(id);
         if (reservation == null){
+            System.out.println("NULLLLLLLLLLL");
             return false;
         }
         if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
@@ -82,6 +78,7 @@ public class ReservationService implements IService<Reservation, Long> {
             }
             reservation.setStatus(ReservationStatus.CANCELED);
         }else{
+            System.out.println("ELSEEEEEEE");
             return false;
         }
         reservationRepository.save(reservation);

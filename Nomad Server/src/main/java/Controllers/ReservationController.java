@@ -82,28 +82,30 @@ public class ReservationController {
 
         return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
     }
-    //@PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/confirm/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> verifyReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Reservation> verifyReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.findOne(id);
         boolean succesfull = reservationService.verify(reservation);
 
         if(!succesfull){
-            return new ResponseEntity<String>("Reservation not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Reservation>(reservation, HttpStatus.NOT_FOUND);
         }
         reservationService.declineOverlaping(reservation);
-        return new ResponseEntity<String>( "Verified", HttpStatus.OK);
+        return new ResponseEntity<Reservation>( reservation, HttpStatus.OK);
     }
-    //@PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/reject/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> declineReservation(@PathVariable("id") Long id) {
-        boolean succesfull = reservationService.decline(id);
-        if(!succesfull){
-            return new ResponseEntity<String>("Reservation not found", HttpStatus.NOT_FOUND);
+    public ResponseEntity<Reservation> declineReservation(@PathVariable("id") Long id) {
+        Reservation reservation = reservationService.findOne(id);
+        if (reservation == null){
+            return new ResponseEntity<Reservation>(reservation, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>("Reservation declined", HttpStatus.OK);
+        reservationService.decline(reservation);
+
+        return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
     }
-    //@PreAuthorize("hasAuthority('GUEST')")
+    @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping (value = "/cancel/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> cancelReservation(@PathVariable("id") Long id) {
         boolean succesfull = reservationService.cancel(id);
