@@ -178,7 +178,7 @@ public class AccommodationController {
         return new ResponseEntity<Amenity>(newAmenity, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('HOST')")
+    //@PreAuthorize("hasAuthority('HOST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
         Accommodation accommodation = this.convertToEntity(accommodationDTO);

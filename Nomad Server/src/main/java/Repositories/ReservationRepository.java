@@ -1,6 +1,8 @@
 package Repositories;
 
+import model.DateRange;
 import model.Reservation;
+import model.ReservationDate;
 import model.enums.ReservationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,6 +29,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("currentDate") Date currentDate,
             @Param("guestId") Long guestId
     );
+
+    Collection<Reservation> findAllByAccommodation_id(long accommodationId);
 
     @Query("SELECT r FROM Reservation r " +
             "WHERE r.status = :status " +
