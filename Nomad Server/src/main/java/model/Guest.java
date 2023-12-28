@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @DiscriminatorValue("guest")
 public class Guest extends AppUser{
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "guest")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "guest")
     List<Reservation> reservations;
     @Override
     public Collection<UserType> getAuthorities() {

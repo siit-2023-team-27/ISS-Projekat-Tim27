@@ -60,7 +60,7 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
-    @PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
+    //@PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
     @GetMapping(value = "/verified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getApprovedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findApprovedAccommodations();
