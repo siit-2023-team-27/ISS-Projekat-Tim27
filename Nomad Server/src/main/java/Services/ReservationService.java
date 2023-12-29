@@ -1,23 +1,24 @@
 package Services;
 
+import DTO.SearchAccommodationDTO;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
 import Repositories.UserRepository;
 import exceptions.NotValidException;
 import jakarta.transaction.Transactional;
+import model.Accommodation;
+import model.DateRange;
 import model.Reservation;
 import model.ReservationDate;
+import model.enums.AccommodationType;
 import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 @Service
 @ComponentScan(basePackageClasses = IRepository.class)
@@ -104,6 +105,28 @@ public class ReservationService implements IService<Reservation, Long> {
         for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){
             this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime()));
         }
+    }
+    public Collection<Reservation> getFilteredHost(Long hostId, String name, Date startDate, Date endDate, ReservationStatus reservationStatus) {
+        Collection<Reservation> filtered = new ArrayList<>();
+        for (Reservation r: reservationRepository.findAllByHost(hostId, name, reservationStatus)) {
+           if(startDate == null){
+               filtered.add(r);
+           }else if(r.getDateRange().isInRange(new DateRange(startDate, endDate))){
+                filtered.add(r);
+            }
+        }
+        return filtered;
+    }
+    public Collection<Reservation> getFilteredGuest(Long guestId, String name, Date startDate, Date endDate, ReservationStatus reservationStatus) {
+        Collection<Reservation> filtered = new ArrayList<>();
+        for (Reservation r: reservationRepository.findAllByGuest(guestId, name, reservationStatus)) {
+            if(startDate == null){
+                filtered.add(r);
+            }else if(r.getDateRange().isInRange(new DateRange(startDate, endDate))){
+                filtered.add(r);
+            }
+        }
+        return filtered;
     }
     public Collection<Reservation> findReservationsForHost(long userId){
         return reservationRepository.findAllByAccommodation_Host_id(userId);
