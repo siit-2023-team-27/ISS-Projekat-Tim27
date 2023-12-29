@@ -3,6 +3,8 @@ package Services;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
+import Repositories.UserRepository;
+import exceptions.NotValidException;
 import jakarta.transaction.Transactional;
 import model.Reservation;
 import model.ReservationDate;
@@ -10,6 +12,7 @@ import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -22,6 +25,8 @@ public class ReservationService implements IService<Reservation, Long> {
 
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private AccommodationService accommodationService;
     @Autowired
@@ -64,25 +69,29 @@ public class ReservationService implements IService<Reservation, Long> {
             reservationRepository.save(reservation);
         }
     }
-    public boolean cancel(Long id) {
+    public void cancel(Long id) {
         Reservation reservation = findOne(id);
         if (reservation == null){
-            System.out.println("NULLLLLLLLLLL");
-            return false;
+            throw new NullPointerException();
         }
         if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
-            reservationDateRepository.deleteBy(reservation.getAccommodation().getDefaultPrice(), reservation.getId());
+           // reservationDateRepository.deleteByReservation_idAndPrice( reservation.getId(),reservation.getAccommodation().getDefaultPrice());
             for(ReservationDate r : reservationDateRepository.findAllByReservation_id(reservation.getId())){
-                r.setReservation(null);
-                reservationDateRepository.save(r);
+                if(r.getPrice()!=reservation.getAccommodation().getDefaultPrice()){
+                    r.setReservation(null);
+                    reservationDateRepository.save(r);
+                }else{
+                    reservationDateRepository.deleteById(r.getId());
+                }
+
             }
             reservation.setStatus(ReservationStatus.CANCELED);
         }else{
-            System.out.println("ELSEEEEEEE");
-            return false;
+            throw new NotValidException("Not valid for cancel");
         }
+        reservation.getUser().increaseNumber();
+        userRepository.save(reservation.getUser());
         reservationRepository.save(reservation);
-        return true;
     }
 
     @Override
