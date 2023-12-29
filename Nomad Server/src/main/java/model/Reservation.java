@@ -71,6 +71,8 @@ public class Reservation {
         return guest;
     }
 
+
+
     public void setUser(Guest appUser) {
         this.guest = appUser;
     }

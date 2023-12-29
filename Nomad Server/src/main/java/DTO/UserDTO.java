@@ -14,10 +14,13 @@ public class UserDTO {
         private String phoneNumber;
         private boolean suspended;
         private boolean verified;
+        private long cancellationNumber;
         private List<UserType> roles;
 
     // Constructor
-    public UserDTO(Long id, String firstName, String lastName, String address, String username, String password, String phoneNumber,  List<UserType> roles) {
+    public UserDTO(Long id, String firstName, String lastName,
+                   String address, String username, String password, boolean verified, boolean suspended,
+                   String phoneNumber,  List<UserType> roles, long cancellationNumber) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -25,9 +28,18 @@ public class UserDTO {
         this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
-        this.suspended = false;
-        this.verified = true;
+        this.suspended = suspended;
+        this.verified = verified;
         this.roles = roles;
+        this.cancellationNumber = cancellationNumber;
+    }
+
+    public long getCancellationNumber() {
+        return cancellationNumber;
+    }
+
+    public void setCancellationNumber(long cancellationNumber) {
+        this.cancellationNumber = cancellationNumber;
     }
 
     public boolean isVerified() {

@@ -161,25 +161,6 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.OK);
     }
-//    @PreAuthorize("hasAuthority('HOST')")
-//    @PutMapping (value = "/confirm/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<ReservationDTO> confirmReservation(@PathVariable Long id) {
-//        Reservation reservationForUpdate = reservationService.findOne(id);
-//        reservationForUpdate.setStatus(ReservationStatus.ACCEPTED);
-//        reservationService.update(reservationForUpdate);
-//
-//        return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
-//    }
-//    @PreAuthorize("hasAuthority('HOST')")
-//    @PutMapping (value = "/reject/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<ReservationDTO> rejectReservation(@PathVariable Long id) {
-//        Reservation reservationForUpdate = reservationService.findOne(id);
-//        reservationForUpdate.setStatus(ReservationStatus.REJECTED);
-//        reservationService.update(reservationForUpdate);
-//
-//
-//        return new ResponseEntity<ReservationDTO>(convertToDto(reservationForUpdate), HttpStatus.OK);
-//    }
     @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
     @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> filterReservations(@RequestParam(required = false) String name,

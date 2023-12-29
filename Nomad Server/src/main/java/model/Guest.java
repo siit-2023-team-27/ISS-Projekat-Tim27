@@ -10,8 +10,31 @@ import java.util.List;
 @Entity
 @DiscriminatorValue("guest")
 public class Guest extends AppUser{
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "guest")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "guest")
     List<Reservation> reservations;
+
+    long cancellationNumber;
+
+    public void increaseNumber(){
+        this.cancellationNumber++;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public long getCancellationNumber() {
+        return cancellationNumber;
+    }
+
+    public void setCancellationNumber(long cancellationNumber) {
+        this.cancellationNumber = cancellationNumber;
+    }
+
     @Override
     public Collection<UserType> getAuthorities() {
         return Collections.singletonList(UserType.GUEST);

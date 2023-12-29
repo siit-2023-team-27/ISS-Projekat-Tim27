@@ -3,6 +3,7 @@ package Services;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
+import Repositories.UserRepository;
 import exceptions.NotValidException;
 import jakarta.transaction.Transactional;
 import model.Reservation;
@@ -24,6 +25,8 @@ public class ReservationService implements IService<Reservation, Long> {
 
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private AccommodationService accommodationService;
     @Autowired
@@ -69,7 +72,6 @@ public class ReservationService implements IService<Reservation, Long> {
     public void cancel(Long id) {
         Reservation reservation = findOne(id);
         if (reservation == null){
-            System.out.println("NULLLLLLLLLLL");
             throw new NullPointerException();
         }
         if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
@@ -85,9 +87,10 @@ public class ReservationService implements IService<Reservation, Long> {
             }
             reservation.setStatus(ReservationStatus.CANCELED);
         }else{
-            System.out.println("ELSEEEEEEE");
             throw new NotValidException("Not valid for cancel");
         }
+        reservation.getUser().increaseNumber();
+        userRepository.save(reservation.getUser());
         reservationRepository.save(reservation);
     }
 
