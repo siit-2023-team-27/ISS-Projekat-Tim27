@@ -172,8 +172,8 @@ public class ReservationController {
     }
     //@PreAuthorize("hasAuthority('HOST')")
     @GetMapping(value = "/filter-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<ReservationDTO>> filterHost(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus reservationStatus) {
-        Collection<Reservation> reservations = reservationService.getFilteredGuest(id, "", null, null, reservationStatus);
+    public ResponseEntity<Collection<ReservationDTO>> filterHost(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus status) {
+        Collection<Reservation> reservations = reservationService.getFilteredHost(id, "", null, null, status);
         Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
     }
@@ -187,8 +187,8 @@ public class ReservationController {
     }
     //@PreAuthorize("hasAuthority('HOST')")
     @GetMapping(value = "/filter-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<ReservationDTO>> filterGuest(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus reservationStatus) {
-        Collection<Reservation> reservations = reservationService.getFilteredGuest(id, "", null, null, reservationStatus);
+    public ResponseEntity<Collection<ReservationDTO>> filterGuest(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus status) {
+        Collection<Reservation> reservations = reservationService.getFilteredGuest(id, "", null, null, status);
         Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
     }
