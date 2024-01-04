@@ -161,7 +161,7 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.OK);
     }
-   // @PreAuthorize("hasAuthority('HOST')")
+   @PreAuthorize("hasAuthority('HOST')")
     @GetMapping(value = "/search-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> searchHost(@PathVariable("id") Long id, @RequestParam(required = true) String name,
                                                                          @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date minimumDate, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date maximumDate,
@@ -170,13 +170,14 @@ public class ReservationController {
         Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
     }
-    //@PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasAuthority('HOST')")
     @GetMapping(value = "/filter-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> filterHost(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus status) {
         Collection<Reservation> reservations = reservationService.getFilteredHost(id, "", null, null, status);
         Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping(value = "/search-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> searchGuest(@PathVariable("id") Long id, @RequestParam(required = true) String name,
                                                                          @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date minimumDate, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date maximumDate,
@@ -185,7 +186,7 @@ public class ReservationController {
         Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
     }
-    //@PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping(value = "/filter-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> filterGuest(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus status) {
         Collection<Reservation> reservations = reservationService.getFilteredGuest(id, "", null, null, status);
