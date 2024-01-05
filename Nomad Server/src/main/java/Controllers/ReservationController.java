@@ -18,6 +18,7 @@ import org.mockito.internal.matchers.Null;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -145,7 +146,6 @@ public class ReservationController {
     @PreAuthorize("hasAuthority('GUEST')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<ReservationDTO> deleteReservation(@PathVariable("id") Long id) {
-        //trebalo bi da je okej?
         reservationService.delete(id);
         return new ResponseEntity<ReservationDTO>(HttpStatus.NO_CONTENT);
     }
@@ -161,13 +161,35 @@ public class ReservationController {
 
         return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.OK);
     }
-    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
-    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<ReservationDTO>> filterReservations(@RequestParam(required = false) String name,
-                                                                             @RequestParam(required = false) Integer minimumGuests, @RequestParam(required = false) Integer maximumGuests,
-                                                                             @RequestParam(required = false) Date minimumDate, @RequestParam(required = false) Date maximumDate,
-                                                                             @RequestParam(required = false) Double minimumPrice, @RequestParam(required = false) Double maximumPrice) {
-        Collection<Reservation> reservations = reservationService.findAll();
+   @PreAuthorize("hasAuthority('HOST')")
+    @GetMapping(value = "/search-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> searchHost(@PathVariable("id") Long id, @RequestParam(required = true) String name,
+                                                                         @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date minimumDate, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date maximumDate,
+                                                                         @RequestParam(required = false) ReservationStatus status) {
+        Collection<Reservation> reservations = reservationService.getFilteredHost(id, name, minimumDate, maximumDate, status);
+        Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
+    }
+    @PreAuthorize("hasAuthority('HOST')")
+    @GetMapping(value = "/filter-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> filterHost(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus status) {
+        Collection<Reservation> reservations = reservationService.getFilteredHost(id, "", null, null, status);
+        Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
+    }
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(value = "/search-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> searchGuest(@PathVariable("id") Long id, @RequestParam(required = true) String name,
+                                                                         @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date minimumDate, @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date maximumDate,
+                                                                         @RequestParam(required = false) ReservationStatus status) {
+        Collection<Reservation> reservations = reservationService.getFilteredGuest(id, name, minimumDate, maximumDate, status);
+        Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
+    }
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(value = "/filter-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<ReservationDTO>> filterGuest(@PathVariable("id") Long id, @RequestParam(required = true) ReservationStatus status) {
+        Collection<Reservation> reservations = reservationService.getFilteredGuest(id, "", null, null, status);
         Collection<ReservationDTO> reservationDTOS = reservations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<ReservationDTO>>(reservationDTOS, HttpStatus.OK);
     }
