@@ -141,6 +141,8 @@ public class AuthController {
         return modelMapper.map(userDTO, Host.class);
     }
     private Guest convertToGuest(UserRegistrationDTO userDTO) {
-        return modelMapper.map(userDTO, Guest.class);
+        Guest guest = modelMapper.map(userDTO, Guest.class);
+        guest.setCancellationNumber(0);
+        return guest;
     }
 }

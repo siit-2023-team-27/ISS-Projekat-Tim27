@@ -1,19 +1,24 @@
 package Services;
 
+import DTO.SearchAccommodationDTO;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
+import Repositories.UserRepository;
+import exceptions.NotValidException;
 import jakarta.transaction.Transactional;
+import model.Accommodation;
+import model.DateRange;
 import model.Reservation;
 import model.ReservationDate;
+import model.enums.AccommodationType;
 import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 @Service
 @ComponentScan(basePackageClasses = IRepository.class)
@@ -21,6 +26,8 @@ public class ReservationService implements IService<Reservation, Long> {
 
     @Autowired
     private ReservationRepository reservationRepository;
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private AccommodationService accommodationService;
     @Autowired
@@ -36,6 +43,58 @@ public class ReservationService implements IService<Reservation, Long> {
         return reservationRepository.findOneById(id);
     }
 
+    public boolean verify(Reservation reservation) {
+        if (reservation == null){
+            return false;
+        }
+        reservation.setStatus(ReservationStatus.ACCEPTED);
+        this.createReservationDates(reservation);
+        reservationRepository.save(reservation);
+        return true;
+    }
+    public void declineOverlaping(Reservation reservation){
+        //ArrayList<Reservation> reservations = new ArrayList<>();
+        for(Reservation r: reservationRepository.findAllByAccommodation_id(reservation.getAccommodation().getId())){
+            if(r.getId() != reservation.getId() && r.getDateRange().overlaps(reservation.getDateRange()) && r.getStatus() == ReservationStatus.PENDING){
+                r.setStatus(ReservationStatus.REJECTED);
+                //reservations.add(r);
+                reservationRepository.save(r);
+            }
+        }
+       // reservationRepository.saveAll(reservations);
+    }
+
+    public void decline(Reservation reservation) {
+        if(reservation.getStatus() == ReservationStatus.PENDING){
+            reservation.setStatus(ReservationStatus.REJECTED);
+            reservationRepository.save(reservation);
+        }
+    }
+    public void cancel(Long id) {
+        Reservation reservation = findOne(id);
+        if (reservation == null){
+            throw new NullPointerException();
+        }
+        if(reservation.validForCancel() && reservation.getStatus() == ReservationStatus.ACCEPTED){
+           // reservationDateRepository.deleteByReservation_idAndPrice( reservation.getId(),reservation.getAccommodation().getDefaultPrice());
+            for(ReservationDate r : reservationDateRepository.findAllByReservation_id(reservation.getId())){
+                if(r.getPrice()!=reservation.getAccommodation().getDefaultPrice()){
+                    r.setReservation(null);
+                    reservationDateRepository.save(r);
+                }else{
+                    reservationDateRepository.deleteById(r.getId());
+                }
+
+            }
+            reservation.setStatus(ReservationStatus.CANCELED);
+        }else{
+            throw new NotValidException("Not valid for cancel");
+        }
+        reservation.getUser().increaseNumber();
+        userRepository.save(reservation.getUser());
+        reservationRepository.save(reservation);
+    }
+
     @Override
     public void create(Reservation reservation) {
         reservationRepository.save(reservation);
@@ -47,7 +106,29 @@ public class ReservationService implements IService<Reservation, Long> {
             this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime()));
         }
     }
-    public Collection<Reservation> findReservationsForUser(long userId){
+    public Collection<Reservation> getFilteredHost(Long hostId, String name, Date startDate, Date endDate, ReservationStatus reservationStatus) {
+        Collection<Reservation> filtered = new ArrayList<>();
+        for (Reservation r: reservationRepository.findAllByHost(hostId, name, reservationStatus)) {
+           if(startDate == null){
+               filtered.add(r);
+           }else if(r.getDateRange().isInRange(new DateRange(startDate, endDate))){
+                filtered.add(r);
+            }
+        }
+        return filtered;
+    }
+    public Collection<Reservation> getFilteredGuest(Long guestId, String name, Date startDate, Date endDate, ReservationStatus reservationStatus) {
+        Collection<Reservation> filtered = new ArrayList<>();
+        for (Reservation r: reservationRepository.findAllByGuest(guestId, name, reservationStatus)) {
+            if(startDate == null){
+                filtered.add(r);
+            }else if(r.getDateRange().isInRange(new DateRange(startDate, endDate))){
+                filtered.add(r);
+            }
+        }
+        return filtered;
+    }
+    public Collection<Reservation> findReservationsForHost(long userId){
         return reservationRepository.findAllByAccommodation_Host_id(userId);
     }
     public Collection<Reservation> findReservationsForGuest(long userId){
@@ -70,12 +151,21 @@ public class ReservationService implements IService<Reservation, Long> {
         reservationDateRepository.save(reservationDateToUpdate);
     }
 
-    public boolean reserve(Reservation reservation){
+    public boolean reserveAutomatically(Reservation reservation){
         if(!this.isAvailable(reservation)){
             return false;
         }
+        reservation.setStatus(ReservationStatus.ACCEPTED);
         this.create(reservation);
         this.createReservationDates(reservation);
+        return true;
+    }
+    public boolean reserveManually(Reservation reservation){
+        if(!this.isAvailable(reservation)){
+            return false;
+        }
+        reservation.setStatus(ReservationStatus.PENDING);
+        this.create(reservation);
         return true;
     }
     public boolean isAvailable(Reservation reservation){

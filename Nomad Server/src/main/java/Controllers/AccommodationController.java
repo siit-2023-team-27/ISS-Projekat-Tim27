@@ -60,7 +60,7 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
-    @PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
+    //@PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
     @GetMapping(value = "/verified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getApprovedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findApprovedAccommodations();
@@ -161,6 +161,17 @@ public class AccommodationController {
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 
+    @PostMapping("available/{accommodationId}")
+    public ResponseEntity<String> setAvailable(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
+        String startDateStr = (String) requestBody.get("startDate");
+        String finishDateStr = (String) requestBody.get("finishDate");
+        DateRange dateRange = new DateRange(startDateStr, finishDateStr);
+        this.accommodationService.setAvailableForDateRange(accommodationId, dateRange);
+        String message = "Accommodation is set to available for dates: " + dateRange.toString();
+        String essage = "Accommodation is set to available for dates: " + dateRange.toString();
+        return new ResponseEntity<String>(message, HttpStatus.OK);
+    }
+
     @PreAuthorize("hasAuthority('HOST')")
     @PostMapping("/{accommodationId}/amenities")
     public ResponseEntity<Amenity> addAmenityToAccommodation(@PathVariable long accommodationId, @RequestBody Amenity newAmenity) {
@@ -168,7 +179,7 @@ public class AccommodationController {
         return new ResponseEntity<Amenity>(newAmenity, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAuthority('HOST')")
+    //@PreAuthorize("hasAuthority('HOST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> createAccommodation(@RequestBody AccommodationDTO accommodationDTO) throws Exception {
         Accommodation accommodation = this.convertToEntity(accommodationDTO);

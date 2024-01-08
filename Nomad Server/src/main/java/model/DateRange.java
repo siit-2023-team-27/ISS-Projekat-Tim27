@@ -45,6 +45,10 @@ public class DateRange {
         return !this.finishDate.before(comparedDateRange.getStartDate()) && !this.startDate.after(comparedDateRange.getFinishDate());
     }
 
+    public boolean isInRange(DateRange comparedDateRange) {
+        return !this.startDate.before(comparedDateRange.getStartDate()) && !this.finishDate.after(comparedDateRange.getFinishDate());
+     }
+
     // Getters for each attribute
     public Date getStartDate() {
         return startDate;

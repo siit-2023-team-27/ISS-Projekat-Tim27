@@ -302,6 +302,46 @@ public class AccommodationService implements IService<Accommodation, Long> {
             calendar.add(Calendar.DATE, 1);
         }
     }
+
+    public void setAvailable(long accommodationId, Date date) {
+        ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        if(reservationDate == null) {
+            System.out.println("Already available");
+            //already available
+            return;
+        }
+
+        if(reservationDate.getReservation() != null){
+            //there is active reservation for this date
+            if(reservationDate.getReservation().getUser() != null) {
+                System.out.println("There is an active reservation for date: " + date.toString());
+                return;
+            }
+
+            System.out.println("Host previously set up accommodation to unavailable");
+            this.reservationDateRepository.delete(reservationDate);
+            return;
+        }
+
+        //only price is stored in this reservationDate
+        System.out.println("Only price is stored in this reservationDate");
+        this.reservationDateRepository.delete(reservationDate);
+        return;
+    }
+
+    public void setAvailableForDateRange(long accommodationId, DateRange dateRange) {
+        Date startDate = dateRange.getStartDate();
+        Date endDate = dateRange.getFinishDate();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+
+        while (calendar.getTime().before(endDate) || calendar.getTime().equals(endDate)) {
+            Date currentDate = calendar.getTime();
+            setAvailable(accommodationId, currentDate);
+            calendar.add(Calendar.DATE, 1);
+        }
+    }
+
     public boolean validateAccommodation(Accommodation accommodation){
         if (accommodation.getAmenities() == null){
             accommodation.setAmenities(new ArrayList<Amenity>());
@@ -327,7 +367,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
         if(accommodation.getDescription().length() < 3){
             return false;
         }
-        if(accommodation.getMinGuests() > accommodation.getMaxGuests() || accommodation.getMinGuests() < 0){
+        if(accommodation.getMinGuests() > accommodation.getMaxGuests() || accommodation.getMinGuests() <= 0){
             return false;
         }
         if(accommodation.getDefaultPrice() < 1){
