@@ -1,20 +1,14 @@
 package DTO;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
-import model.Accommodation;
-import model.AppUser;
-
-public class AccommodationRatingDTO {
+public class RatingDTO {
 
     private String userName;
     private String text;
     private int rating;
 
-    public AccommodationRatingDTO() {}
+    public RatingDTO() {}
 
-    public AccommodationRatingDTO(String userName, String text, int rating) {
+    public RatingDTO(String userName, String text, int rating) {
         this.userName = userName;
         this.text = text;
         this.rating = rating;

@@ -1,7 +1,10 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
+import DTO.UserReportDto;
 import Services.IService;
+import Services.UserReportService;
+import Services.UserService;
 import model.Accommodation;
 import model.UserReport;
 import org.modelmapper.ModelMapper;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.parser.Entity;
 import java.util.Collection;
 
 @CrossOrigin(
@@ -33,10 +37,10 @@ import java.util.Collection;
 public class UserReportController {
 
     @Autowired
-    private IService<UserReport, Long> userReportService;
+    private UserReportService userReportService;
 
     @Autowired
-    private ModelMapper modelMapper;
+    private UserService userService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserReport>> getUserReports() {
@@ -55,9 +59,10 @@ public class UserReportController {
     }
     @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserReport> createUserReport(@RequestBody UserReport userReport) throws Exception {
+    public ResponseEntity<UserReportDto> createUserReport(@RequestBody UserReportDto userReportDto) throws Exception {
+        UserReport userReport = this.convertToEntity(userReportDto);
         userReportService.create(userReport);
-        return new ResponseEntity<UserReport>(userReport, HttpStatus.CREATED);
+        return new ResponseEntity<UserReportDto>(userReportDto, HttpStatus.CREATED);
     }
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserReport> deleteUserReport(@PathVariable("id") Long id) {
@@ -77,6 +82,24 @@ public class UserReportController {
         }
 
         return new ResponseEntity<UserReport>(userReport, HttpStatus.OK);
+    }
+
+    public UserReport convertToEntity(UserReportDto dto) {
+        UserReport ur = new UserReport();
+        ur.setReportedUser(userService.findOne(dto.getReportedUser()));
+        ur.setReportingUser(userService.findOne(dto.getReportingUser()));
+        ur.setReason(dto.getReason());
+        ur.setReportStatus(dto.getReportStatus());
+        return ur;
+    }
+
+    public UserReportDto convertToDto(UserReport ur) {
+        UserReportDto dto = new UserReportDto();
+        dto.setReportingUser(ur.getReportingUser().getId());
+        dto.setReportedUser(ur.getReportedUser().getId());
+        dto.setReason(ur.getReason());
+        dto.setReportStatus(ur.getReportStatus());
+        return dto;
     }
 
 }
