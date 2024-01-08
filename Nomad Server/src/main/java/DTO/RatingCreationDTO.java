@@ -1,22 +1,17 @@
 package DTO;
 
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Transient;
-import model.Accommodation;
-
-public class AccommodationRatingCreationDTO {
+public class RatingCreationDTO {
     private Long userId;
-    private Long accommodationId;
+    private Long ratedId;
     private String text;
     private int rating;
 
-    public AccommodationRatingCreationDTO() {
+    public RatingCreationDTO() {
     }
 
-    public AccommodationRatingCreationDTO(Long userId, Long accommodationId, String text, int rating) {
+    public RatingCreationDTO(Long userId, Long ratedId, String text, int rating) {
         this.userId = userId;
-        this.accommodationId = accommodationId;
+        this.ratedId = ratedId;
         this.text = text;
         this.rating = rating;
     }
@@ -29,12 +24,12 @@ public class AccommodationRatingCreationDTO {
         this.userId = userId;
     }
 
-    public Long getAccommodationId() {
-        return accommodationId;
+    public Long getRatedId() {
+        return ratedId;
     }
 
-    public void setAccommodationId(Long accommodationId) {
-        this.accommodationId = accommodationId;
+    public void setRatedId(Long ratedId) {
+        this.ratedId = ratedId;
     }
 
     public String getText() {

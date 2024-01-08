@@ -1,11 +1,11 @@
 package Controllers;
 
+import DTO.RatingCreationDTO;
+import DTO.RatingDTO;
 import Services.HostRatingService;
 import Services.IService;
-import model.Accommodation;
-import model.AccommodationRating;
-import model.HostComment;
-import model.HostRating;
+import Services.UserService;
+import model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
@@ -34,34 +34,40 @@ import java.util.Collection;
 public class HostRatingController {
 
     @Autowired
-    private IService<HostRating, Long> hostRatingService;
+    private HostRatingService hostRatingService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<HostRating>> getRatings() {
-        Collection<HostRating> ratings = hostRatingService.findAll();
-        return new ResponseEntity<Collection<HostRating>>(ratings, HttpStatus.OK);
+    @Autowired
+    private UserService userService;
+
+
+    @GetMapping(value = "/host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<RatingDTO>> getRatingsForHost(@PathVariable("id") Long id) {
+        Collection<HostRating> ratings = hostRatingService.findAllRatingsForHost(id);
+        return new ResponseEntity<Collection<RatingDTO>>(ratings.stream().map(this::mapRating).toList(), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HostRating> getRating(@PathVariable("id") Long id) {
-        HostRating rating = hostRatingService.findOne(id);
-
-        if (rating == null) {
-            return new ResponseEntity<HostRating>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<HostRating>(rating, HttpStatus.OK);
-    }
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HostRating> createRating(@RequestBody HostRating rating) throws Exception {
+    public ResponseEntity<RatingCreationDTO> createRating(@RequestBody RatingCreationDTO ratingDto) throws Exception {
+        HostRating rating = this.mapRatingDTO(ratingDto);
         hostRatingService.create(rating);
-        return new ResponseEntity<HostRating>(rating, HttpStatus.CREATED);
+        return new ResponseEntity<RatingCreationDTO>(ratingDto, HttpStatus.CREATED);
     }
-    @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<HostRating> deleteRating(@PathVariable("id") Long id) {
-        hostRatingService.delete(id);
-        return new ResponseEntity<HostRating>(HttpStatus.NO_CONTENT);
+
+    public RatingDTO mapRating(HostRating rating){
+        RatingDTO dto = new RatingDTO();
+        dto.setText(rating.getText());
+        dto.setRating(rating.getRating());
+        dto.setUserName(rating.getUser().getUsername());
+        return dto;
+    }
+    public HostRating mapRatingDTO(RatingCreationDTO dto){
+        HostRating rating = new HostRating();
+        rating.setText(dto.getText());
+        rating.setRating(dto.getRating());
+        rating.setHost((Host) this.userService.findOne(dto.getRatedId()));
+        rating.setUser(this.userService.findOne(dto.getUserId()));
+
+        return rating;
     }
 }
