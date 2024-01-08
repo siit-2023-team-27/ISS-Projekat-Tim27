@@ -47,6 +47,9 @@ public class AccommodationService implements IService<Accommodation, Long> {
     public void create(Accommodation accommodation) {
         accommodationRepository.save(accommodation);
     }
+    public Accommodation createAccommodation(Accommodation accommodation) {
+        return accommodationRepository.save(accommodation);
+    }
 
     @Override
     public void update(Accommodation accommodation) {
@@ -324,7 +327,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
         if(accommodation.getDescription().length() < 3){
             return false;
         }
-        if(accommodation.getMinGuests() < accommodation.getMaxGuests() || accommodation.getMinGuests() < 0){
+        if(accommodation.getMinGuests() > accommodation.getMaxGuests() || accommodation.getMinGuests() < 0){
             return false;
         }
         if(accommodation.getDefaultPrice() < 1){

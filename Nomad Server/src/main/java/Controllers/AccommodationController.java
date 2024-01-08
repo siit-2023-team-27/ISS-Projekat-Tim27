@@ -152,6 +152,7 @@ public class AccommodationController {
 
     @PostMapping("unavailable/{accommodationId}")
     public ResponseEntity<String> setUnavailable(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
+        System.out.println(requestBody.toString());
         String startDateStr = (String) requestBody.get("startDate");
         String finishDateStr = (String) requestBody.get("finishDate");
         DateRange dateRange = new DateRange(startDateStr, finishDateStr);
@@ -175,7 +176,7 @@ public class AccommodationController {
             return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.BAD_REQUEST);
         }
         accommodation.setHost( (Host) userService.findOne(accommodationDTO.getHostId()) );
-        accommodationService.create(accommodation);
+        accommodationDTO = convertToDto(accommodationService.createAccommodation(accommodation));
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.CREATED);
     }
     @PreAuthorize("hasAuthority('HOST')")
@@ -230,7 +231,7 @@ public class AccommodationController {
     }
     private AccommodationDTO convertToDto(Accommodation accommodation) {
         AccommodationDTO accommodationDTO = modelMapper.map(accommodation, AccommodationDTO.class);
-
+        accommodationDTO.setId(accommodation.getId());
         return accommodationDTO;
     }
     private Accommodation convertToEntity(AccommodationDTO accommodationDTO) {
