@@ -58,6 +58,14 @@ public class DateRange {
         return finishDate;
     }
 
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setFinishDate(Date finishDate) {
+        this.finishDate = finishDate;
+    }
+
     @Override
     public String toString() {
         return "[ " + startDate.toString() + ", " + finishDate.toString() + " ]";

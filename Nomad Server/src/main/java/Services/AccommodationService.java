@@ -47,6 +47,9 @@ public class AccommodationService implements IService<Accommodation, Long> {
     public void create(Accommodation accommodation) {
         accommodationRepository.save(accommodation);
     }
+    public Accommodation createAccommodation(Accommodation accommodation) {
+        return accommodationRepository.save(accommodation);
+    }
 
     @Override
     public void update(Accommodation accommodation) {
