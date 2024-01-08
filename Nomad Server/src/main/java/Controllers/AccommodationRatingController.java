@@ -81,6 +81,7 @@ public class AccommodationRatingController {
         dto.setText(rating.getText());
         dto.setRating(rating.getRating());
         dto.setUserName(rating.getUser().getUsername());
+        dto.setId(rating.getId());
         return dto;
     }
     public AccommodationRating mapRatingDTO(AccommodationRatingCreationDTO dto){
