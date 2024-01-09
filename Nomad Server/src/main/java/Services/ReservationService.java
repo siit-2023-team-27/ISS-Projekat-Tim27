@@ -1,5 +1,6 @@
 package Services;
 
+import DTO.ReportDTO;
 import DTO.SearchAccommodationDTO;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
@@ -12,6 +13,7 @@ import model.DateRange;
 import model.Reservation;
 import model.ReservationDate;
 import model.enums.AccommodationType;
+import model.enums.PriceType;
 import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,6 +43,28 @@ public class ReservationService implements IService<Reservation, Long> {
     @Override
     public Reservation findOne(Long id) {
         return reservationRepository.findOneById(id);
+    }
+
+    public List<ReportDTO> getReportsFor(DateRange dateRange, Long hostId){
+        List<ReportDTO> reports = new ArrayList<>();
+        for(Accommodation accommodation: accommodationService.findByHost(hostId)){
+            ReportDTO report = new ReportDTO();
+            report.setAccommodation_id(accommodation.getId());
+            for(Reservation reservation: reservationRepository.findForDateRangeReport(accommodation.getId(), ReservationStatus.ACCEPTED )){
+                if(reservation.getDateRange().isInRange(dateRange)){
+                    for (ReservationDate reservationDate: reservationDateRepository.findAllByReservation_id(reservation.getId())){
+                        if(accommodation.getPriceType() == PriceType.FOR_GUEST){
+                            report.addProfit( reservation.getNumGuests()*reservationDate.getPrice());
+                        }else{
+                            report.addProfit(reservationDate.getPrice());
+                        }
+                    }
+                    report.increaseResNum();
+                }
+            }
+            reports.add(report);
+        }
+        return reports;
     }
 
     public boolean verify(Reservation reservation) {
