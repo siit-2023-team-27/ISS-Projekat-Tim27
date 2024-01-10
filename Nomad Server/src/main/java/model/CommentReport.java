@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import model.enums.ReportStatus;
 
 @Entity
-@Table (name = "comment_reports")
+@Table (name = "comment-reports")
 public class CommentReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,15 +12,15 @@ public class CommentReport {
     @ManyToOne
     private AppUser reportingAppUser;
     @ManyToOne
-    private AccommodationRating reportedRating;
+    private Comment reportedComment;
     private String reason;
     private ReportStatus reportStatus;
 
     public CommentReport(){}
     // Constructor
-    public CommentReport(AppUser reportingAppUser, AccommodationRating reportedComment, String reason, ReportStatus reportStatus) {
+    public CommentReport(AppUser reportingAppUser, Comment reportedComment, String reason, ReportStatus reportStatus) {
         this.reportingAppUser = reportingAppUser;
-        this.reportedRating = reportedComment;
+        this.reportedComment = reportedComment;
         this.reason = reason;
         this.reportStatus = reportStatus;
     }
@@ -41,12 +41,12 @@ public class CommentReport {
         this.reportingAppUser = reportingAppUser;
     }
 
-    public AccommodationRating getReportedRating() {
-        return reportedRating;
+    public Comment getReportedComment() {
+        return reportedComment;
     }
 
-    public void setReportedRating(AccommodationRating reportedComment) {
-        this.reportedRating = reportedComment;
+    public void setReportedComment(Comment reportedComment) {
+        this.reportedComment = reportedComment;
     }
 
     public String getReason() {
@@ -67,7 +67,7 @@ public class CommentReport {
 
     public void copyValues(CommentReport comment){
         this.reportingAppUser = comment.reportingAppUser;
-        this.reportedRating = comment.reportedRating;
+        this.reportedComment = comment.reportedComment;
         this.reason = comment.reason;
         this.reportStatus = comment.reportStatus;
     }
