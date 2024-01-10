@@ -6,6 +6,7 @@ import jakarta.persistence.Transient;
 import model.Accommodation;
 
 public class AccommodationRatingCreationDTO {
+    //TODO: merge with RatingCreationDTO
     private Long userId;
     private Long accommodationId;
     private String text;
