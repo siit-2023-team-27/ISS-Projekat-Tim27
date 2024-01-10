@@ -14,6 +14,7 @@ import java.util.Collection;
 @ComponentScan(basePackageClasses = IRepository.class)
 public class HostRatingService implements IService<HostRating, Long> {
 
+
     @Autowired
     private HostRatingRepository hostRatingRepository;
 
@@ -40,9 +41,5 @@ public class HostRatingService implements IService<HostRating, Long> {
     @Override
     public void delete(Long id) {
         hostRatingRepository.deleteById(id);
-    }
-
-    public Collection<HostRating> findAllRatingsForHost(Long id) {
-        return hostRatingRepository.findAllByHost_Id(id);
     }
 }

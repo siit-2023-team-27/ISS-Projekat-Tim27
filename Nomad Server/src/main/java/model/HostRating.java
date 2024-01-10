@@ -6,11 +6,11 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class HostRating extends Rating{
     @ManyToOne
-    private Host host;
+    private AppUser host;
 
     public HostRating () {}
 
-    public HostRating(int rating, AppUser appUser, Host host) {
+    public HostRating(int rating, AppUser appUser, AppUser host) {
         super(rating, appUser, "");
         this.host = host;
     }
@@ -19,7 +19,7 @@ public class HostRating extends Rating{
         return host;
     }
 
-    public void setHost(Host host) {
+    public void setHost(AppUser host) {
         this.host = host;
     }
 

@@ -1,6 +1,5 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
@@ -18,7 +17,6 @@ public class Accommodation implements Serializable {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
     @ManyToOne (fetch = FetchType.LAZY, cascade = {})
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Host host;
     private int minGuests;
     private int maxGuests;

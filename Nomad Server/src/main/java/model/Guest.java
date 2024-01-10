@@ -13,7 +13,7 @@ public class Guest extends AppUser{
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "guest")
     List<Reservation> reservations;
 
-    long cancellationNumber;
+    Long cancellationNumber;
 
     public void increaseNumber(){
         this.cancellationNumber++;

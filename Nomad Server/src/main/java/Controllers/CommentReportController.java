@@ -1,12 +1,8 @@
 package Controllers;
 
 import DTO.AddCommentReportDTO;
-import DTO.CommentDTO;
 import DTO.CommentReportDTO;
-import Services.CommentService;
-import Services.IService;
-import Services.UserService;
-import model.Comment;
+import Services.*;
 import model.CommentReport;
 import model.enums.ReportStatus;
 import org.modelmapper.ModelMapper;
@@ -36,9 +32,9 @@ import java.util.Collection;
 @ComponentScan(basePackageClasses = IService.class)
 public class CommentReportController {
     @Autowired
-    private IService<CommentReport, Long> commentService;
+    private CommentReportService commentService;
     @Autowired
-    private CommentService comService;
+    private AccommodationRatingService comService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -117,7 +113,7 @@ public class CommentReportController {
     }
     private CommentReport convertAddToEntity(AddCommentReportDTO commentDTO) {
         CommentReport commentReport = new CommentReport();
-        commentReport.setReportedComment(comService.findOne(commentDTO.getReportedComment()));
+        commentReport.setReportedRating(comService.findOne(commentDTO.getReportedComment()));
         commentReport.setReportingUser(userService.findOne(commentDTO.getReportingAppUser()));
         commentReport.setReportStatus(ReportStatus.PENDING);
         commentReport.setReason(commentDTO.getReason());
@@ -127,7 +123,7 @@ public class CommentReportController {
         AddCommentReportDTO dto = new AddCommentReportDTO();
         dto.setReason(report.getReason());
         dto.setReportingAppUser(report.getReportingUser().getId());
-        dto.setReportedComment(report.getReportedComment().getId());
+        dto.setReportedComment(report.getReportedRating().getId());
         dto.setReportStatus(report.getReportStatus());
         return dto;
     }

@@ -1,7 +1,5 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,12 +10,12 @@ public class FavouriteAccommodation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne (fetch = FetchType.LAZY, cascade = {})
-    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
+    @ManyToOne
+    @JoinColumn(name = "guest_id")
     private Guest guest;
 
-    @ManyToOne (fetch = FetchType.LAZY, cascade = {})
-    @JsonIgnoreProperties(value = {"applications", "hibernateLazyInitializer"})
+    @ManyToOne
+    @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
     public FavouriteAccommodation() {};
