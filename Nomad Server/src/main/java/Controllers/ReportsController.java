@@ -16,8 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 @CrossOrigin(
         origins = {
@@ -46,11 +45,16 @@ public class ReportsController {
         return new ResponseEntity<Collection<ReportDTO>>( reports, HttpStatus.OK);
     }
     @GetMapping(value = "/accommodation/{hostId}/{accommodationId}/{year}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<AccommodationDTO>> generateReportForAccommodation(@PathVariable("hostId") Long hostId,
+    public ResponseEntity<Collection<ReportDTO>> generateReportForAccommodation(@PathVariable("hostId") Long hostId,
                                                                                        @PathVariable("accommodationId") Long accommodationId,
                                                                                        @PathVariable("year") int year) {
-//        Collection<Accommodation> accommodations = accommodationService.findAll();
-//        Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
-        return new ResponseEntity<Collection<AccommodationDTO>>( HttpStatus.OK);
+        HashMap<Integer,ReportDTO> reports = reservationService.getReportsFor(year, accommodationId, hostId);
+        List<ReportDTO> reportDTOS = new ArrayList<>();
+        for (Integer key: reports.keySet()){
+            ReportDTO r = reports.get(key);
+            r.setMonth(key);
+            reportDTOS.add(r);
+        }
+        return new ResponseEntity<Collection<ReportDTO>>(reportDTOS,HttpStatus.OK);
     }
 }

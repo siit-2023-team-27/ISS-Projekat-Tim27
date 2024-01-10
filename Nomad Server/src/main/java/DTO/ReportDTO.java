@@ -4,6 +4,15 @@ public class ReportDTO {
     private Double profit;
     private int reservationNumber;
     private Long accommodation_id;
+    private Integer month;
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
 
     public ReportDTO(Double profit, int reservationNumber, Long accommodation_id) {
         this.profit = profit;
