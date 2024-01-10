@@ -37,4 +37,6 @@ public class NotificationService implements IService<Notification, Long> {
     public void delete(Long id) {
         notificationRepository.deleteById(id);
     }
+
+    public Collection<Notification> getAllForUSer(Long id) { return notificationRepository.findAllByTargetAppUser_Id(id); }
 }
