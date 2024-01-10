@@ -1,13 +1,10 @@
 package Controllers;
 
-import DTO.AccommodationRatingCreationDTO;
-import DTO.AccommodationRatingDTO;
+import DTO.RatingCreationDTO;
+import DTO.RatingDTO;
 import Services.AccommodationRatingService;
 import Services.IService;
-import model.Accommodation;
-import model.AccommodationComment;
 import model.AccommodationRating;
-import model.HostRating;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
@@ -17,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @CrossOrigin(
         origins = {
@@ -57,17 +53,17 @@ public class AccommodationRatingController {
     }
 
     @GetMapping(value = "/for-accommodation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<AccommodationRatingDTO>> getRatingsForAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<Collection<RatingDTO>> getRatingsForAccommodation(@PathVariable("id") Long id) {
         Collection<AccommodationRating> accommodationRatings = accommodationRatingService.findRatingsForAccommodation(id);
-        return new ResponseEntity<Collection<AccommodationRatingDTO>>(accommodationRatings.stream().map(this::mapRating).toList(), HttpStatus.OK);
+        return new ResponseEntity<Collection<RatingDTO>>(accommodationRatings.stream().map(this::mapRating).toList(), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccommodationRatingCreationDTO> createRating(@RequestBody AccommodationRatingCreationDTO ratingCreationDTO) throws Exception {
+    public ResponseEntity<RatingCreationDTO> createRating(@RequestBody RatingCreationDTO ratingCreationDTO) throws Exception {
         AccommodationRating rating = this.mapRatingDTO(ratingCreationDTO);
         accommodationRatingService.create(rating);
-        return new ResponseEntity<AccommodationRatingCreationDTO>(ratingCreationDTO, HttpStatus.CREATED);
+        return new ResponseEntity<RatingCreationDTO>(ratingCreationDTO, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasAuthority('GUEST') or hasAuthority('ADMIN')")
@@ -76,17 +72,16 @@ public class AccommodationRatingController {
         accommodationRatingService.delete(id);
         return new ResponseEntity<AccommodationRating>(HttpStatus.NO_CONTENT);
     }
-    public AccommodationRatingDTO mapRating(AccommodationRating rating){
-        AccommodationRatingDTO dto = new AccommodationRatingDTO();
+    public RatingDTO mapRating(AccommodationRating rating){
+        RatingDTO dto = new RatingDTO();
         dto.setText(rating.getText());
         dto.setRating(rating.getRating());
         dto.setUserName(rating.getUser().getUsername());
-        dto.setId(rating.getId());
         return dto;
     }
-    public AccommodationRating mapRatingDTO(AccommodationRatingCreationDTO dto){
+    public AccommodationRating mapRatingDTO(RatingCreationDTO dto){
         AccommodationRating rating = new AccommodationRating();
-        rating.setAccommodationId(dto.getAccommodationId());
+        rating.setAccommodationId(dto.getRatedId());
         rating.setText(dto.getText());
         rating.setRating(dto.getRating());
         rating.setUserId(dto.getUserId());
