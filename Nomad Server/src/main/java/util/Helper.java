@@ -3,6 +3,7 @@ package util;
 import model.DateRange;
 import model.enums.UserType;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -52,5 +53,9 @@ public class Helper {
         public static int getYear(Date date){
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
             return Integer.parseInt(dateFormat.format(date));
+        }
+        public static String dateToString(Date date){
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            return dateFormat.format(date);
         }
 }
