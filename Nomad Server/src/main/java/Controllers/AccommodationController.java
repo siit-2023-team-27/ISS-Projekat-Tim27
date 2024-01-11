@@ -1,6 +1,7 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
+import DTO.AccommodationDTOReport;
 import DTO.SearchAccommodationDTO;
 import DTO.UserDTO;
 import Services.AccommodationService;
@@ -124,6 +125,14 @@ public class AccommodationController {
         Collection<AccommodationDTO> accommodationDTOS = accommodations.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('HOST')")
+    @GetMapping("/host-reports/{hostId}")
+    public ResponseEntity<Collection<AccommodationDTOReport>> getAccommodationsForHostReports(@PathVariable("hostId") Long hostId) {
+        Collection<Accommodation> accommodations = this.accommodationService.findByHost(hostId);
+        System.out.println(accommodations.size());
+        Collection<AccommodationDTOReport> accommodationDTOS = accommodations.stream().map(this::convertToDto2).toList();
+        return new ResponseEntity<Collection<AccommodationDTOReport>>(accommodationDTOS, HttpStatus.OK);
+    }
     //config
     @GetMapping("isAvailable/{accommodationId}/{date}")
     public ResponseEntity<Boolean> isAvailable(@PathVariable long accommodationId, @PathVariable  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date) {
@@ -242,6 +251,11 @@ public class AccommodationController {
     }
     private AccommodationDTO convertToDto(Accommodation accommodation) {
         AccommodationDTO accommodationDTO = modelMapper.map(accommodation, AccommodationDTO.class);
+        accommodationDTO.setId(accommodation.getId());
+        return accommodationDTO;
+    }
+    private AccommodationDTOReport convertToDto2(Accommodation accommodation) {
+        AccommodationDTOReport accommodationDTO = modelMapper.map(accommodation, AccommodationDTOReport.class);
         accommodationDTO.setId(accommodation.getId());
         return accommodationDTO;
     }

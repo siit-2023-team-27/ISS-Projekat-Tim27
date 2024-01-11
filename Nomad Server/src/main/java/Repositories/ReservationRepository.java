@@ -21,6 +21,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     Collection<Reservation> findAllByAccommodation_Host_id(long userId);
 
 
+
     Collection<Reservation> findAllByGuest_id(long userId);
 
     @Query("SELECT r FROM Reservation r " +
@@ -58,4 +59,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("hostId") Long hostId
     );
 
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE r.accommodation.id = :id " +
+            "and r.status = :status ")
+    Collection<Reservation> findForReport(
+            @Param("id") Long accommodationId,
+            @Param("status") ReservationStatus status
+    );
+//    AND :currentDate >= r.dateRange.startDate
 }
