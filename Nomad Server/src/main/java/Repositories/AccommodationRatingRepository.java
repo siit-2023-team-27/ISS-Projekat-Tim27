@@ -11,4 +11,8 @@ public interface AccommodationRatingRepository extends JpaRepository<Accommodati
 
 
     Collection<AccommodationRating> findAllByAccommodation_Id(Long id);
+
+    Collection<AccommodationRating> findAllByAppUser_Id(Long userId);
+
+    Collection<Object> findAllByAppUser_IdAndAccommodation_Id(Long userId, Long accommodationId);
 }

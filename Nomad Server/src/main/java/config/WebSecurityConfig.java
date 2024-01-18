@@ -59,7 +59,6 @@ public class WebSecurityConfig {
 
     @Autowired
     private TokenUtils tokenUtils;
-    //[TODO] PROVALI PROBLEM SA AUTORIZACIJOM
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("1. FILTER CHAIN");
@@ -105,6 +104,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
                 .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
                 .requestMatchers( HttpMethod.POST,"/api/accommodations")
+                .requestMatchers( HttpMethod.GET,"/api/accommodation-ratings/for-accommodation")
                 .requestMatchers( "/images/**");
     }
 }

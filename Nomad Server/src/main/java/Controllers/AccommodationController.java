@@ -7,6 +7,7 @@ import Services.AccommodationService;
 import Services.AmenityService;
 import Services.IService;
 import Services.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import model.*;
 import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
@@ -137,27 +138,47 @@ public class AccommodationController {
     //config
     @GetMapping("price/{accommodationId}/{date}")
     public ResponseEntity<Double> getPrice(@PathVariable long accommodationId, @PathVariable  Date date) {
-        return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
+        try{
+            return new ResponseEntity<Double>(accommodationService.getPrice(accommodationId, date), HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<Double>(HttpStatus.BAD_REQUEST);
+        }
     }
     @PostMapping("price/{accommodationId}")
     public ResponseEntity<String> setPrice(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
         double price = Double.parseDouble((String) requestBody.get("price"));
         String startDateStr = (String) requestBody.get("startDate");
         String finishDateStr = (String) requestBody.get("finishDate");
-        DateRange dateRange = new DateRange(startDateStr, finishDateStr);
-        this.accommodationService.setPriceForDateRange(accommodationId, price, dateRange);
+        DateRange dateRange;
+        try{
+            dateRange = new DateRange(startDateStr, finishDateStr);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<String>("Illegal date range", HttpStatus.BAD_REQUEST);
+        }
+        if(!this.accommodationService.setPriceForDateRange(accommodationId, price, dateRange)){
+            return new ResponseEntity<String>("Date range in past", HttpStatus.BAD_REQUEST);
+        }
         String message = "Price is successfully updated for date range: " + dateRange.toString();
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
-
     @PostMapping("unavailable/{accommodationId}")
     public ResponseEntity<String> setUnavailable(@PathVariable long accommodationId, @RequestBody Map<String, Object> requestBody){
         System.out.println(requestBody.toString());
         String startDateStr = (String) requestBody.get("startDate");
         String finishDateStr = (String) requestBody.get("finishDate");
-        DateRange dateRange = new DateRange(startDateStr, finishDateStr);
-        this.accommodationService.setUnavailableForDateRange(accommodationId, dateRange);
-        String message = "Accommodation is set to unavailable for dates: " + dateRange.toString();
+        DateRange dateRange;
+        try{
+            dateRange = new DateRange(startDateStr, finishDateStr);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<String>("invalid date range", HttpStatus.BAD_REQUEST);
+        }
+        String message = "Accommodation doesn't exist";
+        try{
+            this.accommodationService.setUnavailableForDateRange(accommodationId, dateRange);
+        }catch (EntityNotFoundException e){
+            return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
+        }
+        message = "Accommodation is set to unavailable for dates: " + dateRange.toString();
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 

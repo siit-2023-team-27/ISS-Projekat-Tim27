@@ -1,11 +1,10 @@
 package Controllers;
 
-import DTO.AddCommentReportDTO;
-import DTO.CommentDTO;
-import DTO.CommentReportDTO;
+import DTO.*;
 import Services.*;
 import model.Comment;
 import model.CommentReport;
+import model.UserReport;
 import model.enums.ReportStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +35,8 @@ public class CommentReportController {
     @Autowired
     private CommentReportService commentService;
     @Autowired
+    private HostRatingService hostRatingService;
+    @Autowired
     private AccommodationRatingService comService;
     @Autowired
     private UserService userService;
@@ -43,10 +44,16 @@ public class CommentReportController {
     private ModelMapper modelMapper;
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Collection<AddCommentReportDTO>> getReports() {
+    public ResponseEntity<Collection<CommentReportIdDTO>> getReports() {
         Collection<CommentReport> comments = commentService.findAll();
-        Collection<AddCommentReportDTO> commentsDTOS = comments.stream().map(this::convertAddToDTO).toList();
-        return new ResponseEntity<Collection<AddCommentReportDTO>>(commentsDTOS, HttpStatus.OK);
+        Collection<CommentReportIdDTO> commentsDTOS = comments.stream().map(this::convertToIdDTO).toList();
+        return new ResponseEntity<Collection<CommentReportIdDTO>>(commentsDTOS, HttpStatus.OK);
+    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "details", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<CommentReportDetailsDTO>> getReportDetails() {
+        Collection<CommentReport> comments = commentService.findAll();
+        return new ResponseEntity<Collection<CommentReportDetailsDTO>>(comments.stream().map(this::convertToDetailsDto).toList(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,19 +75,24 @@ public class CommentReportController {
     }
 
 
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<CommentReportDTO> deleteReport(@PathVariable("id") Long id) {
         commentService.delete(id);
         return new ResponseEntity<CommentReportDTO>(HttpStatus.NO_CONTENT);
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
+
     @PutMapping(value = "accept/{id}")
     public ResponseEntity<CommentReportDTO> acceptReport(@PathVariable("id") Long id) {
         CommentReport report = commentService.findOne(id);
         report.setReportStatus(ReportStatus.ACCEPTED);
+        comService.delete(report.getReportedRating().getId());
         commentService.update(report);
         return new ResponseEntity<CommentReportDTO>(HttpStatus.NO_CONTENT);
     }
+    @PreAuthorize("hasAuthority('ADMIN')")
+
     @PutMapping(value = "archive/{id}")
     public ResponseEntity<CommentReportDTO> archiveReport(@PathVariable("id") Long id) {
         CommentReport report = commentService.findOne(id);
@@ -105,6 +117,7 @@ public class CommentReportController {
         return new ResponseEntity<CommentReportDTO>(commentDTO, HttpStatus.OK);
     }
 
+
     private CommentReportDTO convertToDto(CommentReport comment) {
         CommentReportDTO commentDTO = modelMapper.map(comment, CommentReportDTO.class);
 
@@ -116,6 +129,10 @@ public class CommentReportController {
     private CommentReport convertAddToEntity(AddCommentReportDTO commentDTO) {
         CommentReport commentReport = new CommentReport();
         commentReport.setReportedComment(comService.findOne(commentDTO.getReportedComment()));
+        if(comService.findOne(commentDTO.getReportedComment()) == null){
+            commentReport.setReportedComment(hostRatingService.findOne(commentDTO.getReportedComment()));
+
+        }
         commentReport.setReportingUser(userService.findOne(commentDTO.getReportingAppUser()));
         commentReport.setReportStatus(ReportStatus.PENDING);
         commentReport.setReason(commentDTO.getReason());
@@ -127,6 +144,26 @@ public class CommentReportController {
         dto.setReportingAppUser(report.getReportingUser().getId());
         dto.setReportedComment(report.getReportedRating().getId());
         dto.setReportStatus(report.getReportStatus());
+        return dto;
+    }
+    private CommentReportIdDTO convertToIdDTO(CommentReport report){
+        CommentReportIdDTO dto = new CommentReportIdDTO();
+        dto.setReason(report.getReason());
+        dto.setReportingAppUser(report.getReportingUser().getId());
+        dto.setReportedComment(report.getReportedRating().getId());
+        dto.setReportStatus(report.getReportStatus());
+        dto.setId(report.getId());
+        return dto;
+    }
+    private CommentReportDetailsDTO convertToDetailsDto(CommentReport report){
+        CommentReportDetailsDTO dto = new CommentReportDetailsDTO ();
+        dto.setReason(report.getReason());
+        dto.setReportingUserName(report.getReportingUser().getUsername());
+        dto.setReportedUserName(report.getReportedRating().getUser().getUsername());
+        dto.setReportedCommentRating(report.getReportedRating().getRating());
+        dto.setReportedCommentText(report.getReportedRating().getText());
+        dto.setReportStatus(report.getReportStatus());
+        dto.setId(report.getId());
         return dto;
     }
 }

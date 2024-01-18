@@ -1,5 +1,6 @@
 package Controllers;
 
+import Services.HostCommentService;
 import Services.IService;
 import model.AccommodationComment;
 import model.HostComment;
@@ -32,7 +33,7 @@ import java.util.Collection;
 public class HostCommentController {
 
     @Autowired
-    private IService<HostComment, Long> hostCommentService;
+    private HostCommentService hostCommentService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<HostComment>> getComments() {
@@ -50,10 +51,15 @@ public class HostCommentController {
 
         return new ResponseEntity<HostComment>(comment, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(value = "/can-rate/{hostId}/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> canRate(@PathVariable("hostId") Long hostId,
+                                           @PathVariable("userId") Long userId) {
+        return new ResponseEntity<Boolean>(hostCommentService.canRate(hostId, userId), HttpStatus.OK);
+    }
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<HostComment> createComment(@RequestBody HostComment comment) throws Exception {
+     public ResponseEntity<HostComment> createComment(@RequestBody HostComment comment) throws Exception {
         hostCommentService.create(comment);
         return new ResponseEntity<HostComment>(comment, HttpStatus.CREATED);
     }

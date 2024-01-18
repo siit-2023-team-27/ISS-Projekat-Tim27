@@ -109,6 +109,8 @@ public class AuthController {
             user = convertToGuest(userDTO);
         }else if(userDTO.getRoles().get(0) == UserType.HOST){
             user = convertToHost(userDTO);
+        }else if(userDTO.getRoles().get(0) == UserType.ADMIN){
+            user = convertToAdmin(userDTO);
         }
         if(user == null){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -140,6 +142,10 @@ public class AuthController {
     private Host convertToHost(UserRegistrationDTO userDTO) {
         return modelMapper.map(userDTO, Host.class);
     }
+    private Admin convertToAdmin(UserRegistrationDTO userDTO) {
+        return modelMapper.map(userDTO, Admin.class);
+    }
+
     private Guest convertToGuest(UserRegistrationDTO userDTO) {
         Guest guest = modelMapper.map(userDTO, Guest.class);
         guest.setCancellationNumber(0);

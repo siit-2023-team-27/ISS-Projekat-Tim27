@@ -27,7 +27,7 @@ public class Guest extends AppUser{
         this.reservations = reservations;
     }
 
-    public long getCancellationNumber() {
+    public Long getCancellationNumber() {
         return cancellationNumber;
     }
 
