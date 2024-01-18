@@ -1,5 +1,6 @@
 package Services;
 
+import DTO.ReportDTO;
 import DTO.SearchAccommodationDTO;
 import Repositories.IRepository;
 import Repositories.ReservationDateRepository;
@@ -12,13 +13,19 @@ import model.DateRange;
 import model.Reservation;
 import model.ReservationDate;
 import model.enums.AccommodationType;
+import model.enums.PriceType;
 import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import util.Helper;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @ComponentScan(basePackageClasses = IRepository.class)
@@ -41,6 +48,68 @@ public class ReservationService implements IService<Reservation, Long> {
     @Override
     public Reservation findOne(Long id) {
         return reservationRepository.findOneById(id);
+    }
+
+    public List<ReportDTO> getReportsFor(DateRange dateRange, Long hostId){
+        List<ReportDTO> reports = new ArrayList<>();
+        for(Accommodation accommodation: accommodationService.findByHost(hostId)){
+            ReportDTO report = new ReportDTO();
+            report.setAccommodation_id(accommodation.getId());
+            for(Reservation reservation: reservationRepository.findForReport(accommodation.getId(), ReservationStatus.ACCEPTED )){
+                if(reservation.getDateRange().isInRange(dateRange)){
+                    for (ReservationDate reservationDate: reservationDateRepository.findAllByReservation_id(reservation.getId())){
+                        if(accommodation.getPriceType() == PriceType.FOR_GUEST){
+                            report.addProfit( reservation.getNumGuests()*reservationDate.getPrice());
+                        }else{
+                            report.addProfit(reservationDate.getPrice());
+                        }
+                    }
+                    report.increaseResNum();
+                }
+            }
+            reports.add(report);
+        }
+        return reports;
+    }
+    public HashMap<Integer, ReportDTO> getReportsFor(int year, Long accommodationId, Long hostId){
+        Accommodation accommodation = accommodationService.findOne(accommodationId);
+        if (accommodation.getHost().getId() != hostId){
+            throw new NotValidException("That is someone else's accommodation");
+        }
+        HashMap<Integer,ReportDTO> reports = new HashMap<>(12);
+        DateRange yearDateRange = Helper.getStartEndDates(year);
+
+        for(Reservation reservation: reservationRepository.findForReport(accommodation.getId(), ReservationStatus.ACCEPTED)){
+            if(!yearDateRange.overlaps(reservation.getDateRange())){
+                continue;
+            }
+            if(reservation.isForReservationCount(year)){
+                int month = reservation.getMonthForReport();
+                if(reports.containsKey(month)){
+                    reports.get(month).increaseResNum();
+                }else {
+                    reports.put(month, new ReportDTO(0.0, 1, 0L));
+                }
+            }
+
+            for (ReservationDate reservationDate: reservationDateRepository.findAllByReservation_id(reservation.getId())){
+                if(Helper.getYear(reservationDate.getDate())!=year){
+                    continue;
+                }
+                int resDateMonth = Helper.getMonth(reservationDate.getDate());
+                if(!reports.containsKey(resDateMonth)){
+                    reports.put(resDateMonth, new ReportDTO(0.0, 0, 0L));
+                }
+                if(accommodation.getPriceType() == PriceType.FOR_GUEST){
+                    reports.get(resDateMonth).addProfit( reservation.getNumGuests()*reservationDate.getPrice());
+                }else{
+                    reports.get(resDateMonth).addProfit(reservationDate.getPrice());
+                }
+            }
+
+        }
+
+        return reports;
     }
 
     public boolean verify(Reservation reservation) {

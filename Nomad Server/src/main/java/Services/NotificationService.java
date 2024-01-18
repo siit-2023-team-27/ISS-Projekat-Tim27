@@ -2,6 +2,7 @@ package Services;
 
 import Repositories.IRepository;
 import Repositories.NotificationRepository;
+import model.AppUser;
 import model.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +14,10 @@ import java.util.Collection;
 public class NotificationService implements IService<Notification, Long> {
     @Autowired
     private NotificationRepository notificationRepository;
+
+    @Autowired
+    private UserService userService;
+
     @Override
     public Collection<Notification> findAll() {
         return notificationRepository.findAll();
@@ -36,5 +41,11 @@ public class NotificationService implements IService<Notification, Long> {
     @Override
     public void delete(Long id) {
         notificationRepository.deleteById(id);
+    }
+
+    public Collection<Notification> getAllForUSer(Long id) {
+        AppUser user = this.userService.findOne(id);
+
+        return notificationRepository.findAllByTargetAppUser_Id(id);
     }
 }

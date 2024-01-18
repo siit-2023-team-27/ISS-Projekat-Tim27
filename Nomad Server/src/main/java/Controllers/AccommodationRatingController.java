@@ -55,6 +55,7 @@ public class AccommodationRatingController {
 
     @GetMapping(value = "/for-accommodation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<RatingDTO>> getRatingsForAccommodation(@PathVariable("id") Long id) {
+        System.out.println("POGODIO RATINGS ACC");
         Collection<AccommodationRating> accommodationRatings = accommodationRatingService.findRatingsForAccommodation(id);
         return new ResponseEntity<Collection<RatingDTO>>(accommodationRatings.stream().map(this::mapRating).toList(), HttpStatus.OK);
     }
