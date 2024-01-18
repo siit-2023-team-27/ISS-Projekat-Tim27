@@ -23,7 +23,7 @@ public class Guest extends AppUser{
     private Map<NotificationType, Boolean> notificationPreferences;
 
 
-    long cancellationNumber;
+    Long cancellationNumber;
 
     public Guest() {
         super();

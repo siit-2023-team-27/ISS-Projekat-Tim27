@@ -1,7 +1,14 @@
 package util;
 
+import model.DateRange;
 import model.enums.UserType;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 public class Helper {
@@ -22,5 +29,33 @@ public class Helper {
     }
         public static boolean isStringValid(String str) {
             return str.length() > 1;
+        }
+
+        public static DateRange getStartEndDates(int year){
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.YEAR, year);
+
+            // Get the start date of the year
+            calendar.set(Calendar.MONTH, Calendar.JANUARY);
+            calendar.set(Calendar.DAY_OF_MONTH, 1);
+            Date startDate = calendar.getTime();
+
+            // Get the end date of the year
+            calendar.set(Calendar.MONTH, Calendar.DECEMBER);
+            calendar.set(Calendar.DAY_OF_MONTH, 31);
+            Date endDate = calendar.getTime();
+            return new DateRange(startDate, endDate);
+        }
+        public static int getMonth(Date date){
+            LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            return localDate.getMonthValue();
+        }
+        public static int getYear(Date date){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
+            return Integer.parseInt(dateFormat.format(date));
+        }
+        public static String dateToString(Date date){
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            return dateFormat.format(date);
         }
 }

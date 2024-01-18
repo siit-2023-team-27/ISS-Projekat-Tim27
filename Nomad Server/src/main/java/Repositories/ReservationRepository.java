@@ -1,9 +1,11 @@
 package Repositories;
 
-
+import model.Accommodation;
+import model.DateRange;
 import model.Reservation;
+import model.ReservationDate;
+import model.enums.AccommodationType;
 import model.enums.ReservationStatus;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +17,9 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     Reservation findOneById(Long id);
 
+
     Collection<Reservation> findAllByAccommodation_Host_id(long userId);
+
 
     Collection<Reservation> findAllByGuest_id(long userId);
 
@@ -54,4 +58,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("hostId") Long hostId
     );
 
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE r.accommodation.id = :id " +
+            "and r.status = :status ")
+    Collection<Reservation> findForReport(
+            @Param("id") Long accommodationId,
+            @Param("status") ReservationStatus status
+    );
+//    AND :currentDate >= r.dateRange.startDate
 }

@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import model.enums.ReservationStatus;
 import org.hibernate.annotations.Fetch;
 import org.springframework.context.annotation.Lazy;
+import util.Helper;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Entity
@@ -38,6 +40,43 @@ public class Reservation {
     }
 
     public Reservation() {}
+
+    public int getMonthForReport(){
+        Calendar c = Calendar.getInstance();
+        c.setTime(dateRange.getStartDate());
+        int[] months = new int[12];
+        Arrays.fill(months, 0);
+        for(; c.getTime().before(dateRange.getFinishDate()); c.add(Calendar.DATE, 1)){
+            LocalDate localDate = c.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            int month = localDate.getMonthValue();
+            months[month-1] +=1;
+        }
+        int max = 0;
+        int month = 0;
+        for(int i = 0; i < 12; i++){
+            if(months[i] > max){
+                month = i;
+                max = months[i];
+            }
+        }
+        return ++month;
+    }
+    public boolean isForReservationCount(int year){
+        if(isBetweenYears() && isEndOfYear(year)){
+            return getMonthForReport() == 12;
+        }else if(isBetweenYears() && !isEndOfYear(year) ){
+            return getMonthForReport() == 1;
+        }else return !isBetweenYears();
+    }
+
+    public boolean isEndOfYear(int year){
+        return Helper.getYear(this.dateRange.getStartDate()) == year;
+    }
+    public boolean isBetweenYears(){
+        int fromMonth = Helper.getYear(this.dateRange.getStartDate());
+        int toMonth = Helper.getYear(this.dateRange.getFinishDate());
+        return fromMonth != toMonth;
+    }
 
     public boolean validForCancel(){
         Calendar calendar = Calendar.getInstance();
