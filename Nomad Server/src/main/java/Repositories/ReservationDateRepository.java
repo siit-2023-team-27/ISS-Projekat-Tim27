@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -33,4 +34,13 @@ public interface ReservationDateRepository extends JpaRepository<ReservationDate
     void deleteByReservation_id(Long id);
     void deleteByReservation_idAndPrice(Long id, Double defaultPrice);
     void deleteById(Long id);
+
+    @Query("select r from ReservationDate r " +
+            "where r.accommodation.id=:accommodationId and r.date between :cutOffDate and CURRENT_DATE" +
+            "  and r.reservation.guest.id = :guestId")
+    Collection<ReservationDate> findDatesForAllowingComment(@Param("accommodationId")long accommodationId, @Param("guestId")Long userId,
+                                                             @Param("cutOffDate") Date cutOffDate);
+
+    Collection<ReservationDate> findAllByAccommodation_Host_IdAndReservationGuest_Id(Long hostId, Long guestId);
 }
+//

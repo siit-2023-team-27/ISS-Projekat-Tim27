@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Date;
 
 @CrossOrigin(
         origins = {
@@ -40,16 +41,16 @@ public class AccommodationRatingController {
         Collection<AccommodationRating> accommodationRatings = accommodationRatingService.findAll();
         return new ResponseEntity<Collection<AccommodationRating>>(accommodationRatings, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccommodationRating> getRating(@PathVariable("id") Long id) {
+    public ResponseEntity<RatingDTO> getRating(@PathVariable("id") Long id) {
         AccommodationRating rating = accommodationRatingService.findOne(id);
 
         if (rating == null) {
-            return new ResponseEntity<AccommodationRating>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<RatingDTO>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<AccommodationRating>(rating, HttpStatus.OK);
+        return new ResponseEntity<RatingDTO>(mapRating(rating), HttpStatus.OK);
     }
 
     @GetMapping(value = "/for-accommodation/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,6 +58,17 @@ public class AccommodationRatingController {
         System.out.println("POGODIO RATINGS ACC");
         Collection<AccommodationRating> accommodationRatings = accommodationRatingService.findRatingsForAccommodation(id);
         return new ResponseEntity<Collection<RatingDTO>>(accommodationRatings.stream().map(this::mapRating).toList(), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(value = "/can-rate/{accommodationId}/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> canRate(@PathVariable("accommodationId") Long accommodationId,
+                                           @PathVariable("userId") Long userId) {
+        return new ResponseEntity<Boolean>(accommodationRatingService.canRate(userId, accommodationId), HttpStatus.OK);
+    }
+    @GetMapping(value = "/has-comment/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> hasComment(@PathVariable("userId") Long userId) {
+        return new ResponseEntity<Boolean>(accommodationRatingService.hasComment(userId), HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('GUEST')")
@@ -79,6 +91,7 @@ public class AccommodationRatingController {
         dto.setRating(rating.getRating());
         dto.setUserName(rating.getUser().getUsername());
         dto.setId(rating.getId());
+        dto.setUserId(rating.getUser().getId());
         return dto;
     }
     public AccommodationRating mapRatingDTO(RatingCreationDTO dto){

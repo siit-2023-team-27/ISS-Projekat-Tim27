@@ -1,5 +1,6 @@
 package model;
 
+import DTO.RatingDTO;
 import jakarta.persistence.*;
 import model.enums.ReportStatus;
 
@@ -12,7 +13,7 @@ public class CommentReport {
     @ManyToOne
     private AppUser reportingAppUser;
     @ManyToOne
-    private AccommodationRating reportedRating;
+    private Rating reportedRating;
     private String reason;
     private ReportStatus reportStatus;
 
@@ -41,11 +42,11 @@ public class CommentReport {
         this.reportingAppUser = reportingAppUser;
     }
 
-    public AccommodationRating getReportedRating() {
+    public Rating getReportedRating() {
         return reportedRating;
     }
 
-    public void setReportedComment(AccommodationRating reportedComment) {
+    public void setReportedComment(Rating reportedComment) {
         this.reportedRating = reportedComment;
     }
 
