@@ -68,7 +68,7 @@ public class AccommodationController {
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
   
-    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping(value = "/unverified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getUnverifiedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.getUnverifiedAccommodations();
@@ -190,7 +190,7 @@ public class AccommodationController {
         accommodationDTO = convertToDto(accommodationService.createAccommodation(accommodation));
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.CREATED);
     }
-    @PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<AccommodationDTO> deleteAccommodation(@PathVariable("id") Long id) {
         accommodationService.delete(id);
@@ -213,7 +213,7 @@ public class AccommodationController {
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "verify/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "verify/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> updateAccommodation(@PathVariable Long id)
             throws Exception {
         Accommodation accommodationForUpdate = accommodationService.findOne(id);

@@ -1,11 +1,9 @@
 package Repositories;
 
-import model.Accommodation;
-import model.DateRange;
+
 import model.Reservation;
-import model.ReservationDate;
-import model.enums.AccommodationType;
 import model.enums.ReservationStatus;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,9 +15,7 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     Reservation findOneById(Long id);
 
-
     Collection<Reservation> findAllByAccommodation_Host_id(long userId);
-
 
     Collection<Reservation> findAllByGuest_id(long userId);
 

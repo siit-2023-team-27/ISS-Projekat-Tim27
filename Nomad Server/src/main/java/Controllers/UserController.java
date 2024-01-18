@@ -1,8 +1,5 @@
 package Controllers;
 
-import DTO.AccommodationDTO;
-import DTO.LoginDTO;
-import DTO.LoginResponseDTO;
 import DTO.UserDTO;
 import Services.AccommodationService;
 import Services.IService;
@@ -15,12 +12,11 @@ import model.Guest;
 
 import model.Host;
 
+import model.enums.NotificationType;
 import model.enums.UserType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Role;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import static model.enums.UserType.ADMIN;
+import java.util.Map;
 
 @CrossOrigin(
         origins = {
@@ -83,7 +78,7 @@ public class UserController {
     //config
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) throws Exception {
-        boolean existUser = this.userService.isRegistrated(userDTO.getUsername());
+        boolean existUser = this.userService.isRegistered(userDTO.getUsername());
         if (existUser) {
             throw new ResourceConflictException(null,"Username already exists");
         }
@@ -126,34 +121,19 @@ public class UserController {
     //config
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO, @PathVariable Long id) throws Exception {
-        AppUser appUserForUpdate = userService.findOne(id);
-        AppUser updatedAppUser;
-        switch (userDTO.getRoles().get(0)){
-            case ADMIN:
-                updatedAppUser = this.convertToEntityAdmin(userDTO);
-                break;
-            case HOST:
-                updatedAppUser = this.convertToEntityHost(userDTO);
-                break;
-            case GUEST:
-                updatedAppUser = this.convertToEntityGuest(userDTO);
-                break;
-            default:
-                updatedAppUser = this.convertToEntity(userDTO);
-        }
+        AppUser updatedAppUser = switch (userDTO.getRoles().get(0)) {
+            case ADMIN -> this.convertToEntityAdmin(userDTO);
+            case HOST -> this.convertToEntityHost(userDTO);
+            case GUEST -> this.convertToEntityGuest(userDTO);
+            default -> this.convertToEntity(userDTO);
+        };
 
-        appUserForUpdate.copyValues(updatedAppUser);
-
-        userService.update(appUserForUpdate);
-
-        if (updatedAppUser == null) {
-            return new ResponseEntity<UserDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        userService.update(updatedAppUser);
 
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/suspend/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> suspendUser(@PathVariable Long id) {
         AppUser user = userService.findOne(id);
         user.setSuspended(true);
@@ -161,12 +141,51 @@ public class UserController {
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PutMapping(value = "/un-suspend/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/un-suspend/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> unsuspentUser(@PathVariable Long id) {
         AppUser user = userService.findOne(id);
         user.setSuspended(false);
         userService.update(user);
         return new ResponseEntity<UserDTO>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
+    @PutMapping(value = "/notifications-preferences/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<NotificationType, Boolean>> manageNotifications(@PathVariable Long id, @RequestParam NotificationType notificationType, @RequestParam boolean value) {
+        AppUser user = userService.findOne(id);
+        if (user instanceof Host) {
+            Host host = (Host) user;
+            Map<NotificationType, Boolean> newNotificationPreferences = host.getNotificationPreferences();
+            newNotificationPreferences.put(notificationType, value);
+            host.setNotificationPreferences(newNotificationPreferences);
+            userService.update2(host);
+            return new ResponseEntity<Map<NotificationType, Boolean>>(newNotificationPreferences, HttpStatus.OK);
+        } else if (user instanceof Guest) {
+            Guest guest = (Guest) user;
+            Map<NotificationType, Boolean> newNotificationPreferences = guest.getNotificationPreferences();
+            newNotificationPreferences.put(notificationType, value);
+            guest.setNotificationPreferences(newNotificationPreferences);
+            userService.update2(guest);
+            return new ResponseEntity<Map<NotificationType, Boolean>>(newNotificationPreferences, HttpStatus.OK);
+        }
+        return new ResponseEntity<Map<NotificationType, Boolean>>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
+    @GetMapping(value = "/notifications-preferences/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<NotificationType, Boolean>> getNotificationPreferences(@PathVariable("id") Long id) {
+        AppUser user = userService.findOne(id);
+        if (user instanceof Host) {
+            Host host = (Host) user;
+            Map<NotificationType, Boolean> notificationPreferences = host.getNotificationPreferences();
+            return ResponseEntity.ok(notificationPreferences);
+
+        } else if (user instanceof Guest) {
+            Guest guest = (Guest) user;
+            Map<NotificationType, Boolean> notificationPreferences = guest.getNotificationPreferences();
+            return ResponseEntity.ok(notificationPreferences);
+        }
+        return null;
     }
 
     private UserDTO convertToDto(AppUser appUser) {
