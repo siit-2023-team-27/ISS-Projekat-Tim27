@@ -69,6 +69,7 @@ public class WebSecurityConfig {
         http.authorizeRequests()
                 //OVDE DOZVOLJAVA RUTE AUTENTIFIKOVANIM KORISNICIMA KO GDE MOZE
                 //.requestMatchers("/api/accommodations").hasAuthority("GUEST")
+                .requestMatchers("/socket/**").permitAll()
                 .requestMatchers("/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST ,"/api/users").permitAll()
                 .requestMatchers(HttpMethod.DELETE ,"/api/users/{id}").permitAll()
@@ -82,7 +83,9 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/notifications").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/amenities").permitAll()
                 .requestMatchers("/api/amenities").permitAll()
+//                .requestMatchers("/api/accommodations/verify/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/price/{accommodationId}/{date}").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/unverified").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/taken-dates/{accommodationId}").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/isAvailable/{accommodationId}/{date}").permitAll()
             // za svaki drugi zahtev korisnik mora biti autentifikovan
@@ -104,6 +107,10 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
                 .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
+                .requestMatchers( HttpMethod.POST,"/api/accommodations")
+//                .requestMatchers( "/api/accommodations/verify/{id}")
+                .requestMatchers( "/images/**")
+                .requestMatchers("/socket/**");
                 .requestMatchers(HttpMethod.POST,"/api/accommodations")
                 .requestMatchers(HttpMethod.GET,"/api/accommodation-ratings/for-accommodation/{id}")
                 //.requestMatchers(HttpMethod.GET,"/api/reports/date-range/{hostId}")

@@ -17,7 +17,7 @@ public class Accommodation implements Serializable {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne (fetch = FetchType.LAZY, cascade = {})
+    @ManyToOne (fetch = FetchType.LAZY, cascade=CascadeType.ALL)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Host host;
     private int minGuests;

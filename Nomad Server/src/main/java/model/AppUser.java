@@ -31,6 +31,8 @@ public abstract class AppUser implements Serializable, UserDetails {
     private boolean verified;
 
     private Timestamp lastPasswordResetDate;
+
+
     // Constructor
     public AppUser(String firstName, String lastName, String address, String username, String password, String phoneNumber) {
         this.firstName = firstName;
