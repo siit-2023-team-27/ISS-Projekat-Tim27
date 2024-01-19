@@ -55,6 +55,7 @@ public class NotificationControllerWebSocket {
                     if(notificationPreferences.get(notification.getNotificationType())) {
                         this.simpMessagingTemplate.convertAndSend("/socket-publisher/" + messageConverted.get("targetAppUser"),
                                 messageConverted);
+
                     }
                 }
                 notificationService.create(notification);
@@ -86,6 +87,7 @@ public class NotificationControllerWebSocket {
         notification.setDate(this.convertToDate(message.get("date")));
         notification.setNotificationType(NotificationType.valueOf(message.get("notificationType")));
         notification.setTargetUser(userService.findOne(Long.parseLong(message.get("targetAppUser"))));
+
 
         return notification;
     }

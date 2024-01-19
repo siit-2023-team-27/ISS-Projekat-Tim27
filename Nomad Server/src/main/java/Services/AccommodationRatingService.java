@@ -76,4 +76,8 @@ public class AccommodationRatingService implements IService<AccommodationRating,
     public boolean hasComment(Long userId){
         return !accommodationRatingRepository.findAllByAppUser_Id(userId).isEmpty();
     }
+
+    public Boolean hasComment(Long userId, Long accommodationId) {
+        return !accommodationRatingRepository.findAllByAppUser_IdAndAccommodation_Id(userId, accommodationId).isEmpty();
+    }
 }

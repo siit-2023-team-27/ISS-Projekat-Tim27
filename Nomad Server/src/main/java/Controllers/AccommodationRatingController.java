@@ -70,6 +70,10 @@ public class AccommodationRatingController {
     public ResponseEntity<Boolean> hasComment(@PathVariable("userId") Long userId) {
         return new ResponseEntity<Boolean>(accommodationRatingService.hasComment(userId), HttpStatus.OK);
     }
+    @GetMapping(value = "/has-comment/{userId}/{accommodationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Boolean> hasCommentOnAccommodation(@PathVariable("userId") Long userId, @PathVariable("accommodationId") Long accommodationId) {
+        return new ResponseEntity<Boolean>(accommodationRatingService.hasComment(userId, accommodationId), HttpStatus.OK);
+    }
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
