@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
+import util.Helper;
 
 import javax.print.attribute.standard.Media;
 import java.util.Collection;
@@ -81,6 +82,8 @@ public class ReservationController {
     @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping (value = "/with-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> getReservationForGuest(@PathVariable("id") Long id) {
+
+        System.out.println("WITH GUEST");
         Collection<ReservationDTO> reservations = reservationService.findReservationsForGuest(id).stream().map(this::convertToDto).toList();
 
         return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
@@ -111,16 +114,17 @@ public class ReservationController {
     }
     @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping (value = "/cancel/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Long> cancelReservation(@PathVariable("id") Long id) {
+        System.out.println("Cancel");
         try{
             reservationService.cancel(id);
         }catch(NotValidException r){
-            return new ResponseEntity<ReservationDTO>( HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Long>(id, HttpStatus.BAD_REQUEST);
         }catch (NullPointerException n){
-            return new ResponseEntity<ReservationDTO>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Long>(id,HttpStatus.NOT_FOUND);
 
         }
-        return new ResponseEntity<ReservationDTO>( HttpStatus.OK);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('GUEST')")
@@ -145,9 +149,10 @@ public class ReservationController {
 
     @PreAuthorize("hasAuthority('GUEST')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<ReservationDTO> deleteReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Long>deleteReservation(@PathVariable("id") Long id) {
+        System.out.println("DELETE");
         reservationService.delete(id);
-        return new ResponseEntity<ReservationDTO>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
     @PutMapping (value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -207,7 +212,7 @@ public class ReservationController {
     }
     private Reservation convertToEntity(ReservationDTO reservationDTO) {
         Reservation reservation =  modelMapper.map(reservationDTO, Reservation.class);
-        reservation.setDateRange(new DateRange(reservationDTO.getStartDate(), reservationDTO.getFinishDate()));
+        reservation.setDateRange(new DateRange(Helper.setMiliseconds(reservationDTO.getStartDate()), Helper.setMiliseconds(reservationDTO.getFinishDate())));
         reservation.setUser((Guest)userService.findOne(reservationDTO.getUser()));
         reservation.setAccommodation(accommodationService.findOne(reservationDTO.getAccommodation()));
         reservation.setId(reservationDTO.getId());

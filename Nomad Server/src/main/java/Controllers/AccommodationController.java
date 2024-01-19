@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Double.MAX_VALUE;
+
 @CrossOrigin(
         origins = {
                 "http://localhost:4200"
@@ -84,6 +86,16 @@ public class AccommodationController {
                              @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
                              @RequestParam(required = false) AccommodationType type) {
 
+
+        if(maximumPrice == null && minimumPrice != null){
+            System.out.println("usaoooo Search");
+            maximumPrice = MAX_VALUE;
+        }else if(maximumPrice != null && minimumPrice == null){
+            minimumPrice = 0.0;
+        }
+        System.out.println(maximumPrice);
+        System.out.println(minimumPrice);
+
         Collection<SearchAccommodationDTO> accommodationsDTOs = accommodationService.getSearchedAndFiltered(city, new DateRange(from, to), peopleNum, minimumPrice,
                                                     maximumPrice, amenity, type);
 
@@ -94,6 +106,11 @@ public class AccommodationController {
     public ResponseEntity<Collection<AccommodationDTO>> filterccommodations(@RequestParam(required = false) Double minimumPrice,
                                                                                            @RequestParam(required = false) Double maximumPrice, @RequestParam(required = false) List<Long> amenity,
                                                                                            @RequestParam(required = false) AccommodationType type) {
+        if(maximumPrice == null && minimumPrice != null){
+            maximumPrice = MAX_VALUE;
+        }else if(maximumPrice != null && minimumPrice == null){
+            minimumPrice = 0.0;
+        }
         if(minimumPrice == null && maximumPrice == null && type == null){
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -141,6 +158,7 @@ public class AccommodationController {
     //config
     @GetMapping("taken-dates/{accommodationId}")
     public ResponseEntity<List<Date>> getAccommodationTakenDates(@PathVariable long accommodationId) {
+        System.out.println("TAKEN DATESS");
         return new ResponseEntity<List<Date>>(accommodationService.getTakenDates(accommodationId), HttpStatus.OK);
     }
     //config
