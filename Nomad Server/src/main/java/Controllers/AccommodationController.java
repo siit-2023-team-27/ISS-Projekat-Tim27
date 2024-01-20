@@ -213,7 +213,6 @@ public class AccommodationController {
         DateRange dateRange = new DateRange(startDateStr, finishDateStr);
         this.accommodationService.setAvailableForDateRange(accommodationId, dateRange);
         String message = "Accommodation is set to available for dates: " + dateRange.toString();
-        String essage = "Accommodation is set to available for dates: " + dateRange.toString();
         return new ResponseEntity<String>(message, HttpStatus.OK);
     }
 
