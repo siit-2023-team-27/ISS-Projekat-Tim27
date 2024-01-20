@@ -1,21 +1,30 @@
 package model;
 
 import jakarta.persistence.*;
+import model.enums.NotificationType;
+
+import java.util.Date;
 
 @Entity
+@Table (name = "notifications")
 public class Notification {
-    private String text;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne (fetch = FetchType.EAGER)
     private AppUser targetAppUser;
+    private String text;
     private String title;
+    private Date date;
+    private NotificationType notificationType;
 
-    public Notification(String text, AppUser targetAppUser, String title) {
+    public Notification(String text, AppUser targetAppUser, String title, Date date, NotificationType notificationType) {
         this.text = text;
         this.targetAppUser = targetAppUser;
         this.title = title;
+        this.date = date;
+        this.notificationType = notificationType;
     }
     public Notification(){}
     public Long getId() {
@@ -53,5 +62,21 @@ public class Notification {
         this.title = notification.title;
         this.text = notification.text;
         this.targetAppUser = notification.targetAppUser;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public NotificationType getNotificationType() {
+        return notificationType;
+    }
+
+    public void setNotificationType(NotificationType notificationType) {
+        this.notificationType = notificationType;
     }
 }

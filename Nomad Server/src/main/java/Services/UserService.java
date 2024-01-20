@@ -1,17 +1,13 @@
 package Services;
 
-import DTO.LoginDTO;
 import Repositories.IRepository;
 import Repositories.UserRepository;
 import model.AppUser;
-import model.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,12 +44,9 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
             return user;
         }
     }
-    public boolean isRegistrated(String username) throws UsernameNotFoundException {
+    public boolean isRegistered(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findOneByUsername(username);
-        if(user!= null){
-            return true;
-        }
-        return false;
+        return user != null;
     }
 
     @Override
@@ -68,7 +61,6 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
 
     @Override
     public void create(AppUser appUser) {
-        //PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         userRepository.save(appUser);
     }
@@ -78,8 +70,17 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
 
     @Override
     public void update(AppUser appUser) {
-        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
-        appUser.setLastPasswordResetDate(new Timestamp(new Date().getTime()));
+        AppUser existingUser = findOne(appUser.getId());
+        if ((existingUser!= null) && (!appUser.getPassword().equals(existingUser.getPassword()))){
+            appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+            System.out.println("new password: " + appUser.getPassword());
+            appUser.setLastPasswordResetDate(new Timestamp(new Date().getTime()));
+        }
+
+        userRepository.save(appUser);
+    }
+
+    public void update2(AppUser appUser) {
         userRepository.save(appUser);
     }
 

@@ -1,16 +1,20 @@
 package Services;
 
-import Repositories.AccommodationRatingRepository;
-import Repositories.AccommodationRepository;
-import Repositories.IRepository;
-import Repositories.UserRepository;
+import Repositories.*;
 import model.Accommodation;
 import model.AccommodationRating;
+import model.Guest;
+import model.ReservationDate;
+import model.enums.ReservationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
 
 @Service
 @ComponentScan(basePackageClasses = IRepository.class)
@@ -22,6 +26,8 @@ public class AccommodationRatingService implements IService<AccommodationRating,
     private UserRepository userRepository;
     @Autowired
     private AccommodationRepository accommodationRepository;
+    @Autowired
+    private ReservationDateRepository reservationDateRepository;
 
     @Override
     public Collection<AccommodationRating> findAll() {
@@ -52,5 +58,22 @@ public class AccommodationRatingService implements IService<AccommodationRating,
 
     public Collection<AccommodationRating> findRatingsForAccommodation(Long id) {
         return accommodationRatingRepository.findAllByAccommodation_Id(id);
+    }
+    public boolean canRate(Long userId, Long accommodationId){
+        LocalDate cutOffDate = LocalDate.now().minusDays(7);
+        Collection<ReservationDate> dates = reservationDateRepository.findDatesForAllowingComment(accommodationId, userId,
+                Date.from(cutOffDate.atStartOfDay(ZoneId.systemDefault()).toInstant())); //This mess gets the Date() 7 days before now
+        if(dates.isEmpty()){
+            return false;
+        }
+        for (ReservationDate date: dates){
+            if (date.getReservation().getStatus() == ReservationStatus.ACCEPTED){
+                return true;
+            }
+        }
+        return accommodationRatingRepository.findAllByAppUser_IdAndAccommodation_Id(userId, accommodationId).isEmpty();
+    }
+    public boolean hasComment(Long userId){
+        return !accommodationRatingRepository.findAllByAppUser_Id(userId).isEmpty();
     }
 }

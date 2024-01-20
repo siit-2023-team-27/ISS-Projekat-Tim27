@@ -4,6 +4,7 @@ import DTO.AccommodationDTO;
 import DTO.NotificationDTO;
 import Services.IService;
 import Services.NotificationService;
+import Services.UserService;
 import model.Accommodation;
 import model.Notification;
 import org.modelmapper.ModelMapper;
@@ -24,11 +25,20 @@ public class NotificationController {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private ModelMapper modelMapper;
+    private UserService userService;
 
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<NotificationDTO>> getNotifications() {
         Collection<Notification> notifications = notificationService.findAll();
+        Collection<NotificationDTO> notificationDTOS = notifications.stream().map(this::convertToDto).toList();
+        return new ResponseEntity<Collection<NotificationDTO>>(notificationDTOS, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAuthority('HOST') or hasAuthority('GUEST')")
+    @GetMapping(value = "/user/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Collection<NotificationDTO>> getNotificationsForUser(@PathVariable("id") Long userId) {
+        Collection<Notification> notifications = notificationService.getAllForUSer(userId);
         Collection<NotificationDTO> notificationDTOS = notifications.stream().map(this::convertToDto).toList();
         return new ResponseEntity<Collection<NotificationDTO>>(notificationDTOS, HttpStatus.OK);
     }
@@ -75,11 +85,21 @@ public class NotificationController {
     }
 
     private NotificationDTO convertToDto(Notification notification) {
-        NotificationDTO notificationDTO = modelMapper.map(notification, NotificationDTO.class);
-
+        NotificationDTO notificationDTO = new NotificationDTO();
+        notificationDTO.setTitle(notification.getTitle());
+        notificationDTO.setText(notification.getText());
+        notificationDTO.setDate(notification.getDate());
+        notificationDTO.setNotificationType(notification.getNotificationType());
+        notificationDTO.setTargetAppUser(notification.getTargetUser().getId());
         return notificationDTO;
     }
     private Notification convertToEntity(NotificationDTO notificationDTO) {
-        return modelMapper.map(notificationDTO, Notification.class);
+        Notification notification = new Notification();
+        notification.setTitle(notificationDTO.getTitle());
+        notification.setText(notificationDTO.getText());
+        notification.setDate(notificationDTO.getDate());
+        notification.setNotificationType(notificationDTO.getNotificationType());
+        notification.setTargetUser(userService.findOne(notificationDTO.getTargetAppUser()));
+        return notification;
     }
 }

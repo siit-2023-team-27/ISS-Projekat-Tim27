@@ -3,6 +3,7 @@ package Services;
 import DTO.AccommodationDTO;
 import DTO.SearchAccommodationDTO;
 import Repositories.*;
+import jakarta.persistence.EntityNotFoundException;
 import model.*;
 import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
@@ -231,17 +232,33 @@ public class AccommodationService implements IService<Accommodation, Long> {
     }
     public Double getPrice(long accommodationId, Date date) {
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        Accommodation accommodation = accommodationRepository.findOneById(accommodationId);
+        if(accommodation == null){
+            throw new IllegalArgumentException("Non-existent accommodation");
+        }
         if (reservationDate == null){
-            return accommodationRepository.findOneById(accommodationId).getDefaultPrice();
+            return accommodation.getDefaultPrice();
         }else{
             if(reservationDate.getPrice() != 0){
                 return reservationDate.getPrice();
             }
-            return accommodationRepository.findOneById(accommodationId).getDefaultPrice();
+            return accommodation.getDefaultPrice();
         }
     }
 
     public boolean setPrice(long accommodationId, double price, Date date) {
+        if(price < 0){
+            //Price is less than 0 (assuming we allow "free" dates
+            return false;
+        }
+        if(accommodationRepository.findOneById(accommodationId) == null){
+            //Accommodation doesn't exist
+            return false;
+        }
+        if(date.before(new Date())){
+            //Date is before now
+            return false;
+        }
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
         if(reservationDate != null) {
             if(reservationDate.getReservation() != null){
@@ -261,7 +278,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
         return true;
     }
 
-    public void setPriceForDateRange(long accommodationId, double price, DateRange dateRange) {
+    public boolean setPriceForDateRange(long accommodationId, double price, DateRange dateRange) {
         Date startDate = dateRange.getStartDate();
         Date endDate = dateRange.getFinishDate();
         Calendar calendar = Calendar.getInstance();
@@ -269,18 +286,32 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
         while (calendar.getTime().before(endDate) || calendar.getTime().equals(endDate)) {
             Date currentDate = calendar.getTime();
-            setPrice(accommodationId, price, currentDate);
+            if(!setPrice(accommodationId, price, currentDate)){
+                return false;
+            }
             calendar.add(Calendar.DATE, 1);
         }
+        return true;
     }
 
-    public void setUnavailable(long accommodationId, Date date) {
+    public boolean setUnavailable(long accommodationId, Date date) {
+        if(date.before(new Date())){
+            //Date is before now
+            return false;
+        }
+        if(accommodationRepository.findOneById(accommodationId) == null){
+            //Accommodation doesn't exist
+            return false;
+        }
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
         if(reservationDate != null) {
             if(reservationDate.getReservation() == null) {
-                reservationDate.setReservation(new Reservation());
+                Reservation reservation = new Reservation();
+                reservation.setUser(null);
+                reservationDate.setReservation(reservation);
+
                 this.reservationDateRepository.save(reservationDate);
-                return;
+                return true;
             }
         }
         Accommodation ac = this.accommodationRepository.findOneById(accommodationId);
@@ -288,6 +319,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
                 new Reservation(null, ac, null, 0, ReservationStatus.REJECTED),
                 0, date);
         this.reservationDateRepository.save(reservationDate);
+        return true;
     }
 
     public void setUnavailableForDateRange(long accommodationId, DateRange dateRange) {
@@ -298,35 +330,48 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
         while (calendar.getTime().before(endDate) || calendar.getTime().equals(endDate)) {
             Date currentDate = calendar.getTime();
-            setUnavailable(accommodationId, currentDate);
+            if(!setUnavailable(accommodationId, currentDate)){
+                throw new EntityNotFoundException("Accommodation doesn't exist");
+            }
             calendar.add(Calendar.DATE, 1);
         }
     }
 
-    public void setAvailable(long accommodationId, Date date) {
+    public boolean setAvailable(long accommodationId, Date date) {
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
+        if(reservationDate.getReservation().getUser().getUsername() == null){
+            reservationDate.getReservation().setUser(null);
+        }
+        if(date.before(new Date())){
+            //Date is before now
+            return false;
+        }
+        if(accommodationRepository.findOneById(accommodationId) == null){
+            //Accommodation doesn't exist
+            return false;
+        }
         if(reservationDate == null) {
             System.out.println("Already available");
             //already available
-            return;
+            return false;
         }
 
         if(reservationDate.getReservation() != null){
             //there is active reservation for this date
             if(reservationDate.getReservation().getUser() != null) {
                 System.out.println("There is an active reservation for date: " + date.toString());
-                return;
+                return false;
             }
 
             System.out.println("Host previously set up accommodation to unavailable");
             this.reservationDateRepository.delete(reservationDate);
-            return;
+            return true;
         }
 
         //only price is stored in this reservationDate
         System.out.println("Only price is stored in this reservationDate");
         this.reservationDateRepository.delete(reservationDate);
-        return;
+        return true;
     }
 
     public void setAvailableForDateRange(long accommodationId, DateRange dateRange) {

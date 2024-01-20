@@ -1,12 +1,15 @@
 package Controllers;
 
 import DTO.AccommodationDTO;
+import DTO.UserReportDetailsDTO;
 import DTO.UserReportDto;
 import Services.IService;
 import Services.UserReportService;
 import Services.UserService;
 import model.Accommodation;
+import model.AppUser;
 import model.UserReport;
+import model.enums.ReportStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -17,7 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.parser.Entity;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @CrossOrigin(
         origins = {
@@ -47,6 +52,15 @@ public class UserReportController {
         Collection<UserReport> userReports = userReportService.findAll();
         return new ResponseEntity<Collection<UserReport>>(userReports, HttpStatus.OK);
     }
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "details")
+    public ResponseEntity<Collection<UserReportDetailsDTO>> getUserReportDetails() {
+        Collection<UserReport> userReports = userReportService.findAll();
+        Collection<UserReportDetailsDTO> userReportDetails = userReports.stream().map(this::toDetails).toList();
+        return new ResponseEntity<Collection<UserReportDetailsDTO>>(userReportDetails, HttpStatus.OK);
+    }
+
+
+
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserReport> getUserReport(@PathVariable("id") Long id) {
         UserReport userReport = userReportService.findOne(id);
@@ -67,6 +81,22 @@ public class UserReportController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<UserReport> deleteUserReport(@PathVariable("id") Long id) {
         userReportService.delete(id);
+        return new ResponseEntity<UserReport>(HttpStatus.NO_CONTENT);
+    }
+    @PutMapping(value = "archive/{id}")
+    public ResponseEntity<UserReport> archiveUserReport(@PathVariable("id") Long id) {
+        UserReport report = userReportService.findOne(id);
+        report.setReportStatus(ReportStatus.ARCHIVED);
+        userReportService.update(report);
+        return new ResponseEntity<UserReport>(HttpStatus.NO_CONTENT);
+    }
+    @PutMapping(value = "accept/{id}")
+    public ResponseEntity<UserReport> acceptUserReport(@PathVariable("id") Long id) {
+        UserReport report = userReportService.findOne(id);
+        report.setReportStatus(ReportStatus.ACCEPTED);
+        report.getReportedUser().setSuspended(true);
+        userService.update(report.getReportedUser());
+        userReportService.update(report);
         return new ResponseEntity<UserReport>(HttpStatus.NO_CONTENT);
     }
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -101,5 +131,15 @@ public class UserReportController {
         dto.setReportStatus(ur.getReportStatus());
         return dto;
     }
-
+    private UserReportDetailsDTO toDetails(UserReport ur) {
+        UserReportDetailsDTO dto = new UserReportDetailsDTO();
+        dto.setReportingUser(ur.getReportingUser().getId());
+        dto.setReportedUser(ur.getReportedUser().getId());
+        dto.setReason(ur.getReason());
+        dto.setReportStatus(ur.getReportStatus());
+        dto.setReportedUserName(ur.getReportedUser().getUsername());
+        dto.setReportingUserName(ur.getReportingUser().getUsername());
+        dto.setId(ur.getId());
+        return dto;
+    }
 }

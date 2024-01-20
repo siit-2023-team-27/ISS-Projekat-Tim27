@@ -59,7 +59,6 @@ public class WebSecurityConfig {
 
     @Autowired
     private TokenUtils tokenUtils;
-    //[TODO] PROVALI PROBLEM SA AUTORIZACIJOM
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("1. FILTER CHAIN");
@@ -69,6 +68,7 @@ public class WebSecurityConfig {
         http.authorizeRequests()
                 //OVDE DOZVOLJAVA RUTE AUTENTIFIKOVANIM KORISNICIMA KO GDE MOZE
                 //.requestMatchers("/api/accommodations").hasAuthority("GUEST")
+                .requestMatchers("/socket/**").permitAll()
                 .requestMatchers("/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST ,"/api/users").permitAll()
                 .requestMatchers(HttpMethod.DELETE ,"/api/users/{id}").permitAll()
@@ -82,8 +82,9 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST,"/api/notifications").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/amenities").permitAll()
                 .requestMatchers("/api/amenities").permitAll()
-                //.requestMatchers(HttpMethod.GET ,"/api/accommodations/price/{accommodationId}/{date}").permitAll()
-                //.requestMatchers(HttpMethod.GET ,"/api/accommodations/taken-dates/{accommodationId}").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/price/{accommodationId}/{date}").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/unverified").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/accommodations/taken-dates/{accommodationId}").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/isAvailable/{accommodationId}/{date}").permitAll()
             // za svaki drugi zahtev korisnik mora biti autentifikovan
                 .anyRequest().authenticated().and()
@@ -104,12 +105,12 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
                 .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
-                .requestMatchers(HttpMethod.GET, "/api/accommodations/taken-dates/{accommodationId}")
-                .requestMatchers(HttpMethod.POST,"/api/accommodations")
+                .requestMatchers( HttpMethod.POST,"/api/accommodations")
+                .requestMatchers( HttpMethod.GET,"/api/accommodation-ratings/for-accommodation")
                 .requestMatchers(HttpMethod.GET,"/api/accommodation-ratings/for-accommodation/{id}")
                 .requestMatchers(HttpMethod.GET,"/api/reports/generate-pdf/accommodation/{hostId}/{accommodationId}/{year}")
                 .requestMatchers(HttpMethod.GET,"/api/reports/generate-pdf/date-range/{hostId}")
-                .requestMatchers(HttpMethod.GET ,"/api/accommodations/price/{accommodationId}/{date}")
+                .requestMatchers("/socket/**")
                 .requestMatchers( "/images/**");
     }
 }

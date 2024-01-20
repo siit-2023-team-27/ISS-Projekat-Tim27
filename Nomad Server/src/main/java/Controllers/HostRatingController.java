@@ -59,6 +59,7 @@ public class HostRatingController {
         dto.setText(rating.getText());
         dto.setRating(rating.getRating());
         dto.setUserName(rating.getUser().getUsername());
+        dto.setId(rating.getId());
         return dto;
     }
     public HostRating mapRatingDTO(RatingCreationDTO dto){
