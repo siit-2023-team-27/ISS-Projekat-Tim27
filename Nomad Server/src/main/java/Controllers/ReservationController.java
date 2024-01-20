@@ -94,7 +94,7 @@ public class ReservationController {
         if(!succesfull){
             return new ResponseEntity<ReservationDTO>(HttpStatus.NOT_FOUND);
         }
-        reservationService.declineOverlaping(reservation);
+        //reservationService.declineOverlaping(reservation);
         ReservationDTO reservationDTO = convertToDto(reservation);
         return new ResponseEntity<ReservationDTO>( reservationDTO, HttpStatus.OK);
     }

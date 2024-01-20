@@ -113,10 +113,12 @@ public class ReservationService implements IService<Reservation, Long> {
     }
 
     public boolean verify(Reservation reservation) {
-        if (reservation == null){
-            return false;
-        }
+        if (reservation == null){ return false; }
+        if(reservation.getStatus() == ReservationStatus.CANCELED) { return false; }
+        if(reservation.getStatus() == ReservationStatus.REJECTED) { return false; }
+
         reservation.setStatus(ReservationStatus.ACCEPTED);
+        declineOverlaping(reservation);
         this.createReservationDates(reservation);
         reservationRepository.save(reservation);
         return true;
