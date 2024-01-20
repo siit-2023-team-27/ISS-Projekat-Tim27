@@ -1,16 +1,16 @@
 package DTO;
 
-import model.Amenity;
-import model.Comment;
-import model.Rating;
+import model.*;
 import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
 import model.enums.ConfirmationType;
 import model.enums.PriceType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SearchAccommodationDTO extends AccommodationDTO{
+    //List<AccommodationRating> ratings;
     Double totalPrice;
     Double pricePerNight;
     double averageRating;
@@ -44,10 +44,31 @@ public class SearchAccommodationDTO extends AccommodationDTO{
         return averageRating;
     }
 
-//    public void setAverageRating() {
-//        for(Rating rating: this.getRatings()){
-//            this.averageRating += rating.getRating();
-//        }
-//        this.averageRating = this.averageRating/this.getRatings().size();
+//    public List<AccommodationRating> getRatings() {
+//        return ratings;
 //    }
+//
+//    public void setRatings(List<AccommodationRating> ratings) {
+//        this.ratings = ratings;
+//    }
+
+    public void setPricePerNight(Double pricePerNight) {
+        this.pricePerNight = pricePerNight;
+    }
+
+//    public void setAverageRating(double averageRating) {
+//        this.averageRating = averageRating;
+//    }
+
+    public void setAverageRating(List<AccommodationRating> ratings) {
+        for(Rating rating: ratings){
+            this.averageRating += rating.getRating();
+        }
+        if(!ratings.isEmpty()){
+            this.averageRating = this.averageRating/ratings.size();
+        }else{
+            this.averageRating = 0;
+        }
+
+    }
 }
