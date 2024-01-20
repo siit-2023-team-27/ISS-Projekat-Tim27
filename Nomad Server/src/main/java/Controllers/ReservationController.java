@@ -75,42 +75,40 @@ public class ReservationController {
     @PreAuthorize("hasAuthority('HOST')")
     @GetMapping (value = "/with-host/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> getReservationForUser(@PathVariable("id") Long id) {
+        System.out.println("WITH HOST");
         Collection<ReservationDTO> reservations = reservationService.findReservationsForHost(id).stream().map(this::convertToDto).toList();
-
         return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping (value = "/with-guest/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<ReservationDTO>> getReservationForGuest(@PathVariable("id") Long id) {
-
         System.out.println("WITH GUEST");
         Collection<ReservationDTO> reservations = reservationService.findReservationsForGuest(id).stream().map(this::convertToDto).toList();
-
         return new ResponseEntity<Collection<ReservationDTO>>(reservations, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/confirm/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReservationDTO> verifyReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Long> verifyReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.findOne(id);
         boolean succesfull = reservationService.verify(reservation);
 
         if(!succesfull){
-            return new ResponseEntity<ReservationDTO>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Long>(id, HttpStatus.NOT_FOUND);
         }
         reservationService.declineOverlaping(reservation);
         ReservationDTO reservationDTO = convertToDto(reservation);
-        return new ResponseEntity<ReservationDTO>( reservationDTO, HttpStatus.OK);
+        return new ResponseEntity<Long>( id, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/reject/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReservationDTO> declineReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<Long> declineReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.findOne(id);
         if (reservation == null){
-            return new ResponseEntity<ReservationDTO>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Long>(id, HttpStatus.NOT_FOUND);
         }
         reservationService.decline(reservation);
         ReservationDTO reservationDTO = convertToDto(reservation);
-        return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.OK);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
     @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping (value = "/cancel/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -88,13 +88,10 @@ public class AccommodationController {
 
 
         if(maximumPrice == null && minimumPrice != null){
-            System.out.println("usaoooo Search");
             maximumPrice = MAX_VALUE;
         }else if(maximumPrice != null && minimumPrice == null){
             minimumPrice = 0.0;
         }
-        System.out.println(maximumPrice);
-        System.out.println(minimumPrice);
 
         Collection<SearchAccommodationDTO> accommodationsDTOs = accommodationService.getSearchedAndFiltered(city, new DateRange(from, to), peopleNum, minimumPrice,
                                                     maximumPrice, amenity, type);
