@@ -53,10 +53,14 @@ public class FavouriteAccommodationController {
     @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(value = "/like-dislike/{accommodationId}/{guestId}")
     public ResponseEntity<Boolean> likeOrDislike(@PathVariable long accommodationId, @PathVariable long guestId) {
+
+        System.out.println("LIKEE");
         FavouriteAccommodation favourite = this.favouriteAccommodationService.findForAccommodationAndGuest(accommodationId, guestId);
         if (favourite == null) {
             //add accommodation to favourites
             Accommodation accommodation = accommodationService.findOne(accommodationId);
+            System.out.println(guestId);
+            System.out.println( userService.findOne(guestId).getAuthorities());
             Guest guest = (Guest) userService.findOne(guestId);
             this.favouriteAccommodationService.create(new FavouriteAccommodation(0L, guest, accommodation));
             return new ResponseEntity<Boolean>(true, HttpStatus.OK);
@@ -70,10 +74,10 @@ public class FavouriteAccommodationController {
 
     @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping(value = "/guest/{guestId}")
-    public ResponseEntity<Collection<FavouriteAccommodation>> getFavouritesForUser(@PathVariable("guestId") Long guestId) {
+    public ResponseEntity<Collection<AccommodationDTO>> getFavouritesForUser(@PathVariable("guestId") Long guestId) {
         Collection<FavouriteAccommodation> favAccommodations = favouriteAccommodationService.findAllForGuest(guestId);
-        //Collection<FavouriteAccommodationDTO> favAccommodationsDTOs = favAccommodations.stream().map(this::convertToDto).toList();
-        return new ResponseEntity<Collection<FavouriteAccommodation>>(favAccommodations, HttpStatus.OK);
+        Collection<AccommodationDTO> favAccommodationsDTOs = favAccommodations.stream().map(this::getAccommodation).toList();
+        return new ResponseEntity<Collection<AccommodationDTO>>(favAccommodationsDTOs, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAuthority('GUEST')")
@@ -88,6 +92,11 @@ public class FavouriteAccommodationController {
 
     private FavouriteAccommodationDTO convertToDto(FavouriteAccommodation accommodation) {
         FavouriteAccommodationDTO accommodationDTO = modelMapper.map(accommodation, FavouriteAccommodationDTO.class);
+
+        return accommodationDTO;
+    }
+    private AccommodationDTO getAccommodation(FavouriteAccommodation accommodation) {
+        AccommodationDTO accommodationDTO = modelMapper.map(accommodation.getAccommodation(), AccommodationDTO.class);
 
         return accommodationDTO;
     }
