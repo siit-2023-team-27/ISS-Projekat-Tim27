@@ -198,7 +198,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
     }
     private SearchAccommodationDTO convertToSearchDto(Accommodation accommodation, int nights, Double totalPrice) {
         SearchAccommodationDTO accommodationDTO = modelMapper.map(accommodation, SearchAccommodationDTO.class);
-//        accommodationDTO.setAverageRating();
+        accommodationDTO.setAverageRating(accommodation.getRatings());
         accommodationDTO.setTotalPrice(totalPrice);
         accommodationDTO.setPricePerNight(nights);
         return accommodationDTO;

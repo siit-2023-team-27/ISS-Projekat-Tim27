@@ -113,10 +113,12 @@ public class ReservationService implements IService<Reservation, Long> {
     }
 
     public boolean verify(Reservation reservation) {
-        if (reservation == null){
-            return false;
-        }
+        if (reservation == null){ return false; }
+        if(reservation.getStatus() == ReservationStatus.CANCELED) { return false; }
+        if(reservation.getStatus() == ReservationStatus.REJECTED) { return false; }
+
         reservation.setStatus(ReservationStatus.ACCEPTED);
+        declineOverlaping(reservation);
         this.createReservationDates(reservation);
         reservationRepository.save(reservation);
         return true;
@@ -241,10 +243,14 @@ public class ReservationService implements IService<Reservation, Long> {
         Calendar c = Calendar.getInstance();
         c.setTime(reservation.getDateRange().getStartDate());
         for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){
+            System.out.println(c.getTime());
+            System.out.println(c.getTime().getTime());
             if (!accommodationService.isAvailable(reservation.getAccommodation().getId(), c.getTime()) ){
                 return false;
             }
+
         }
+
         return true;
     }
     @Override

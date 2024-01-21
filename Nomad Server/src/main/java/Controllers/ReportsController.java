@@ -52,6 +52,7 @@ public class ReportsController {
                                                                                    @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date from,
             @RequestParam(required = true)@DateTimeFormat(pattern = "MM/dd/yyyy") Date to) throws JRException, FileNotFoundException {
 
+
         List<ReportDTO> reports = reservationService.getReportsFor(new DateRange(from, to), hostId);
 
         return new ResponseEntity<Collection<ReportDTO>>( reports, HttpStatus.OK);

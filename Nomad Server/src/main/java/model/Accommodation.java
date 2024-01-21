@@ -34,7 +34,6 @@ public class Accommodation implements Serializable {
     @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "accommodation")
     private List<AccommodationRating> ratings;
     private AccommodationStatus status;
-
     @OneToMany (cascade =  CascadeType.ALL)
     private List<ReservationDate> reeservationDates;
     private ConfirmationType confirmationType;

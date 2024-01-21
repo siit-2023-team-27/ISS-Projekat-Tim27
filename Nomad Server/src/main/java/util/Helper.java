@@ -46,9 +46,19 @@ public class Helper {
             Date endDate = calendar.getTime();
             return new DateRange(startDate, endDate);
         }
+        public static Date setMiliseconds(Date date){
+            Calendar c = Calendar.getInstance();
+            c.set(Helper.getYear(date), Helper.getMonth(date)-1, Helper.getDay(date), 0, 0,0); // Month is 0-based in Calendar
+            c.set(Calendar.MILLISECOND, 0);
+            return c.getTime();
+        }
         public static int getMonth(Date date){
             LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             return localDate.getMonthValue();
+        }
+        public static int getDay(Date date){
+            LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            return localDate.getDayOfMonth();
         }
         public static int getYear(Date date){
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy");
