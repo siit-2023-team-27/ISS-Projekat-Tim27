@@ -258,7 +258,7 @@ public class AccommodationController {
     }
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping(value = "verify/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AccommodationDTO> updateAccommodation(@PathVariable Long id)
+    public ResponseEntity<AccommodationDTO> verifyAcommodation(@PathVariable Long id)
             throws Exception {
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
         accommodationForUpdate.setVerified(true);
@@ -266,6 +266,18 @@ public class AccommodationController {
         accommodationService.update(accommodationForUpdate);
         return new ResponseEntity<AccommodationDTO>(convertToDto(accommodationForUpdate), HttpStatus.OK);
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping(value = "decline/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AccommodationDTO> declineAcommodation(@PathVariable Long id)
+            throws Exception {
+        Accommodation accommodationForUpdate = accommodationService.findOne(id);
+        accommodationForUpdate.setVerified(false);
+        accommodationForUpdate.setStatus(AccommodationStatus.PENDING);
+        accommodationService.update(accommodationForUpdate);
+        return new ResponseEntity<AccommodationDTO>(convertToDto(accommodationForUpdate), HttpStatus.OK);
+    }
+
     @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping(value = "/favourite", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AccommodationDTO> favouriteAccommodation(@RequestParam() Long userID, @RequestParam() Long accommodationID) {

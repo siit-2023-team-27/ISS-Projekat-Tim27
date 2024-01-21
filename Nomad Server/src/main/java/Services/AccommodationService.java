@@ -339,9 +339,6 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
     public boolean setAvailable(long accommodationId, Date date) {
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
-        if(reservationDate.getReservation().getUser().getUsername() == null){
-            reservationDate.getReservation().setUser(null);
-        }
         if(date.before(new Date())){
             //Date is before now
             return false;
@@ -355,6 +352,10 @@ public class AccommodationService implements IService<Accommodation, Long> {
             //already available
             return false;
         }
+
+//        if(reservationDate.getReservation().getUser().getUsername() == null){
+//            reservationDate.getReservation().setUser(null);
+//        }
 
         if(reservationDate.getReservation() != null){
             //there is active reservation for this date
