@@ -111,6 +111,7 @@ public class AuthController {
         if(user == null){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         this.userService.create(user);
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
         confirmationTokenService.create(confirmationToken);
@@ -147,6 +148,7 @@ public class AuthController {
     private Guest convertToGuest(UserRegistrationDTO userDTO) {
         Guest guest = modelMapper.map(userDTO, Guest.class);
         guest.setCancellationNumber(0);
+        guest.setNotificationPreferences(new HashMap<>());
 
         guest.setNotificationPreferences(new HashMap<>());
 
