@@ -20,7 +20,7 @@ public class MailService {
                 "http://localhost:8080/auth/confirm-account?token="+confirmationToken.getConfirmationToken());
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sg = new SendGrid("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\n");
+        SendGrid sg = new SendGrid("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");
         Request request = new Request();
         try {
             request.setMethod(Method.POST);

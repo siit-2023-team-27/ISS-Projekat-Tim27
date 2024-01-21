@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import util.TokenUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 @CrossOrigin(
         origins = {
@@ -110,6 +111,7 @@ public class AuthController {
         if(user == null){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         this.userService.create(user);
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
         confirmationTokenService.create(confirmationToken);
@@ -135,7 +137,9 @@ public class AuthController {
         return userDTO;
     }
     private Host convertToHost(UserRegistrationDTO userDTO) {
-        return modelMapper.map(userDTO, Host.class);
+        Host host = modelMapper.map(userDTO, Host.class);
+        host.setNotificationPreferences(new HashMap<>());
+        return host;
     }
     private Admin convertToAdmin(UserRegistrationDTO userDTO) {
         return modelMapper.map(userDTO, Admin.class);
@@ -144,6 +148,7 @@ public class AuthController {
     private Guest convertToGuest(UserRegistrationDTO userDTO) {
         Guest guest = modelMapper.map(userDTO, Guest.class);
         guest.setCancellationNumber(0);
+        guest.setNotificationPreferences(new HashMap<>());
 
 
         return guest;
