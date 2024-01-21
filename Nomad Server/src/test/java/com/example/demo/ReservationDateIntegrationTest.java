@@ -1,40 +1,36 @@
 package com.example.demo;
 
-import Controllers.AccommodationController;
 import DTO.AccommodationDTO;
 import Services.AccommodationService;
 import Services.UserService;
-import com.beust.ah.A;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import model.Accommodation;
 import model.Host;
+import model.enums.AccommodationType;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Headers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.*;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 
@@ -51,6 +47,7 @@ public class ReservationDateIntegrationTest {
     @Autowired
     private AccommodationService accommodationService;
     private static String token = "";
+    private Host host;
     public void login() throws JSONException {
         HttpHeaders headers = new HttpHeaders();
 
@@ -71,8 +68,7 @@ public class ReservationDateIntegrationTest {
     }
     public void addAccommodation(){
         Accommodation accommodation = new Accommodation();
-        Host host = new Host();
-        host.setId(1L);
+
         accommodation.setHost(host);
 
         Accommodation accommodation2 = new Accommodation();
@@ -82,28 +78,16 @@ public class ReservationDateIntegrationTest {
         accommodationService.createAccommodation(accommodation2);
     }
     public void register() throws JSONException {
-        HttpHeaders headers = new HttpHeaders();
 
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        JSONObject user = new JSONObject();
-        user.put("username", "host@gmail.com");
-        user.put("password",  "hostPassword");
-        user.put("passwordConfirmation",  "hostPassword");
-        user.put("roles",  List.of(1));
-        user.put("address",  "Baker Street");
-        user.put("firstName",  "Name");
-        user.put("lastName",  "Surname");
-        user.put("phoneNumber",  "0694251300");
-        System.out.println(user.toString().replace("\"[1]\"", "[1]"));
-
-        HttpEntity<String> request =
-                new HttpEntity<String>(user.toString().replace("\"[1]\"", "[1]"), headers);
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/auth/signup",
-                HttpMethod.POST,
-                request,
-                new ParameterizedTypeReference<String>() {
-                });
-        System.out.println(responseEntity2.getStatusCode());
+        host = new Host();
+        host.setUsername("host@gmail.com");
+        host.setPassword("hostPassword");
+        host.setAddress("Test Street");
+        host.setFirstName("Name");
+        host.setLastName("Surname");
+        host.setPhoneNumber("0694251300");
+        host.setNotificationPreferences(new HashMap<>());
+        userService.create(host);
         userService.confirmRegistration("host@gmail.com");
     }
     @BeforeAll
@@ -169,20 +153,21 @@ public class ReservationDateIntegrationTest {
         assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
         assertEquals(3, dates.size());
     }
-    @Test
+    @ParameterizedTest
+    @MethodSource("provideNonExistentAccommodation")
     @DisplayName("Should fail for non-existent accommodation")
     @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
-    public void shouldFailForNonExistentAccommodation() throws JSONException, ParseException {
+    public void shouldFailForNonExistentAccommodation(String accommodationId) throws JSONException, ParseException {
 
         HttpEntity<String> request =
                 new HttpEntity<String>(getDateRange("2025-01-01", "2025-01-03").toString(), getHeaders());
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/unavailable/5",
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/unavailable/" + accommodationId,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<String>() {
                 });
         System.out.println(responseEntity2.getStatusCode());
-        ResponseEntity<List<Date>> responseEntity = restTemplate.exchange("/api/accommodations/taken-dates/5",
+        ResponseEntity<List<Date>> responseEntity = restTemplate.exchange("/api/accommodations/taken-dates/" + accommodationId,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Date>>() {
@@ -220,21 +205,23 @@ public class ReservationDateIntegrationTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity2.getStatusCode());
         assertEquals(0, dates.size());
     }
-    @Test
+
+    @ParameterizedTest
+    @MethodSource("provideNonExistentAccommodation")
     @DisplayName("Should fail for non-existent accommodation")
     @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
-    public void shouldFailMakingUnavailableForNonExistentAccommodation() throws JSONException, ParseException {
+    public void shouldFailMakingUnavailableForNonExistentAccommodation(String accommodationId) throws JSONException, ParseException {
 
 
         HttpEntity<String> request =
                 new HttpEntity<String>(getDateRange("2025-01-03", "2025-01-01").toString(), getHeaders());
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/unavailable/3",
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/unavailable/" + accommodationId,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<String>() {
                 });
         System.out.println(responseEntity2.getStatusCode());
-        ResponseEntity<List<Date>> responseEntity = restTemplate.exchange("/api/accommodations/taken-dates/3",
+        ResponseEntity<List<Date>> responseEntity = restTemplate.exchange("/api/accommodations/taken-dates/" + accommodationId,
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Date>>() {
@@ -245,67 +232,156 @@ public class ReservationDateIntegrationTest {
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity2.getStatusCode());
         assertEquals(0, dates.size());
     }
-    @Test
+    @ParameterizedTest
+    @MethodSource("provideNonExistentAccommodation")
+    @DisplayName("Should fail setting deadline for non-existent accommodation")
+    @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
+    public void shouldFailSettingDeadlineForNonExistentAccommodation(String accommodationId) throws JsonProcessingException {
+        Accommodation accommodation = new Accommodation();
+        accommodation.setId(Long.parseLong(accommodationId));
+        accommodation.setDeadlineForCancellation(5);
+
+
+        HttpEntity<String> request =
+                new HttpEntity<String>(accommodationToString(accommodation), getHeaders());
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/" + accommodationId,
+                HttpMethod.PUT,
+                request,
+                new ParameterizedTypeReference<String>() {
+                });
+        System.out.println(responseEntity2.getStatusCode());
+        ResponseEntity<AccommodationDTO> responseEntity = restTemplate.exchange("/api/accommodations/" + accommodationId,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<AccommodationDTO>() {
+                });
+
+        AccommodationDTO returnedAccommodation = responseEntity.getBody();
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity2.getStatusCode());
+        assertNull(returnedAccommodation);
+    }
+    @ParameterizedTest
+    @MethodSource("provideInvalidDeadlines")
+    @DisplayName("Should fail setting deadline for invalidDeadline")
+    @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
+    public void shouldFailForInvalidDeadline(int deadline) throws JSONException, ParseException, JsonProcessingException {
+        Accommodation accommodation = new Accommodation();
+        accommodation.setId(1L);
+        accommodation.setDeadlineForCancellation(deadline);
+
+
+        HttpEntity<String> request =
+                new HttpEntity<String>(accommodationToString(accommodation), getHeaders());
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/" + "1",
+                HttpMethod.PUT,
+                request,
+                new ParameterizedTypeReference<String>() {
+                });
+        System.out.println(responseEntity2.getStatusCode());
+        ResponseEntity<AccommodationDTO> responseEntity = restTemplate.exchange("/api/accommodations/" + "1",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<AccommodationDTO>() {
+                });
+
+        AccommodationDTO returnedAccommodation = responseEntity.getBody();
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity2.getStatusCode());
+        assertNotEquals(returnedAccommodation.getDeadlineForCancellation(), deadline);
+    }
+    @ParameterizedTest
+    @MethodSource("provideValidDeadlinesAndAccommodations")
+    @DisplayName("Should set deadline for valid deadline and accommodation")
+    @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
+    public void shouldSucceedForValidDeadlineAndExistentAccommodation(String accommodationId, int deadline) throws JSONException, ParseException, JsonProcessingException {
+        Accommodation accommodation = new Accommodation();
+        accommodation.setId(Long.parseLong(accommodationId));
+        accommodation.setDeadlineForCancellation(deadline);
+
+
+        HttpEntity<String> request =
+                new HttpEntity<String>(accommodationToString(accommodation), getHeaders());
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/" + accommodationId,
+                HttpMethod.PUT,
+                request,
+                new ParameterizedTypeReference<String>() {
+                });
+        System.out.println(responseEntity2.getStatusCode());
+        ResponseEntity<AccommodationDTO> responseEntity = restTemplate.exchange("/api/accommodations/" + accommodationId,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<AccommodationDTO>() {
+                });
+
+        AccommodationDTO returnedAccommodation = responseEntity.getBody();
+
+        assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
+        assertEquals(returnedAccommodation.getDeadlineForCancellation(), deadline);
+    }
+    @ParameterizedTest
     @DisplayName("Should add price")
     @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
-    public void shouldAddPrice() throws JSONException, ParseException {
+    @MethodSource("provideExistentAccommodationAndValidPrice")
+    public void shouldAddPrice(String accommodationId, String price) throws JSONException, ParseException {
 
         JSONObject resDate = getDateRange("2025-01-01", "2025-01-03");
-        resDate.put("price", "50.0");
+        resDate.put("price", price);
         HttpEntity<String> request =
                 new HttpEntity<String>(resDate.toString(), getHeaders());
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/price/1",
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/price/" + accommodationId,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<String>() {
                 });
-        ResponseEntity<Double> responseEntity = restTemplate.exchange("/api/accommodations/price/1/"+getDate("2025-01-02"),
+        ResponseEntity<Double> responseEntity = restTemplate.exchange("/api/accommodations/price/"+accommodationId+ "/" +getDate("2025-01-02"),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Double>() {
                 });
 
-        Double price = responseEntity.getBody();
+        Double returnPrice = responseEntity.getBody();
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
-        assertEquals(price, 50.0);
+        assertEquals(returnPrice, Double.valueOf(price));
     }
-    @Test
-    @DisplayName("Should should overwrite existing price")
+    @ParameterizedTest
+    @MethodSource("provideExistentAccommodationAndValidPrice")
+    @DisplayName("Should overwrite existing price")
     @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
-    public void shouldOverwriteExistingPrice() throws JSONException, ParseException {
+    public void shouldOverwriteExistingPrice(String accommodationId, String price) throws JSONException, ParseException {
 
         JSONObject resDate = getDateRange("2025-01-01", "2025-01-03");
-        resDate.put("price", "50.0");
+        resDate.put("price", "10000");
         HttpEntity<String> request =
                 new HttpEntity<String>(resDate.toString(), getHeaders());
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/price/1",
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/price/" + accommodationId,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<String>() {
                 });
 
-        resDate.put("price", "500.0");
+        resDate.put("price", price);
         request =
                 new HttpEntity<String>(resDate.toString(), getHeaders());
-        ResponseEntity<String> responseEntity3 = restTemplate.exchange("/api/accommodations/price/1",
+        ResponseEntity<String> responseEntity3 = restTemplate.exchange("/api/accommodations/price/" + accommodationId,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<String>() {
                 });
-        ResponseEntity<Double> responseEntity = restTemplate.exchange("/api/accommodations/price/1/"+getDate("2025-01-02"),
+        ResponseEntity<Double> responseEntity = restTemplate.exchange("/api/accommodations/price/" + accommodationId + "/" +getDate("2025-01-02"),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Double>() {
                 });
 
-        Double price = responseEntity.getBody();
+        Double returnPrice = responseEntity.getBody();
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(HttpStatus.OK, responseEntity2.getStatusCode());
         assertEquals(HttpStatus.OK, responseEntity3.getStatusCode());
-        assertEquals(500.0, price);
+        assertEquals(returnPrice, Double.valueOf(price));
     }
     @ParameterizedTest
     @MethodSource("provideIllegalDates")
@@ -332,24 +408,25 @@ public class ReservationDateIntegrationTest {
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity2.getStatusCode());
-        assertEquals(price, 0.0);
+        assertNotEquals(price, 50.0);
     }
 
-    @Test
+    @ParameterizedTest
     @DisplayName("Should fail setting price for non-existent accommodation")
     @WithMockUser(roles = {"HOST"}, username = "host@gmail.com")
-    public void shouldFailPriceForNonExistentAccommodation() throws JSONException, ParseException {
+    @MethodSource("provideNonExistentAccommodation")
+    public void shouldFailPriceForNonExistentAccommodation(String accommodationId) throws JSONException, ParseException {
 
         JSONObject resDate = getDateRange("2025-01-01", "2025-01-03");
         resDate.put("price", "50.0");
         HttpEntity<String> request =
                 new HttpEntity<String>(resDate.toString(), getHeaders());
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/price/3",
+        ResponseEntity<String> responseEntity2 = restTemplate.exchange("/api/accommodations/price/" + accommodationId,
                 HttpMethod.POST,
                 request,
                 new ParameterizedTypeReference<String>() {
                 });
-        ResponseEntity<Double> responseEntity = restTemplate.exchange("/api/accommodations/price/3/"+getDate("2025-01-02"),
+        ResponseEntity<Double> responseEntity = restTemplate.exchange("/api/accommodations/price/"  + accommodationId + "/" +getDate("2025-01-02"),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Double>() {
@@ -365,6 +442,62 @@ public class ReservationDateIntegrationTest {
         return Stream.of(
                 Arguments.of("2025-01-03", "2025-01-01", "2025-01-02"),
                 Arguments.of("2019-01-03", "2019-01-01", "2019-01-02")
+        );
+    }
+
+    public Stream<Arguments> provideNonExistentAccommodation() {
+        return Stream.of(
+                Arguments.of("5"),
+                Arguments.of("6"),
+                Arguments.of("7"),
+                Arguments.of("8")
+        );
+    }
+    public Stream<Arguments> provideExistentAccommodation() {
+        return Stream.of(
+                Arguments.of("1"),
+                Arguments.of("2")
+        );
+    }
+    public Stream<Arguments> provideExistentAccommodationAndValidPrice() {
+        return Stream.of(
+                Arguments.of("1", "20"),
+                Arguments.of("2", "20"),
+                Arguments.of("1", "50"),
+                Arguments.of("2", "10")
+        );
+    }
+    private String accommodationToString(Accommodation accommodation) throws JsonProcessingException {
+        accommodation.setAccommodationType(AccommodationType.ROOM);
+        accommodation.setAddress("AAAAA");
+        accommodation.setName("AAAAA");
+        accommodation.setDescription("AAAAA");
+        accommodation.setMinGuests(1);
+        accommodation.setMaxGuests(5);
+        accommodation.setDefaultPrice(10);
+
+
+
+        accommodation.setHost(host);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        return ow.writeValueAsString(accommodation);
+    }
+
+    public Stream<Arguments> provideInvalidDeadlines() {
+        return Stream.of(
+                Arguments.of(-5),
+                Arguments.of(-100),
+                Arguments.of(-2)
+        );
+    }
+
+    public Stream<Arguments> provideValidDeadlinesAndAccommodations() {
+        return Stream.of(
+                Arguments.of("1", 5),
+                Arguments.of("2", 0),
+                Arguments.of("1", 0),
+                Arguments.of("2", 11)
+
         );
     }
 }

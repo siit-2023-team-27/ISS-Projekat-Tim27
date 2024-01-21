@@ -246,8 +246,14 @@ public class AccommodationController {
     public ResponseEntity<AccommodationDTO> updateAccommodation(@RequestBody AccommodationDTO accommodationDTO, @PathVariable Long id)
             throws Exception {
         Accommodation accommodationForUpdate = accommodationService.findOne(id);
+        if(accommodationForUpdate == null){
+            return new ResponseEntity<AccommodationDTO>(HttpStatus.BAD_REQUEST);
+        }
         Accommodation updatedAccommodation = this.convertToEntity(accommodationDTO);
         accommodationForUpdate.copyValues(updatedAccommodation);
+        if(!accommodationService.validateAccommodation(accommodationForUpdate)){
+            return new ResponseEntity<AccommodationDTO>(HttpStatus.BAD_REQUEST);
+        }
         accommodationService.update(accommodationForUpdate);
 
         if (updatedAccommodation == null) {

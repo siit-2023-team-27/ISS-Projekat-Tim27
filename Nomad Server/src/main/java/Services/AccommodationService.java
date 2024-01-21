@@ -10,6 +10,7 @@ import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
 import model.enums.PriceType;
 import model.enums.ReservationStatus;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,7 +56,21 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
     @Override
     public void update(Accommodation accommodation) {
+        if(accommodationRepository.findOneById(accommodation.getId()) == null){
+            throw (new IllegalArgumentException());
+        }
+        if(!validateAccommodation(accommodation)){
+            throw (new IllegalArgumentException());
+        }
         accommodationRepository.save(accommodation);
+    }
+    public int getDeadlineForCancellation(Long accommodationId) {
+        Accommodation accommodation = accommodationRepository.findOneById(accommodationId);
+        if(accommodation == null){
+            throw (new IllegalArgumentException());
+        }
+        return accommodation.getDeadlineForCancellation();
+
     }
 
     @Override
@@ -391,6 +406,9 @@ public class AccommodationService implements IService<Accommodation, Long> {
     public boolean validateAccommodation(Accommodation accommodation){
         if (accommodation.getAmenities() == null){
             accommodation.setAmenities(new ArrayList<Amenity>());
+        }
+        if (accommodation.getAddress() == null){
+            return false;
         }
         if (accommodation.getAddress().length() < 2){
             return false;
