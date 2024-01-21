@@ -37,8 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@TestPropertySource(
-//        locations = "classpath:application-test.properties")
+
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase()
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

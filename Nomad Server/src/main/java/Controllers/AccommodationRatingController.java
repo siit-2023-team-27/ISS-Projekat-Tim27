@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -70,9 +71,15 @@ public class AccommodationRatingController {
     public ResponseEntity<Boolean> hasComment(@PathVariable("userId") Long userId) {
         return new ResponseEntity<Boolean>(accommodationRatingService.hasComment(userId), HttpStatus.OK);
     }
-    @GetMapping(value = "/has-comment/{userId}/{accommodationId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Boolean> hasCommentOnAccommodation(@PathVariable("userId") Long userId, @PathVariable("accommodationId") Long accommodationId) {
-        return new ResponseEntity<Boolean>(accommodationRatingService.hasComment(userId, accommodationId), HttpStatus.OK);
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(value = "/comment/{userId}/{accommodationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> hasCommentOnAccommodation(@PathVariable("userId") Long userId, @PathVariable("accommodationId") Long accommodationId) {
+        Long response = accommodationRatingService.findOneForUserAndAccommodation(userId, accommodationId);
+        if(response == -1){
+            return new ResponseEntity<Long>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Long>(response, HttpStatus.OK);
+
     }
 
     @PreAuthorize("hasAuthority('GUEST')")

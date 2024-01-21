@@ -40,7 +40,8 @@ public interface ReservationDateRepository extends JpaRepository<ReservationDate
             "  and r.reservation.guest.id = :guestId")
     Collection<ReservationDate> findDatesForAllowingComment(@Param("accommodationId")long accommodationId, @Param("guestId")Long userId,
                                                              @Param("cutOffDate") Date cutOffDate);
-
+    @Query("select r from ReservationDate r " +
+            "where r.accommodation.host.id =:hostId and r.reservation.guest.id = :guestId ")
     Collection<ReservationDate> findAllByAccommodation_Host_IdAndReservationGuest_Id(Long hostId, Long guestId);
 }
 //

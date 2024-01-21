@@ -10,4 +10,8 @@ public interface HostRatingRepository extends JpaRepository<HostRating, Long> {
     HostRating findOneById(Long id);
 
     Collection<HostRating> findAllByHost_Id(Long id);
+
+    HostRating findOneByAppUser_IdAndHost_Id(Long userId, Long accommodationId);
+
+    Collection<Object> findAllByAppUser_IdAndHost_Id(Long userId, Long accommodationId);
 }
