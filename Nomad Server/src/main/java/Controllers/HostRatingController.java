@@ -45,13 +45,31 @@ public class HostRatingController {
         Collection<HostRating> ratings = hostRatingService.findAllRatingsForHost(id);
         return new ResponseEntity<Collection<RatingDTO>>(ratings.stream().map(this::mapRating).toList(), HttpStatus.OK);
     }
+    @PreAuthorize("hasAuthority('GUEST')")
+    @GetMapping(value = "/host-rating/{userId}/{hostId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> findCommentOnHost(@PathVariable("userId") Long userId, @PathVariable("hostId") Long hostId) {
+        Long response = hostRatingService.findForUserAndHost(userId, hostId);
+        if(response == -1){
+            return new ResponseEntity<Long>(-1L, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<Long>(response, HttpStatus.OK);
 
+    }
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RatingCreationDTO> createRating(@RequestBody RatingCreationDTO ratingDto) throws Exception {
         HostRating rating = this.mapRatingDTO(ratingDto);
         hostRatingService.create(rating);
         return new ResponseEntity<RatingCreationDTO>(ratingDto, HttpStatus.CREATED);
+    }
+    @PreAuthorize("hasAuthority('GUEST')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<RatingDTO> deleteRating(@PathVariable Long id) throws Exception {
+        if(hostRatingService.findOne(id) == null){
+            return new ResponseEntity<RatingDTO>(HttpStatus.NOT_FOUND);
+        }
+        hostRatingService.delete(id);
+        return new ResponseEntity<RatingDTO>(HttpStatus.OK);
     }
 
     public RatingDTO mapRating(HostRating rating){

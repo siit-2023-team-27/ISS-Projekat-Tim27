@@ -2,6 +2,8 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "ratings")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -13,6 +15,8 @@ public class Rating {
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
     private AppUser appUser;
+    @OneToMany(mappedBy = "reportedRating", cascade = CascadeType.REMOVE)
+    private List<CommentReport> ratingReports;
 
     public Rating() {}
     public Rating(int rating, AppUser appUser, String text) {

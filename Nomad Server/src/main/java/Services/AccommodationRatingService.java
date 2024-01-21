@@ -68,12 +68,31 @@ public class AccommodationRatingService implements IService<AccommodationRating,
         }
         for (ReservationDate date: dates){
             if (date.getReservation().getStatus() == ReservationStatus.ACCEPTED){
-                return true;
+                return accommodationRatingRepository.findAllByAppUser_IdAndAccommodation_Id(userId, accommodationId).isEmpty();
             }
         }
-        return accommodationRatingRepository.findAllByAppUser_IdAndAccommodation_Id(userId, accommodationId).isEmpty();
+        return false;
     }
     public boolean hasComment(Long userId){
         return !accommodationRatingRepository.findAllByAppUser_Id(userId).isEmpty();
+    }
+
+    public Boolean hasComment(Long userId, Long accommodationId) {
+        return !accommodationRatingRepository.findAllByAppUser_IdAndAccommodation_Id(userId, accommodationId).isEmpty();
+    }
+
+    public Long findOneForUserAndAccommodation(Long userId, Long accommodationId) {
+        AccommodationRating rating;
+        try{
+             rating = accommodationRatingRepository.findOneByAppUser_IdAndAccommodation_Id(userId, accommodationId);
+
+        }catch (Exception e){    //This ensures backwards compatibility with versions of the database
+                                                                    //from when we allowed multiple comments by the same user
+            rating = (AccommodationRating) accommodationRatingRepository.findAllByAppUser_IdAndAccommodation_Id(userId, accommodationId).toArray()[0];
+        }
+        if(rating == null){
+            return -1L;
+        }
+        return rating.getId();
     }
 }

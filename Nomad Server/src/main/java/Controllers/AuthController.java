@@ -147,7 +147,9 @@ public class AuthController {
     private Guest convertToGuest(UserRegistrationDTO userDTO) {
         Guest guest = modelMapper.map(userDTO, Guest.class);
         guest.setCancellationNumber(0);
+
         guest.setNotificationPreferences(new HashMap<>());
+
         return guest;
     }
 }

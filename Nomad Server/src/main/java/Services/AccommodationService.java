@@ -4,6 +4,7 @@ import DTO.AccommodationDTO;
 import DTO.SearchAccommodationDTO;
 import Repositories.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import model.*;
 import model.enums.AccommodationStatus;
 import model.enums.AccommodationType;
