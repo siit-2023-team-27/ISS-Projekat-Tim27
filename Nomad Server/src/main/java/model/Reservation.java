@@ -17,7 +17,7 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @ManyToOne (fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+    @ManyToOne (fetch = FetchType.LAZY)
     private Guest guest;
     @ManyToOne(fetch = FetchType.LAZY)
     private Accommodation accommodation;
