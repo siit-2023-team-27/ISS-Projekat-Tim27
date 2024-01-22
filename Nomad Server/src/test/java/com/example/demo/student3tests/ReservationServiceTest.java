@@ -153,20 +153,12 @@ public class ReservationServiceTest {
     }
     @ParameterizedTest
     @MethodSource("validDatesWithDays")
-    public void accommodationAvailableForDatesReservationAutomatically(String startDate, String endDate, int days) {
-        //doraditi ovu proveru za dateRange
+    public void accommodationAvailableForDatesReservationAutomatically(String startDate, String endDate) {
         DateRange dateRange = new DateRange(startDate, endDate);
         reservation.setDateRange(dateRange);
         Assertions.assertTrue(reservationService.reserveAutomatically(reservation));
         verify(reservationRepository, times(1)).save(reservation);
         Assertions.assertEquals(reservation.getStatus(), ReservationStatus.ACCEPTED);
-//        reservationDate.setReservation(reservation);
-//        Calendar c = Calendar.getInstance();
-//        c.setTime(reservation.getDateRange().getStartDate());
-//        for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){
-//            reservationDate.setDate(c.getTime());
-//            verify(reservationDateRepository).save(reservationDate);
-//        }
 
     }
 
@@ -187,9 +179,9 @@ public class ReservationServiceTest {
     }
     private static Stream<Arguments> validDatesWithDays() {
         return Stream.of(
-                Arguments.of("2024-01-01", "2024-01-03", 2),
-                Arguments.of("2024-01-06", "2024-01-07", 2),
-                Arguments.of("2024-01-09", "2024-01-10", 2)
+                Arguments.of("2024-01-01", "2024-01-03"),
+                Arguments.of("2024-01-06", "2024-01-07"),
+                Arguments.of("2024-01-09", "2024-01-10")
         );
     }
 

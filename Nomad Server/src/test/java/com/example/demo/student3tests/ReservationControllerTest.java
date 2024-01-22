@@ -126,23 +126,6 @@ public class ReservationControllerTest {
         register();
         login();
         addAccommodation();
-//        reservation = new Reservation();
-//        reservation.setUser(guest);
-//        reservation.setNumGuests(3);
-//        reservation.setAccommodation(accommodation2);
-//        Reservation reservation1 = reservationRepository.save(reservation);
-//        ReservationDate reservationDate = new ReservationDate(accommodation2, reservation,  200, formatter.parse("2024-01-01"));
-//        reservationDateRepository.save(reservationDate);
-//        reservationDate.setDate(formatter.parse("2024-01-02"));
-//        reservationDateRepository.save(reservationDate);
-//        reservationDate.setDate(formatter.parse("2024-01-03"));
-//        reservationDateRepository.save(reservationDate);
-//        reservationDate.setDate(formatter.parse("2024-01-04"));
-//        reservationDateRepository.save(reservationDate);
-//        reservationDate.setDate(formatter.parse("2024-01-05"));
-//        reservationDateRepository.save(reservationDate);
-//
-//        ReservationDate reservationDate4 = reservationDateRepository.findByAccommodation_IdAndDate(accommodation2.getId(), formatter.parse("2024-01-01"));
     }
 
     private static HttpHeaders getHeaders(){
