@@ -39,6 +39,15 @@ public class Reservation {
         this.status = status;
     }
 
+    public Reservation(Long id, Guest guest, Accommodation accommodation, DateRange dateRange, int numGuests, ReservationStatus status) {
+        this.id = id;
+        this.guest = guest;
+        this.accommodation = accommodation;
+        this.dateRange = dateRange;
+        this.numGuests = numGuests;
+        this.status = status;
+    }
+
     public Reservation() {}
 
     public int getMonthForReport(){

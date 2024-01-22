@@ -88,27 +88,34 @@ public class ReservationController {
     }
     @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/confirm/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> verifyReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<String> verifyReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.findOne(id);
-        boolean succesfull = reservationService.verify(reservation);
-
-        if(!succesfull){
-            return new ResponseEntity<Long>(id, HttpStatus.NOT_FOUND);
+        if (reservation == null) {
+            return new ResponseEntity<String>("Reservation not found", HttpStatus.NOT_FOUND);
         }
-        //reservationService.declineOverlaping(reservation);
-        ReservationDTO reservationDTO = convertToDto(reservation);
-        return new ResponseEntity<Long>( id, HttpStatus.OK);
+
+        boolean succesfull = reservationService.verify(reservation);
+        if(!succesfull){
+            return new ResponseEntity<String>("Failed to verify the reservation.", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<String>("Successfully verified reservation", HttpStatus.OK);
     }
+
     @PreAuthorize("hasAuthority('HOST')")
     @PutMapping (value = "/reject/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> declineReservation(@PathVariable("id") Long id) {
+    public ResponseEntity<String> declineReservation(@PathVariable("id") Long id) {
         Reservation reservation = reservationService.findOne(id);
-        if (reservation == null){
-            return new ResponseEntity<Long>(id, HttpStatus.NOT_FOUND);
+        if (reservation == null) {
+            return new ResponseEntity<String>("Not found", HttpStatus.NOT_FOUND);
         }
-        reservationService.decline(reservation);
-        ReservationDTO reservationDTO = convertToDto(reservation);
-        return new ResponseEntity<Long>(id, HttpStatus.OK);
+
+        boolean result = reservationService.decline(reservation);
+        if (result) {
+            return new ResponseEntity<String>("Successfully rejected reservation", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>("Failed to decline the reservation.", HttpStatus.BAD_REQUEST);
+        }
     }
     @PreAuthorize("hasAuthority('GUEST')")
     @PutMapping (value = "/cancel/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

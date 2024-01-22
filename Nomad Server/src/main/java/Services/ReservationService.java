@@ -135,11 +135,13 @@ public class ReservationService implements IService<Reservation, Long> {
        // reservationRepository.saveAll(reservations);
     }
 
-    public void decline(Reservation reservation) {
+    public boolean decline(Reservation reservation) {
         if(reservation.getStatus() == ReservationStatus.PENDING){
             reservation.setStatus(ReservationStatus.REJECTED);
             reservationRepository.save(reservation);
+            return true;
         }
+        return false;
     }
     public void cancel(Long id) {
         Reservation reservation = findOne(id);

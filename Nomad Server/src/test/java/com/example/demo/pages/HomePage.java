@@ -35,4 +35,8 @@ public class HomePage {
         (new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS)))
                 .until(ExpectedConditions.elementToBeClickable((WebElement) editButton)).click();
     }
+
+    public void clickReservationHost() {
+
+    }
 }
