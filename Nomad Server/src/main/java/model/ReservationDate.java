@@ -21,6 +21,17 @@ public class ReservationDate {
 
     public ReservationDate(){}
 
+    @Override
+    public String toString() {
+        return "ReservationDate{" +
+                "id=" + id +
+                ", accommodation=" + accommodation +
+                ", reservation=" + reservation +
+                ", price=" + price +
+                ", date=" + date +
+                '}';
+    }
+
     public ReservationDate(Accommodation accommodation, Reservation reservation, double price, Date date) {
         this.accommodation = accommodation;
         this.reservation = reservation;

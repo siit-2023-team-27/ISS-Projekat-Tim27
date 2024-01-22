@@ -174,7 +174,9 @@ public class ReservationService implements IService<Reservation, Long> {
         Calendar c = Calendar.getInstance();
         c.setTime(reservation.getDateRange().getStartDate());
         for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){
-            this.createReservationDate(new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime()));
+            ReservationDate reservationDate = new ReservationDate(reservation.getAccommodation(), reservation, reservation.getAccommodation().getDefaultPrice(), c.getTime());
+            System.out.println(reservationDate);
+            this.createReservationDate(reservationDate);
         }
     }
     public Collection<Reservation> getFilteredHost(Long hostId, String name, Date startDate, Date endDate, ReservationStatus reservationStatus) {
@@ -215,6 +217,7 @@ public class ReservationService implements IService<Reservation, Long> {
     private void createReservationDate(ReservationDate reservationDate) {
         ReservationDate reservationDateToUpdate = reservationDateRepository.findOneByAccommodation_IdAndDate(reservationDate.getAccommodation().getId(), reservationDate.getDate());
         if(reservationDateToUpdate == null){
+            System.out.println(reservationDate);
             reservationDateRepository.save(reservationDate);
             return;
         }
@@ -243,8 +246,6 @@ public class ReservationService implements IService<Reservation, Long> {
         Calendar c = Calendar.getInstance();
         c.setTime(reservation.getDateRange().getStartDate());
         for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){
-            System.out.println(c.getTime());
-            System.out.println(c.getTime().getTime());
             if (!accommodationService.isAvailable(reservation.getAccommodation().getId(), c.getTime()) ){
                 return false;
             }

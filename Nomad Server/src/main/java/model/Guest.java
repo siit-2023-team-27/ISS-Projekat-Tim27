@@ -29,6 +29,11 @@ public class Guest extends AppUser{
         super();
     }
 
+    public Guest(String firstName, String lastName, String address, String username, String password, String phoneNumber, Long cancellationNumber) {
+        super(firstName, lastName, address, username, password, phoneNumber);
+        this.cancellationNumber = cancellationNumber;
+    }
+
     public Guest(Map<NotificationType, Boolean> notificationPreferences) {
         this.notificationPreferences = notificationPreferences;
     }
