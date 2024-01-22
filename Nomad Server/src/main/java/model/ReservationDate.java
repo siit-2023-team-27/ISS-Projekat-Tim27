@@ -12,7 +12,8 @@ public class ReservationDate {
     Long id;
     @ManyToOne (fetch = FetchType.LAZY)
     Accommodation accommodation;
-    @ManyToOne (cascade=CascadeType.ALL)
+//    cascade=CascadeType.ALL
+    @ManyToOne (fetch = FetchType.LAZY)
     Reservation reservation;
 
     double price;

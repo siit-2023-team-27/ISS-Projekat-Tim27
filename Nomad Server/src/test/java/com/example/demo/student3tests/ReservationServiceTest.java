@@ -1,6 +1,5 @@
-package com.example.demo;
+package com.example.demo.student3tests;
 
-import Repositories.AccommodationRepository;
 import Repositories.ReservationDateRepository;
 import Repositories.ReservationRepository;
 import Services.AccommodationService;
@@ -10,7 +9,6 @@ import model.enums.AccommodationType;
 import model.enums.ReservationStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +25,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -40,7 +37,7 @@ import static org.mockito.Mockito.verify;
 @AutoConfigureTestDatabase()
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class ReservationServiceStudent3Test {
+public class ReservationServiceTest {
     @MockBean
     AccommodationService accommodationService;
     @MockBean
@@ -50,7 +47,6 @@ public class ReservationServiceStudent3Test {
     @Autowired
     @InjectMocks
     private ReservationService reservationService;
-
     Reservation reservation;
     Accommodation accommodation;
     ReservationDate reservationDate;
@@ -72,7 +68,7 @@ public class ReservationServiceStudent3Test {
         Mockito.when(accommodationService.isAvailable(1L, date2))
                 .thenReturn(true);
         Mockito.when(accommodationService.isAvailable(1L, date3))
-                .thenReturn(true);
+                .thenReturn(false);
         Mockito.when(accommodationService.isAvailable(1L, date4))
                 .thenReturn(false);
         Mockito.when(accommodationService.isAvailable(1L, date5))
@@ -102,26 +98,35 @@ public class ReservationServiceStudent3Test {
         reservation.setNumGuests(3);
         reservation.setAccommodation(accommodation);
 
-        reservationDate = new ReservationDate(accommodation, reservation, 2000, null);
+        reservationDate = new ReservationDate(accommodation, null, 2000, date);
 
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date))
-                .thenReturn(reservationDate);
+                .thenReturn(null);
+        reservationDate.setDate(date2);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date2))
-                .thenReturn(reservationDate);
+                .thenReturn(null);
+        reservationDate.setDate(date3);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date3))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date4))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date5))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date6))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date7))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date8))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date9))
                 .thenReturn(reservationDate);
+        reservationDate.setDate(null);
         Mockito.when(reservationDateRepository.findOneByAccommodation_IdAndDate(1L, date10))
                 .thenReturn(reservationDate);
     }
@@ -155,6 +160,7 @@ public class ReservationServiceStudent3Test {
         Assertions.assertTrue(reservationService.reserveAutomatically(reservation));
         verify(reservationRepository, times(1)).save(reservation);
         Assertions.assertEquals(reservation.getStatus(), ReservationStatus.ACCEPTED);
+//        reservationDate.setReservation(reservation);
 //        Calendar c = Calendar.getInstance();
 //        c.setTime(reservation.getDateRange().getStartDate());
 //        for(; c.getTime().before(reservation.getDateRange().getFinishDate()); c.add(Calendar.DATE, 1)){

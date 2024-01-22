@@ -31,6 +31,7 @@ import javax.print.attribute.standard.Media;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(
         origins = {
@@ -127,7 +128,22 @@ public class ReservationController {
 
     @PreAuthorize("hasAuthority('GUEST')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ReservationDTO> createReservation (@RequestBody ReservationDTO reservationDTO) {
+    public ResponseEntity<ReservationDTO> createReservation (@RequestBody Map<String, Object> requestBody) {
+        String startDateStr = (String) requestBody.get("startDate");
+        String finishDateStr = (String) requestBody.get("finishDate");
+        Integer id = (Integer) requestBody.get("id");
+        Integer user = (Integer) requestBody.get("user");
+        Integer accommodation = (Integer) requestBody.get("accommodation");
+        Integer numGuest = (Integer) requestBody.get("numGuests");
+        DateRange dateRange;
+        try{
+            dateRange = new DateRange(startDateStr, finishDateStr);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<ReservationDTO>( HttpStatus.BAD_REQUEST);
+        }
+
+        ReservationDTO reservationDTO = new ReservationDTO(id.longValue(), user.longValue() ,accommodation.longValue(),
+                dateRange.getStartDate(), dateRange.getFinishDate(), numGuest, ReservationStatus.fromString((String) requestBody.get("status")));
 
         Reservation newReservation = this.convertToEntity(reservationDTO);
         if(!reservationService.validateReservation(newReservation)){
@@ -135,10 +151,12 @@ public class ReservationController {
         }
         if(newReservation.getAccommodation().getConfirmationType() == ConfirmationType.AUTOMATIC){
             if(reservationService.reserveAutomatically(newReservation)){
+                reservationDTO.setStatus(ReservationStatus.ACCEPTED);
                 return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.CREATED);
             }
         }else{
             if(reservationService.reserveManually(newReservation)){
+                reservationDTO.setStatus(ReservationStatus.PENDING);
                 return new ResponseEntity<ReservationDTO>(reservationDTO, HttpStatus.CREATED);
             }
         }

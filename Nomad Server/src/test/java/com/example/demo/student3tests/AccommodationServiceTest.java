@@ -1,8 +1,7 @@
-package com.example.demo;
+package com.example.demo.student3tests;
 
 import Repositories.ReservationDateRepository;
 import Services.AccommodationService;
-import Services.ReservationService;
 import model.*;
 import model.enums.AccommodationType;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +31,7 @@ import java.util.stream.Stream;
 @AutoConfigureTestDatabase()
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-public class AccommodationServiceStudent3Test {
+public class AccommodationServiceTest {
     @MockBean
     ReservationDateRepository reservationDateRepository;
     @Autowired

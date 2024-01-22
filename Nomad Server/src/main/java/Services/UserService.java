@@ -3,6 +3,7 @@ package Services;
 import Repositories.IRepository;
 import Repositories.UserRepository;
 import model.AppUser;
+import model.Guest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,6 +64,11 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
     public void create(AppUser appUser) {
         appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
         userRepository.save(appUser);
+    }
+
+    public Guest createUser(Guest appUser) {
+        appUser.setPassword(passwordEncoder.encode(appUser.getPassword()));
+        return userRepository.save(appUser);
     }
     public void save(AppUser appUser) {
         userRepository.save(appUser);
