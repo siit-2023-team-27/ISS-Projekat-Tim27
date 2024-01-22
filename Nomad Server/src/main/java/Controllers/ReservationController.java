@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 import util.Helper;
 
 import javax.print.attribute.standard.Media;
+import java.lang.reflect.Array;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -121,6 +123,7 @@ public class ReservationController {
     @PutMapping (value = "/cancel/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Long> cancelReservation(@PathVariable("id") Long id) {
         System.out.println("Cancel");
+        Collection<Reservation> reservations = reservationService.findAll();
         try{
             reservationService.cancel(id);
         }catch(NotValidException r){

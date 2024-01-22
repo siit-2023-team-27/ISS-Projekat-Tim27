@@ -21,6 +21,12 @@ public class HomePage {
     @FindBy(xpath = "//app-accommodation-card-host/div/button[contains(text(), 'Edit')]")
     private WebElement editButton;
 
+    @FindBy(xpath = "//app-accommodation-card-host/div/button[contains(text(), 'Requests')]")
+    private WebElement hostReservationsButton;
+
+    @FindBy(xpath = "//div/p[contains(text(), 'Reservations')]/..")
+    private WebElement guestReservationsButton;
+
     public HomePage(WebDriver driver){
         this.driver=driver;
 
@@ -36,7 +42,14 @@ public class HomePage {
                 .until(ExpectedConditions.elementToBeClickable((WebElement) editButton)).click();
     }
 
-    public void clickReservationHost() {
-
+    public void clickReservationsHost() {
+        (new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS)))
+                .until(ExpectedConditions.elementToBeClickable((WebElement) hostReservationsButton)).click();
     }
+
+    public void clickReservationsGuest() {
+        (new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS)))
+                .until(ExpectedConditions.elementToBeClickable((WebElement) guestReservationsButton)).click();
+    }
+
 }
