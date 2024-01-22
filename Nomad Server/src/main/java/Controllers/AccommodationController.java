@@ -25,10 +25,7 @@ import org.yaml.snakeyaml.events.CollectionEndEvent;
 
 import javax.sound.midi.SysexMessage;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.Double.MAX_VALUE;
 
@@ -178,6 +175,11 @@ public class AccommodationController {
             dateRange = new DateRange(startDateStr, finishDateStr);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<String>("Illegal date range", HttpStatus.BAD_REQUEST);
+        }catch(NullPointerException e){
+            dateRange = new DateRange((String)((LinkedHashMap<?, ?>)requestBody.get("dateRange")).get("startDate"),
+                    (String)((LinkedHashMap<?, ?>)requestBody.get("dateRange")).get("finishDate"));
+            System.out.println(dateRange.toString());
+            System.out.println("DATE RANGE");
         }
         if(!this.accommodationService.setPriceForDateRange(accommodationId, price, dateRange)){
             return new ResponseEntity<String>("Date range in past", HttpStatus.BAD_REQUEST);
