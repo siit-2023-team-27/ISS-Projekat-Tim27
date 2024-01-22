@@ -9,6 +9,7 @@ import com.example.demo.pages.LoginPage;
 import model.Accommodation;
 import model.Guest;
 import model.Host;
+import model.enums.AccommodationType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -81,6 +82,14 @@ public class ReservationDateE2ETest extends TestBase {
         accommodation.setVerified(true);
         accommodation.setImages(new ArrayList<String>());
         accommodation.getImages().add("A.jpg");
+        accommodation.setDefaultPrice(10);
+        accommodation.setAccommodationType(AccommodationType.ROOM);
+        accommodation.setAddress("AAAAA");
+        accommodation.setName("AAAAA");
+        accommodation.setDescription("AAAAA");
+        accommodation.setMinGuests(1);
+        accommodation.setMaxGuests(5);
+        accommodation.setDefaultPrice(10);
         accommodation.setDeadlineForCancellation(2);
         accommodationService.createAccommodation(accommodation);
 
@@ -169,7 +178,7 @@ public class ReservationDateE2ETest extends TestBase {
         editPage.clickPreviousMonth();
         editPage.setDatesUnavailable(start, end);
         Assertions.assertTrue(editPage.operationFail());
-        saveSuccess();
+        saveFail();
 
 //        Assertions.assertTrue(editPage.checkNotSelectedDate(end));
 //        Assertions.assertTrue(editPage.checkNotSelectedDate(start));
