@@ -37,10 +37,10 @@ public class EditPage {
     private WebElement setPrice;
 
     @FindBy(css = "#selectedDateprice")
-    private WebElement priceBox;
+    public WebElement priceBox;
 
     @FindBy(css = "#deadline")
-    private WebElement deadlineBox;
+    public WebElement deadlineBox;
 
     public EditPage(WebDriver driver){
         this.driver=driver;
@@ -101,6 +101,7 @@ public class EditPage {
         selectDateRange(start, end);
         clickMakeUnavailable();
     }
+
     public boolean isDateUnavailable(String date){
         return (new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS)))
                 .until(ExpectedConditions.attributeContains(calendar.findElement(By.xpath("//button[@aria-label='" + date + "']")),
@@ -126,6 +127,7 @@ public class EditPage {
         (new WebDriverWait(driver, Duration.of(10, ChronoUnit.SECONDS)))
                 .until(ExpectedConditions.elementToBeClickable(save)).click();
     }
+
 
 
 }

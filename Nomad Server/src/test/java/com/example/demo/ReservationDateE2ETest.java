@@ -9,10 +9,12 @@ import com.example.demo.pages.LoginPage;
 import model.Accommodation;
 import model.Guest;
 import model.Host;
+import model.enums.AccommodationType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -81,6 +83,14 @@ public class ReservationDateE2ETest extends TestBase {
         accommodation.setVerified(true);
         accommodation.setImages(new ArrayList<String>());
         accommodation.getImages().add("A.jpg");
+        accommodation.setDefaultPrice(10);
+        accommodation.setAccommodationType(AccommodationType.ROOM);
+        accommodation.setAddress("AAAAA");
+        accommodation.setName("AAAAA");
+        accommodation.setDescription("AAAAA");
+        accommodation.setMinGuests(1);
+        accommodation.setMaxGuests(5);
+        accommodation.setDefaultPrice(10);
         accommodation.setDeadlineForCancellation(2);
         accommodationService.createAccommodation(accommodation);
 
@@ -144,6 +154,11 @@ public class ReservationDateE2ETest extends TestBase {
         editPage.setDatesPrice(start, end, price);
         Assertions.assertTrue(editPage.operationSuccess());
         saveSuccess();
+        homePage.clickEdit();
+        editPage.clickNextMonth();
+
+        editPage.selectDateRange(start, end);
+        assertPrice(price);
     }
     @ParameterizedTest
     @MethodSource("provideValidDatesInvalidPrices")
@@ -152,6 +167,14 @@ public class ReservationDateE2ETest extends TestBase {
         editPage.setDatesPrice(start, end, price);
         Assertions.assertTrue(editPage.operationFail());
         saveSuccess();
+        homePage.clickEdit();
+        editPage.clickNextMonth();
+
+        editPage.selectDateRange(start, end);
+
+
+
+        assertNotPrice(price);
     }
     @ParameterizedTest
     @MethodSource("provideInvalidDatesInvalidPrices")
@@ -160,7 +183,17 @@ public class ReservationDateE2ETest extends TestBase {
         editPage.setDatesPrice(start, end, price);
         Assertions.assertTrue(editPage.operationFail());
         saveSuccess();
+        homePage.clickEdit();
+        editPage.clickNextMonth();
+
+        editPage.selectDateRange(start, end);
+
+        assertNotPrice(price);
+
     }
+
+
+
     @ParameterizedTest
     @MethodSource("provideDatesInThePast")
     @DisplayName("should Not Select Either Date In The Past")
@@ -169,7 +202,7 @@ public class ReservationDateE2ETest extends TestBase {
         editPage.clickPreviousMonth();
         editPage.setDatesUnavailable(start, end);
         Assertions.assertTrue(editPage.operationFail());
-        saveSuccess();
+        saveFail();
 
 //        Assertions.assertTrue(editPage.checkNotSelectedDate(end));
 //        Assertions.assertTrue(editPage.checkNotSelectedDate(start));
@@ -195,6 +228,9 @@ public class ReservationDateE2ETest extends TestBase {
     public void shouldPassForNonNumberDeadline(String deadline) throws InterruptedException {
         editPage.setDeadline(deadline);
         saveSuccess();
+        homePage.clickEdit();
+
+        assertNotDeadline(deadline);
     }
     @ParameterizedTest
     @MethodSource("provideValidDeadlines")
@@ -202,7 +238,14 @@ public class ReservationDateE2ETest extends TestBase {
     public void shouldPassForValidDeadline(String deadline) throws InterruptedException {
         editPage.setDeadline(deadline);
         saveSuccess();
+        homePage.clickEdit();
+
+        assertDeadline(deadline);
+
     }
+
+
+
     @RepeatedTest(3)
     @DisplayName("should Fail Making Unavailable For No Date Selected")
     public void shouldFailMakingUnavailableForNoDateSelected() throws InterruptedException {
@@ -221,6 +264,18 @@ public class ReservationDateE2ETest extends TestBase {
         editPage.saveChanges();
         Assertions.assertTrue(editPage.operationSuccess());
 
+    }
+    public void assertPrice(String price){
+        Assertions.assertEquals(editPage.priceBox.getAttribute("value"), price);
+    }
+    private void assertDeadline(String deadline) {
+        Assertions.assertEquals(editPage.deadlineBox.getAttribute("value"), deadline);
+    }
+    private void assertNotDeadline(String deadline) {
+        Assertions.assertNotEquals(editPage.deadlineBox.getAttribute("value"), deadline);
+    }
+    private void assertNotPrice(String price) {
+        Assertions.assertNotEquals(editPage.priceBox.getAttribute("value"), price);
     }
     public void saveFail(){
         editPage.clickSave();
@@ -315,9 +370,9 @@ public class ReservationDateE2ETest extends TestBase {
     public Stream<Arguments> provideValidDatesValidPrices() {
         return Stream.of(
                 //Dates where the end is before the start
-                Arguments.of("February 20, 2024", "February 16, 2024", "5"),
-                Arguments.of("February 4, 2024", "February 1, 2024", "1"),
-                Arguments.of("February 10, 2024", "February 6, 2024","100")
+                Arguments.of("February 16, 2024", "February 20, 2024", "5"),
+                Arguments.of("February 1, 2024", "February 4, 2024", "1"),
+                Arguments.of("February 6, 2024", "February 10, 2024","100")
         );
     }
 

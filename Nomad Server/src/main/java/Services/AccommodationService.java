@@ -325,10 +325,9 @@ public class AccommodationService implements IService<Accommodation, Long> {
                 Reservation reservation = new Reservation();
                 reservation.setUser(null);
                 reservationDate.setReservation(reservation);
-
-                this.reservationDateRepository.save(reservationDate);
-                return true;
             }
+            this.reservationDateRepository.save(reservationDate);
+            return true;
         }
         Accommodation ac = this.accommodationRepository.findOneById(accommodationId);
         reservationDate = new ReservationDate(ac,
@@ -355,8 +354,15 @@ public class AccommodationService implements IService<Accommodation, Long> {
 
     public boolean setAvailable(long accommodationId, Date date) {
         ReservationDate reservationDate = reservationDateRepository.findByAccommodation_IdAndDate(accommodationId, date);
-        if(reservationDate.getReservation().getUser().getUsername() == null){
-            reservationDate.getReservation().setUser(null);
+        if(reservationDate == null) {
+            System.out.println("Already available");
+            //already available
+            return false;
+        }
+        if(reservationDate.getReservation().getUser() != null){
+            if(reservationDate.getReservation().getUser().getUsername() == null){
+                reservationDate.getReservation().setUser(null);
+            }
         }
         if(date.before(new Date())){
             //Date is before now
@@ -366,11 +372,7 @@ public class AccommodationService implements IService<Accommodation, Long> {
             //Accommodation doesn't exist
             return false;
         }
-        if(reservationDate == null) {
-            System.out.println("Already available");
-            //already available
-            return false;
-        }
+
 
         if(reservationDate.getReservation() != null){
             //there is active reservation for this date
