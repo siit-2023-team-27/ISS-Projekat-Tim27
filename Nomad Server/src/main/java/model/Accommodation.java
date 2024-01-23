@@ -250,6 +250,7 @@ public class Accommodation implements Serializable {
         this.amenities = accommodation.amenities;
         this.images = accommodation.images;
         this.status = accommodation.status;
+        this.verified = accommodation.verified;
         this.deadlineForCancellation = accommodation.deadlineForCancellation;
         this.confirmationType = accommodation.confirmationType;
         this.accommodationType = accommodation.accommodationType;

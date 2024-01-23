@@ -251,14 +251,14 @@ public class AccommodationController {
         }
         Accommodation updatedAccommodation = this.convertToEntity(accommodationDTO);
         accommodationForUpdate.copyValues(updatedAccommodation);
-        if(!accommodationService.validateAccommodation(accommodationForUpdate)){
-            return new ResponseEntity<AccommodationDTO>(HttpStatus.BAD_REQUEST);
-        }
+//        if(!accommodationService.validateAccommodation(accommodationForUpdate)){
+//            return new ResponseEntity<AccommodationDTO>(HttpStatus.BAD_REQUEST);
+//        }
         accommodationService.update(accommodationForUpdate);
 
-        if (updatedAccommodation == null) {
-            return new ResponseEntity<AccommodationDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+//        if (updatedAccommodation == null) {
+//            return new ResponseEntity<AccommodationDTO>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 
         return new ResponseEntity<AccommodationDTO>(accommodationDTO, HttpStatus.OK);
     }
