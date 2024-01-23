@@ -24,6 +24,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -145,14 +147,6 @@ public class ReservationServiceTest {
         assertEquals(ReservationStatus.PENDING, reservation.getStatus());
     }
 
-    public void testReserveManuallyWhenAccommodationNotAvailable() {
-
-    }
-
-    public void testReserveAutomaticallyWhenAccommodationNotAvailable() {
-
-    }
-
     private static Stream<Reservation> provideNotPendingReservations() {
         return Stream.of(
                 new Reservation(null, null, null, 0, ReservationStatus.CANCELED),
@@ -176,4 +170,40 @@ public class ReservationServiceTest {
         assertTrue(ReservationStatus.REJECTED == reservation.getStatus());
         verify(reservationRepository, times(1)).save(reservation);
     }
+
+    static Stream<Reservation> provideReservationsInPast() {
+        String startDate1;
+        String startDate2;
+        String startDate3;
+
+        String endDate;
+
+        startDate1 = addDays(-1);
+        startDate2 = addDays(-2);
+        startDate3 = addDays(0);
+        endDate = addDays(3);
+        Reservation reservation1 = new Reservation(null, null, new DateRange(startDate1, endDate), 0, ReservationStatus.REJECTED);
+        Reservation reservation2 = new Reservation(null, null, new DateRange(startDate2, endDate), 0, ReservationStatus.REJECTED);
+        Reservation reservation3 = new Reservation(null, null, new DateRange(startDate3, endDate), 0, ReservationStatus.REJECTED);
+        return Stream.of(
+                reservation1, reservation2, reservation3
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideReservationsInPast")
+    public void testVerifyReservationWhenReservationsInPast(Reservation reservation) {
+        boolean result = reservationService.verify(reservation);
+        assertFalse(result);
+    }
+
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static String addDays(int days) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, days);
+        Date currentDatePlusDays = calendar.getTime();
+        String strDate = dateFormat.format(currentDatePlusDays);
+        return strDate;
+    }
+
 }

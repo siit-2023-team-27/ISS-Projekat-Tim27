@@ -107,6 +107,18 @@ public class Reservation {
         return false;
     }
 
+    public boolean validForVerify() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateRange.getStartDate());
+        Date currentDate = Calendar.getInstance().getTime();
+
+        if(calendar.getTime().before(currentDate)){
+            return false;
+        }
+
+        return true;
+    }
+
     // Getters and setters for each attribute
     public long getId() {
         return id;

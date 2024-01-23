@@ -231,7 +231,6 @@ public class GuestReservationsE2ETest extends TestBase{
         reservationsPage.clickCancelButton(id);
         Assertions.assertTrue(reservationsPage.isFail());
         Assertions.assertFalse(reservationsPage.doesStatusMatchWithoutWaiting(id, "CANCELED"));
-
     }
 
     private String addDays(int days) {

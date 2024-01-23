@@ -117,6 +117,8 @@ public class ReservationService implements IService<Reservation, Long> {
         if(reservation.getStatus() == ReservationStatus.CANCELED) { return false; }
         if(reservation.getStatus() == ReservationStatus.REJECTED) { return false; }
 
+        if(!reservation.validForVerify()) { return false; }
+
         reservation.setStatus(ReservationStatus.ACCEPTED);
         declineOverlaping(reservation);
         this.createReservationDates(reservation);
