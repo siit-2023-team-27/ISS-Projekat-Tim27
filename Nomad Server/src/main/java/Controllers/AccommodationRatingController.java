@@ -46,11 +46,9 @@ public class AccommodationRatingController {
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RatingDTO> getRating(@PathVariable("id") Long id) {
         AccommodationRating rating = accommodationRatingService.findOne(id);
-
         if (rating == null) {
             return new ResponseEntity<RatingDTO>(HttpStatus.NOT_FOUND);
         }
-
         return new ResponseEntity<RatingDTO>(mapRating(rating), HttpStatus.OK);
     }
 
