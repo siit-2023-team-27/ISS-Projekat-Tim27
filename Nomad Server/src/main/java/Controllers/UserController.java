@@ -6,11 +6,7 @@ import Services.IService;
 import Services.ReservationService;
 import Services.UserService;
 import exceptions.ResourceConflictException;
-import model.Admin;
-import model.AppUser;
-import model.Guest;
-
-import model.Host;
+import model.*;
 
 import model.enums.NotificationType;
 import model.enums.UserType;
@@ -88,8 +84,10 @@ public class UserController {
             user = convertToEntityGuest(userDTO);
         } else if(userDTO.getRoles().get(0)== UserType.HOST){
             user = convertToEntityHost(userDTO);
-        }else{
+        }else if(userDTO.getRoles().get(0)== UserType.ADMIN){
             user = convertToEntityAdmin(userDTO);
+        }else if(userDTO.getRoles().get(0)== UserType.SUPER_ADMIN){
+            user = convertToEntitySuperAdmin(userDTO);
         }
         userService.create(user);
         return new ResponseEntity<UserDTO>(userDTO, HttpStatus.CREATED);
@@ -210,6 +208,10 @@ public class UserController {
     }
     private Host convertToEntityHost(UserDTO userDTO) {
         return modelMapper.map(userDTO, Host.class);
+    }
+
+    private SuperAdmin convertToEntitySuperAdmin(UserDTO userDTO) {
+        return modelMapper.map(userDTO, SuperAdmin.class);
     }
 
     private Guest convertToEntityGuest(UserDTO userDTO) {
