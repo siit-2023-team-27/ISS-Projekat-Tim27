@@ -55,7 +55,7 @@ public class UserController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserDTO>> getUsers() {
         Collection<AppUser> appUsers = userService.findAll();

@@ -71,6 +71,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/socket/**").permitAll()
                 .requestMatchers("/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST ,"/api/users").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/api/users").permitAll()
                 .requestMatchers(HttpMethod.DELETE ,"/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/{id}").permitAll()
@@ -103,6 +104,8 @@ public class WebSecurityConfig {
         //OVIM RUTAMA MOGU NEREGISTROVANI DA PRISTUPE
         return (web) -> web.ignoring().requestMatchers(HttpMethod.POST, "/auth/login")
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
+                .requestMatchers(HttpMethod.GET, "/api/users")
+                .requestMatchers(HttpMethod.POST, "/api/users")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
                 .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
                 .requestMatchers( HttpMethod.POST,"/api/accommodations")
