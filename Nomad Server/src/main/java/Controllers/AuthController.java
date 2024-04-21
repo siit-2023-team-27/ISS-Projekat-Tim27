@@ -107,6 +107,8 @@ public class AuthController {
             user = convertToHost(userDTO);
         }else if(userDTO.getRoles().get(0) == UserType.ADMIN){
             user = convertToAdmin(userDTO);
+        }else if(userDTO.getRoles().get(0) == UserType.SUPER_ADMIN){
+            user = convertToSuperAdmin(userDTO);
         }
         if(user == null){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -143,6 +145,9 @@ public class AuthController {
     }
     private Admin convertToAdmin(UserRegistrationDTO userDTO) {
         return modelMapper.map(userDTO, Admin.class);
+    }
+    private SuperAdmin convertToSuperAdmin(UserRegistrationDTO userDTO) {
+        return modelMapper.map(userDTO, SuperAdmin.class);
     }
 
     private Guest convertToGuest(UserRegistrationDTO userDTO) {
