@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.client.RestTemplate;
 import security.auth.RestAuthEntryPoint;
 import util.TokenUtils;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -27,5 +28,9 @@ public class DemoApplication {
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
+	}
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 }

@@ -1,0 +1,13 @@
+dn: cn=John Doe,ou=users,dc=mycompany,dc=com
+cn: John Doe
+sn: Doe
+objectClass: inetOrgPerson
+mail: john.doe@example.com
+userPassword: password123
+
+dn: cn=Jane Smith,ou=users,dc=mycompany,dc=com
+cn: Jane Smith
+sn: Smith
+objectClass: inetOrgPerson
+mail: jane.smith@example.com
+userPassword: password456
