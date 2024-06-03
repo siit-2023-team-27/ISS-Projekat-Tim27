@@ -32,37 +32,37 @@ public class WebSecurityConfig {
 
 //    @Autowired
 //    private UserService userService;
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserService(passwordEncoder());
-    }
-
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        return new UserService(passwordEncoder());
+//    }
+//
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    //10 RUNDI HASH
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
-    }
+//    //10 RUNDI HASH
+//    @Bean
+//    public DaoAuthenticationProvider authenticationProvider() {
+//        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+//        authProvider.setUserDetailsService(userDetailsService());
+//        authProvider.setPasswordEncoder(passwordEncoder());
+//
+//        return authProvider;
+//    }
     @Autowired
     private RestAuthEntryPoint restAuthenticationEntryPoint;
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+//        return authConfig.getAuthenticationManager();
+//    }
 
     @Autowired
     private TokenUtils tokenUtils;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("1. FILTER CHAIN");
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+       // http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // sve neautentifikovane zahteve obradi uniformno i posalji 401 gresku
         http.exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint);
         http.authorizeRequests()
@@ -90,11 +90,12 @@ public class WebSecurityConfig {
             // za svaki drugi zahtev korisnik mora biti autentifikovan
                 .anyRequest().authenticated().and()
                 .cors().and()
-                .addFilterBefore(new TokenAuthFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
+                .oauth2ResourceServer(auth-> auth.jwt(token->token.jwtAuthenticationConverter(new KeycloakJwtAuthConverter())));
+                //.addFilterBefore(new TokenAuthFilter(tokenUtils,  userDetailsService()), BasicAuthenticationFilter.class);
 //        http.authorizeRequests().anyRequest().permitAll();
         http.csrf().disable();
         http.headers().frameOptions().disable();
-        http.authenticationProvider(authenticationProvider());
+        //http.authenticationProvider(authenticationProvider());
 
         return http.build();
     }

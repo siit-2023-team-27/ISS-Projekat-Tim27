@@ -36,22 +36,22 @@ import java.util.HashMap;
                 RequestMethod.DELETE,
                 RequestMethod.POST
         })
-@RestController
-@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
+//@RestController
+//@RequestMapping(value = "/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
-    @Autowired
+    //@Autowired
     private ModelMapper modelMapper;
-    @Autowired
+    //@Autowired
     private TokenUtils tokenUtils;
 
-    @Autowired
+    //@Autowired
     private AuthenticationManager authenticationManager;
 
-    @Autowired
+    //@Autowired
     private UserService userService;
-    @Autowired
+    //@Autowired
     private ConfirmationTokenService confirmationTokenService;
-    @Autowired
+    //@Autowired
     MailService mailService;
 
     @PostMapping("/login")
