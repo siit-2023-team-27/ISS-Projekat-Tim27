@@ -52,6 +52,12 @@ public class UserController {
     private ModelMapper modelMapper;
 
 
+//    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public ResponseEntity<Long> getUserId(@PathVariable("username") String username) {
+//        Collection<AppUser> appUsers = userService.find();
+//        return new ResponseEntity<Long>(userDTOS, HttpStatus.OK);
+//    }
+
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserDTO>> getUsers() {
         Collection<AppUser> appUsers = userService.findAll();

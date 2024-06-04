@@ -34,7 +34,14 @@ public class UserService implements IService<AppUser, Long>, UserDetailsService 
         user.setVerified(true);
         this.save(user);
     }
-
+    public UserDetails getIdByUsername(String username) throws UsernameNotFoundException {
+        AppUser user = userRepository.findOneByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        } else {
+            return user;
+        }
+    }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findOneByUsername(username);
