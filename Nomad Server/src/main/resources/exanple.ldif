@@ -1,0 +1,8 @@
+# Entry for User2
+dn: uid=user5,ou=users,dc=mycompany,dc=com
+objectClass: inetOrgPerson
+cn: User3 CommonName
+sn: User3 Surname
+uid: user5
+ou: users
+userPassword: password456
