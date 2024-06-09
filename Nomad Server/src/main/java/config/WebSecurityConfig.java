@@ -2,10 +2,12 @@ package config;
 
 import Services.IService;
 import Services.UserService;
+import interceptor.KeycloakInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 import security.auth.RestAuthEntryPoint;
 import security.auth.TokenAuthFilter;
 import util.TokenUtils;
@@ -30,6 +33,13 @@ import util.TokenUtils;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class WebSecurityConfig {
 
+    @Autowired
+    @Lazy
+    private KeycloakInterceptor keycloakInterceptor;
+    @Bean
+    public MappedInterceptor loginInter() {
+        return new MappedInterceptor(null, keycloakInterceptor);
+    }
 //    @Autowired
 //    private UserService userService;
 //    @Bean
@@ -72,6 +82,7 @@ public class WebSecurityConfig {
                 .requestMatchers("/api/users/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST ,"/api/users").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/users").permitAll()
+                .requestMatchers(HttpMethod.GET ,"/getId/{username}").permitAll()
                 .requestMatchers(HttpMethod.DELETE ,"/api/users/{id}").permitAll()
                 //.requestMatchers(HttpMethod.GET ,"/api/accommodations").permitAll()
                 .requestMatchers(HttpMethod.GET ,"/api/accommodations/{id}").permitAll()
@@ -107,8 +118,9 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/signup")
                 .requestMatchers(HttpMethod.GET, "/api/users")
                 .requestMatchers(HttpMethod.POST, "/api/users")
+                .requestMatchers(HttpMethod.GET ,"/getId/{username}")
                 .requestMatchers(HttpMethod.GET, "/auth/confirm-account")
-                .requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
+                //.requestMatchers(HttpMethod.GET, "/api/accommodations/verified")
                 .requestMatchers( HttpMethod.POST,"/api/accommodations")
                 .requestMatchers( HttpMethod.GET,"/api/accommodation-ratings/for-accommodation")
                 .requestMatchers(HttpMethod.GET,"/api/accommodation-ratings/for-accommodation/{id}")

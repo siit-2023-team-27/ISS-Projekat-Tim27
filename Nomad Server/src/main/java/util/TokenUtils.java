@@ -142,6 +142,7 @@ public class TokenUtils {
 
         return expiration;
     }
+
     private Claims getAllClaimsFromToken(String token) {
         Claims claims;
         try {
