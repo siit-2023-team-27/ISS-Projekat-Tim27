@@ -2,6 +2,7 @@ package com.example.demo;
 
 import Controllers.AccommodationController;
 import config.WebSecurityConfig;
+import interceptor.KeycloakInterceptor;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication()
 
 @EntityScan("model")
-@ComponentScan(basePackageClasses = {AccommodationController.class, WebSecurityConfig.class})
+@ComponentScan(basePackageClasses = {AccommodationController.class, WebSecurityConfig.class, TokenUtils.class, KeycloakInterceptor.class})
 public class DemoApplication {
 
 	public static void main(String[] args) {

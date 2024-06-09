@@ -1,8 +1,14 @@
-# Entry for User2
-dn: uid=user5,ou=users,dc=mycompany,dc=com
+# Entry for User1
+dn: uid=userX@gmail.com,cn=users,dc=mycompany,dc=com
 objectClass: inetOrgPerson
-cn: User3 CommonName
-sn: User3 Surname
-uid: user5
+objectClass: posixAccount
+objectClass: shadowAccount
+cn: User4
+sn: User4
+uid: userX@gmail.com
+uidNumber: 5000
+gidNumber: 5000
+mail: userX@gmail.com
 ou: users
-userPassword: password456
+userPassword: 123
+memberOf: cn=ADMIN,ou=roles,dc=mycompany,dc=com

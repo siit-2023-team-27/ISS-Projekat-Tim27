@@ -52,11 +52,11 @@ public class UserController {
     private ModelMapper modelMapper;
 
 
-//    @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<Long> getUserId(@PathVariable("username") String username) {
-//        Collection<AppUser> appUsers = userService.find();
-//        return new ResponseEntity<Long>(userDTOS, HttpStatus.OK);
-//    }
+    @GetMapping(value = "/getId/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> getUserId(@PathVariable("username") String username) {
+        Long id = userService.getIdByUsername(username);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
+    }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<UserDTO>> getUsers() {

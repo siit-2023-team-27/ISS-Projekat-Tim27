@@ -65,7 +65,7 @@ public class AccommodationController {
         return new ResponseEntity<Collection<AccommodationDTO>>(accommodationDTOS, HttpStatus.OK);
     }
     //@PreAuthorize("hasAuthority('HOST') or hasAuthority('ADMIN') or hasAuthority('GUEST')")
-    //@PreAuthorize("hasAuthority('HOST')")
+    @PreAuthorize("hasAuthority('GUEST')")
     @GetMapping(value = "/verified", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Collection<AccommodationDTO>> getApprovedAccommodations() {
         Collection<Accommodation> accommodations = accommodationService.findApprovedAccommodations();
